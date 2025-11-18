@@ -33,10 +33,6 @@ public class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
         RuleFor(x => x.Department)
             .MaximumLength(100).When(x => !string.IsNullOrEmpty(x.Department))
             .WithMessage("Department cannot exceed 100 characters");
-
-        RuleFor(x => x.Position)
-            .MaximumLength(100).When(x => !string.IsNullOrEmpty(x.Position))
-            .WithMessage("Position cannot exceed 100 characters");
     }
 }
 

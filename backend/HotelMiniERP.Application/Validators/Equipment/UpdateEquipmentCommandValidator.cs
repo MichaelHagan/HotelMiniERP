@@ -23,7 +23,7 @@ public class UpdateEquipmentCommandValidator : AbstractValidator<UpdateEquipment
             .MaximumLength(100).WithMessage("Category cannot exceed 100 characters");
 
         RuleFor(x => x.UnitCost)
-            .GreaterThanOrEqualTo(0).When(x => x.UnitCost.HasValue)
+            .GreaterThanOrEqualTo(0)
             .WithMessage("Unit cost cannot be negative");
 
         RuleFor(x => x.Quantity)

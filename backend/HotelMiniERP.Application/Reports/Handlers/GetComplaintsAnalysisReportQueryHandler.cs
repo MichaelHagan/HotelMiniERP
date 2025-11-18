@@ -35,8 +35,7 @@ public class GetComplaintsAnalysisReportQueryHandler : IRequestHandler<GetCompla
 
         var customerResolvedWithDates = customerComplaints
             .Where(c => (c.Status == ComplaintStatus.Resolved || c.Status == ComplaintStatus.Closed) && 
-                       c.ResolvedDate.HasValue && 
-                       c.CreatedAt != null)
+                       c.ResolvedDate.HasValue)
             .ToList();
 
         var customerAvgResolutionTime = customerResolvedWithDates.Any()
@@ -62,8 +61,7 @@ public class GetComplaintsAnalysisReportQueryHandler : IRequestHandler<GetCompla
 
         var workerResolvedWithDates = workerComplaints
             .Where(c => (c.Status == ComplaintStatus.Resolved || c.Status == ComplaintStatus.Closed) && 
-                       c.ResolvedDate.HasValue && 
-                       c.CreatedAt != null)
+                       c.ResolvedDate.HasValue)
             .ToList();
 
         var workerAvgResolutionTime = workerResolvedWithDates.Any()

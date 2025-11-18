@@ -33,8 +33,7 @@ public class GetWorkOrderPerformanceReportQueryHandler : IRequestHandler<GetWork
         // Calculate average completion time
         var completedWithDates = workOrders
             .Where(w => w.Status == WorkOrderStatus.Completed && 
-                       w.CompletedDate.HasValue && 
-                       w.RequestedDate != null)
+                       w.CompletedDate.HasValue)
             .ToList();
 
         var averageCompletionTime = completedWithDates.Any() 
