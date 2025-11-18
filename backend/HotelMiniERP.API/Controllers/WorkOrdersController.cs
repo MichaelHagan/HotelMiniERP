@@ -139,8 +139,19 @@ public class WorkOrdersController : ControllerBase
     {
         try
         {
-            // TODO: Implement DeleteWorkOrderCommand
+            var command = new HotelMiniERP.Application.WorkOrders.Commands.DeleteWorkOrderCommand { Id = id };
+            var success = await _mediator.Send(command);
+
+            if (!success)
+            {
+                return NotFound(new { Message = "Work order not found" });
+            }
+
             return Ok(new { Message = "Work order deleted successfully" });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { Message = ex.Message });
         }
         catch (Exception ex)
         {
@@ -149,18 +160,23 @@ public class WorkOrdersController : ControllerBase
     }
 
     [HttpGet("my-assignments")]
-    public async Task<IActionResult> GetMyAssignedWorkOrders()
+    public async Task<IActionResult> GetMyAssignedWorkOrders([FromQuery] string? status = null)
     {
         try
         {
             var userId = User.FindFirst("UserId")?.Value;
-            if (userId == null)
+            if (userId == null || !int.TryParse(userId, out int userIdInt))
             {
                 return Unauthorized();
             }
 
-            // TODO: Implement GetWorkOrdersByAssigneeQuery
-            return Ok(new { Message = "My assigned work orders - to be implemented" });
+            var query = new GetWorkOrdersByAssigneeQuery 
+            { 
+                AssignedToUserId = userIdInt,
+                Status = status
+            };
+            var result = await _mediator.Send(query);
+            return Ok(result);
         }
         catch (Exception ex)
         {
@@ -173,8 +189,13 @@ public class WorkOrdersController : ControllerBase
     {
         try
         {
-            // TODO: Implement GetWorkOrdersByStatusQuery
-            return Ok(new { Message = $"Work orders with status {status} - to be implemented" });
+            var query = new GetWorkOrdersByStatusQuery { Status = status };
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { Message = ex.Message });
         }
         catch (Exception ex)
         {
@@ -187,8 +208,13 @@ public class WorkOrdersController : ControllerBase
     {
         try
         {
-            // TODO: Implement GetWorkOrdersByPriorityQuery
-            return Ok(new { Message = $"Work orders with priority {priority} - to be implemented" });
+            var query = new GetWorkOrdersByPriorityQuery { Priority = priority };
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { Message = ex.Message });
         }
         catch (Exception ex)
         {

@@ -91,4 +91,30 @@ public class UsersController : ControllerBase
             return StatusCode(500, new { Message = ex.Message });
         }
     }
+
+    [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DeleteUser(int id)
+    {
+        try
+        {
+            var command = new HotelMiniERP.Application.Users.Commands.DeleteUserCommand { Id = id };
+            var success = await _mediator.Send(command);
+
+            if (!success)
+            {
+                return NotFound(new { message = "User not found" });
+            }
+
+            return Ok(new { message = "User deleted successfully" });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An error occurred while deleting the user", error = ex.Message });
+        }
+    }
 }

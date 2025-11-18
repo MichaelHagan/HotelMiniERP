@@ -102,4 +102,30 @@ public class EquipmentController : ControllerBase
             return StatusCode(500, new { message = "An error occurred while updating the equipment", error = ex.Message });
         }
     }
+
+    [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin,Manager")]
+    public async Task<IActionResult> DeleteEquipment(int id)
+    {
+        try
+        {
+            var command = new HotelMiniERP.Application.Equipment.Commands.DeleteEquipmentCommand { Id = id };
+            var success = await _mediator.Send(command);
+
+            if (!success)
+            {
+                return NotFound(new { message = "Equipment not found" });
+            }
+
+            return Ok(new { message = "Equipment deleted successfully" });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An error occurred while deleting the equipment", error = ex.Message });
+        }
+    }
 }

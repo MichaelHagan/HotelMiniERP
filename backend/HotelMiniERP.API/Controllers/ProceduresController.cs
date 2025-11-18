@@ -97,4 +97,26 @@ public class ProceduresController : ControllerBase
             return StatusCode(500, new { message = "An error occurred while updating the procedure", error = ex.Message });
         }
     }
+
+    [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin,Manager")]
+    public async Task<IActionResult> DeleteProcedure(int id)
+    {
+        try
+        {
+            var command = new HotelMiniERP.Application.Procedures.Commands.DeleteProcedureCommand { Id = id };
+            var success = await _mediator.Send(command);
+
+            if (!success)
+            {
+                return NotFound(new { message = "Procedure not found" });
+            }
+
+            return Ok(new { message = "Procedure deleted successfully" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An error occurred while deleting the procedure", error = ex.Message });
+        }
+    }
 }

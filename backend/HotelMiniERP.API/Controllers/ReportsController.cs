@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using HotelMiniERP.Application.Reports.Queries;
 
 namespace HotelMiniERP.API.Controllers;
 
@@ -21,7 +22,22 @@ public class ReportsController : ControllerBase
     {
         try
         {
-            // TODO: Implement GetDashboardSummaryQuery
+            var query = new GetDashboardSummaryQuery();
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { Message = ex.Message });
+        }
+    }
+
+    [HttpGet("dashboard/mock")]
+    public async Task<IActionResult> GetDashboardSummaryMock()
+    {
+        try
+        {
+            // Legacy mock endpoint for testing
             var mockDashboard = new
             {
                 Assets = new
@@ -89,7 +105,27 @@ public class ReportsController : ControllerBase
     {
         try
         {
-            // TODO: Implement GetAssetDepreciationReportQuery
+            var query = new GetAssetDepreciationReportQuery 
+            { 
+                StartDate = startDate, 
+                EndDate = endDate 
+            };
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { Message = ex.Message });
+        }
+    }
+
+    [HttpGet("assets/depreciation/mock")]
+    [Authorize(Roles = "Admin,Manager")]
+    public async Task<IActionResult> GetAssetDepreciationReportMock([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+    {
+        try
+        {
+            // Legacy mock endpoint
             var mockReport = new
             {
                 ReportPeriod = new
@@ -127,7 +163,27 @@ public class ReportsController : ControllerBase
     {
         try
         {
-            // TODO: Implement GetWorkOrderPerformanceReportQuery
+            var query = new GetWorkOrderPerformanceReportQuery 
+            { 
+                StartDate = startDate, 
+                EndDate = endDate 
+            };
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { Message = ex.Message });
+        }
+    }
+
+    [HttpGet("workorders/performance/mock")]
+    [Authorize(Roles = "Admin,Manager")]
+    public async Task<IActionResult> GetWorkOrderPerformanceReportMock([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+    {
+        try
+        {
+            // Legacy mock endpoint
             var mockReport = new
             {
                 ReportPeriod = new
@@ -172,7 +228,27 @@ public class ReportsController : ControllerBase
     {
         try
         {
-            // TODO: Implement GetEquipmentUtilizationReportQuery
+            var query = new GetEquipmentUtilizationReportQuery 
+            { 
+                StartDate = startDate, 
+                EndDate = endDate 
+            };
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { Message = ex.Message });
+        }
+    }
+
+    [HttpGet("equipment/utilization/mock")]
+    [Authorize(Roles = "Admin,Manager")]
+    public async Task<IActionResult> GetEquipmentUtilizationReportMock([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+    {
+        try
+        {
+            // Legacy mock endpoint
             var mockReport = new
             {
                 ReportPeriod = new
@@ -214,7 +290,27 @@ public class ReportsController : ControllerBase
     {
         try
         {
-            // TODO: Implement GetComplaintsAnalysisReportQuery
+            var query = new GetComplaintsAnalysisReportQuery 
+            { 
+                StartDate = startDate, 
+                EndDate = endDate 
+            };
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { Message = ex.Message });
+        }
+    }
+
+    [HttpGet("complaints/analysis/mock")]
+    [Authorize(Roles = "Admin,Manager")]
+    public async Task<IActionResult> GetComplaintsAnalysisReportMock([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+    {
+        try
+        {
+            // Legacy mock endpoint
             var mockReport = new
             {
                 ReportPeriod = new
@@ -279,7 +375,27 @@ public class ReportsController : ControllerBase
     {
         try
         {
-            // TODO: Implement GetFinancialSummaryReportQuery
+            var query = new GetFinancialSummaryReportQuery 
+            { 
+                StartDate = startDate, 
+                EndDate = endDate 
+            };
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { Message = ex.Message });
+        }
+    }
+
+    [HttpGet("financial/summary/mock")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetFinancialSummaryReportMock([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+    {
+        try
+        {
+            // Legacy mock endpoint
             var mockReport = new
             {
                 ReportPeriod = new

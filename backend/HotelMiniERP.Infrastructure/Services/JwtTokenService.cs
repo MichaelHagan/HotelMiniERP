@@ -33,9 +33,11 @@ namespace HotelMiniERP.Infrastructure.Services
                 Subject = new ClaimsIdentity(new[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim("UserId", user.Id.ToString()),
                     new Claim(ClaimTypes.Name, user.Username),
                     new Claim(ClaimTypes.Email, user.Email),
                     new Claim(ClaimTypes.Role, user.Role.ToString()),
+                    new Claim("Role", user.Role.ToString()),
                     new Claim("FullName", $"{user.FirstName} {user.LastName}")
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),

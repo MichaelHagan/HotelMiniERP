@@ -1,4 +1,5 @@
 import { apiClient } from './apiClient';
+import config from '../config';
 import { 
   AuthResponse, 
   LoginDto, 
@@ -14,8 +15,8 @@ export class AuthService {
     
     // Store token and user data
     if (response.token) {
-      localStorage.setItem('authToken', response.token);
-      localStorage.setItem('user', JSON.stringify(response.user));
+      localStorage.setItem(config.auth.tokenKey, response.token);
+      localStorage.setItem(config.auth.userKey, JSON.stringify(response.user));
     }
     
     return response;
@@ -30,17 +31,17 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('user');
+    localStorage.removeItem(config.auth.tokenKey);
+    localStorage.removeItem(config.auth.userKey);
   }
 
   getStoredUser(): User | null {
-    const userStr = localStorage.getItem('user');
+    const userStr = localStorage.getItem(config.auth.userKey);
     return userStr ? JSON.parse(userStr) : null;
   }
 
   getStoredToken(): string | null {
-    return localStorage.getItem('authToken');
+    return localStorage.getItem(config.auth.tokenKey);
   }
 
   isAuthenticated(): boolean {
