@@ -26,6 +26,7 @@ import {
 } from '@mui/icons-material';
 import { reportService } from '../services';
 import { useNavigate } from 'react-router-dom';
+import { DashboardSummaryDto } from '../types';
 
 interface StatCardProps {
   title: string;
@@ -147,7 +148,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ title, items }) => (
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const { data: dashboardData, isLoading, error, refetch } = useQuery({
+  const { data: dashboardData, isLoading, error, refetch } = useQuery<DashboardSummaryDto>({
     queryKey: ['dashboard-summary'],
     queryFn: () => reportService.getDashboardSummary(),
     refetchInterval: 60000, // Refetch every minute
@@ -183,13 +184,13 @@ export const DashboardPage: React.FC = () => {
     );
   }
 
-  const { Assets, WorkOrders, Inventory, Complaints, Users } = dashboardData || {};
+  const { assets, workOrders, inventory, complaints, users } = dashboardData || {};
 
   // Calculate percentages for progress bars
-  const assetActivePercentage = Assets ? Math.round((Assets.ActiveAssets / Assets.TotalAssets) * 100) : 0;
-  const equipmentAvailablePercentage = Inventory ? Math.round((Inventory.AvailableEquipment / Inventory.TotalEquipment) * 100) : 0;
-  const workOrderCompletionPercentage = WorkOrders && WorkOrders.TotalWorkOrders > 0
-    ? Math.round(((WorkOrders.TotalWorkOrders - WorkOrders.OpenWorkOrders - WorkOrders.InProgressWorkOrders) / WorkOrders.TotalWorkOrders) * 100)
+  const assetActivePercentage = assets ? Math.round((assets.activeAssets / assets.totalAssets) * 100) : 0;
+  const inventoryAvailablePercentage = inventory ? Math.round((inventory.availableInventory / inventory.totalInventory) * 100) : 0;
+  const workOrderCompletionPercentage = workOrders && workOrders.totalWorkOrders > 0
+    ? Math.round(((workOrders.totalWorkOrders - workOrders.openWorkOrders - workOrders.inProgressWorkOrders) / workOrders.totalWorkOrders) * 100)
     : 0;
 
   return (
@@ -215,42 +216,42 @@ export const DashboardPage: React.FC = () => {
       }}>
         <StatCard
           title="Total Assets"
-          value={Assets?.TotalAssets || 0}
+          value={assets?.totalAssets || 0}
           icon={<InventoryIcon />}
           color="#1976d2"
-          subtitle={`${Assets?.MaintenanceRequired || 0} need maintenance`}
+          subtitle={`${assets?.maintenanceRequired || 0} need maintenance`}
           onClick={() => navigate('/assets')}
         />
         <StatCard
           title="Open Work Orders"
-          value={WorkOrders?.OpenWorkOrders || 0}
+          value={workOrders?.openWorkOrders || 0}
           icon={<Assignment />}
           color="#ff9800"
-          subtitle={`${WorkOrders?.HighPriorityWorkOrders || 0} high priority`}
+          subtitle={`${workOrders?.highPriorityWorkOrders || 0} high priority`}
           onClick={() => navigate('/workorders')}
         />
         <StatCard
           title="Equipment Items"
-          value={Inventory?.TotalEquipment || 0}
+          value={inventory?.totalInventory || 0}
           icon={<Build />}
           color="#4caf50"
-          subtitle={`${Inventory?.AvailableEquipment || 0} available`}
+          subtitle={`${inventory?.availableInventory || 0} available`}
           onClick={() => navigate('/equipment')}
         />
         <StatCard
           title="Open Complaints"
-          value={(Complaints?.CustomerComplaints?.Open || 0) + (Complaints?.WorkerComplaints?.Open || 0)}
+          value={(complaints?.customerComplaints?.open || 0) + (complaints?.workerComplaints?.open || 0)}
           icon={<Report />}
           color="#f44336"
-          subtitle={`${Complaints?.CustomerComplaints?.Open || 0} customer, ${Complaints?.WorkerComplaints?.Open || 0} worker`}
+          subtitle={`${complaints?.customerComplaints?.open || 0} customer, ${complaints?.workerComplaints?.open || 0} worker`}
           onClick={() => navigate('/complaints')}
         />
         <StatCard
           title="Active Users"
-          value={Users?.ActiveUsers || 0}
+          value={users?.activeUsers || 0}
           icon={<People />}
           color="#9c27b0"
-          subtitle={`${Users?.OnlineUsers || 0} online now`}
+          subtitle={`${users?.onlineUsers || 0} online now`}
           onClick={() => navigate('/users')}
         />
       </Box>
@@ -280,35 +281,35 @@ export const DashboardPage: React.FC = () => {
                 <Typography variant="body2" color="textSecondary" gutterBottom>
                   Total Work Orders
                 </Typography>
-                <Typography variant="h4">{WorkOrders?.TotalWorkOrders || 0}</Typography>
+                <Typography variant="h4">{workOrders?.totalWorkOrders || 0}</Typography>
               </Box>
               <Box>
                 <Typography variant="body2" color="textSecondary" gutterBottom>
                   Completed This Month
                 </Typography>
                 <Typography variant="h4" color="success.main">
-                  {WorkOrders?.CompletedThisMonth || 0}
+                  {workOrders?.completedThisMonth || 0}
                 </Typography>
               </Box>
             </Box>
 
             <Box sx={{ mt: 3, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
               <Chip 
-                label={`${WorkOrders?.OpenWorkOrders || 0} Open`} 
+                label={`${workOrders?.openWorkOrders || 0} Open`} 
                 color="info"
                 icon={<Assignment />}
               />
               <Chip 
-                label={`${WorkOrders?.InProgressWorkOrders || 0} In Progress`}
+                label={`${workOrders?.inProgressWorkOrders || 0} In Progress`}
                 color="warning"
               />
               <Chip 
-                label={`${WorkOrders?.HighPriorityWorkOrders || 0} High Priority`}
+                label={`${workOrders?.highPriorityWorkOrders || 0} High Priority`}
                 color="error"
               />
-              {(WorkOrders?.OverdueWorkOrders || 0) > 0 && (
+              {(workOrders?.overdueWorkOrders || 0) > 0 && (
                 <Chip 
-                  label={`${WorkOrders?.OverdueWorkOrders} Overdue`}
+                  label={`${workOrders?.overdueWorkOrders} Overdue`}
                   color="error"
                   icon={<Warning />}
                 />
@@ -322,14 +323,14 @@ export const DashboardPage: React.FC = () => {
           title="System Health"
           items={[
             {
-              label: `Assets Active (${Assets?.ActiveAssets || 0}/${Assets?.TotalAssets || 0})`,
+              label: `Assets Active (${assets?.activeAssets || 0}/${assets?.totalAssets || 0})`,
               value: assetActivePercentage,
               color: assetActivePercentage > 90 ? 'success' : assetActivePercentage > 70 ? 'warning' : 'error'
             },
             {
-              label: `Equipment Available (${Inventory?.AvailableEquipment || 0}/${Inventory?.TotalEquipment || 0})`,
-              value: equipmentAvailablePercentage,
-              color: equipmentAvailablePercentage > 80 ? 'success' : equipmentAvailablePercentage > 60 ? 'warning' : 'error'
+              label: `Equipment Available (${inventory?.availableInventory || 0}/${inventory?.totalInventory || 0})`,
+              value: inventoryAvailablePercentage,
+              color: inventoryAvailablePercentage > 80 ? 'success' : inventoryAvailablePercentage > 60 ? 'warning' : 'error'
             },
             {
               label: 'Work Order Completion',
@@ -350,10 +351,10 @@ export const DashboardPage: React.FC = () => {
         <SummaryCard
           title="Assets Breakdown"
           items={[
-            { label: 'Total Assets', value: Assets?.TotalAssets || 0, status: 'default' },
-            { label: 'Active', value: Assets?.ActiveAssets || 0, status: 'success' },
-            { label: 'Maintenance Required', value: Assets?.MaintenanceRequired || 0, status: 'warning' },
-            { label: 'Recently Added', value: Assets?.RecentlyAdded || 0, status: 'info' },
+            { label: 'Total Assets', value: assets?.totalAssets || 0, status: 'default' },
+            { label: 'Active', value: assets?.activeAssets || 0, status: 'success' },
+            { label: 'Maintenance Required', value: assets?.maintenanceRequired || 0, status: 'warning' },
+            { label: 'Recently Added', value: assets?.recentlyAdded || 0, status: 'info' },
           ]}
         />
 
@@ -361,12 +362,12 @@ export const DashboardPage: React.FC = () => {
         <SummaryCard
           title="Equipment Status"
           items={[
-            { label: 'Total Equipment', value: Inventory?.TotalEquipment || 0, status: 'default' },
-            { label: 'Available', value: Inventory?.AvailableEquipment || 0, status: 'success' },
-            { label: 'In Use', value: Inventory?.InUseEquipment || 0, status: 'info' },
-            { label: 'In Maintenance', value: Inventory?.MaintenanceEquipment || 0, status: 'warning' },
-            { label: 'Maintenance Due This Week', value: Inventory?.MaintenanceDueThisWeek || 0, 
-              status: (Inventory?.MaintenanceDueThisWeek || 0) > 0 ? 'warning' : 'success' 
+            { label: 'Total Equipment', value: inventory?.totalInventory || 0, status: 'default' },
+            { label: 'Available', value: inventory?.availableInventory || 0, status: 'success' },
+            { label: 'In Use', value: inventory?.inUseInventory || 0, status: 'info' },
+            { label: 'In Maintenance', value: inventory?.maintenanceInventory || 0, status: 'warning' },
+            { label: 'Maintenance Due This Week', value: inventory?.maintenanceDueThisWeek || 0, 
+              status: (inventory?.maintenanceDueThisWeek || 0) > 0 ? 'warning' : 'success' 
             },
           ]}
         />
@@ -375,16 +376,16 @@ export const DashboardPage: React.FC = () => {
         <SummaryCard
           title="Complaints Overview"
           items={[
-            { label: 'Customer - Total', value: Complaints?.CustomerComplaints?.Total || 0, status: 'default' },
-            { label: 'Customer - Open', value: Complaints?.CustomerComplaints?.Open || 0, 
-              status: (Complaints?.CustomerComplaints?.Open || 0) > 0 ? 'error' : 'success' 
+            { label: 'Customer - Total', value: complaints?.customerComplaints?.total || 0, status: 'default' },
+            { label: 'Customer - Open', value: complaints?.customerComplaints?.open || 0, 
+              status: (complaints?.customerComplaints?.open || 0) > 0 ? 'error' : 'success' 
             },
-            { label: 'Customer - In Progress', value: Complaints?.CustomerComplaints?.InProgress || 0, status: 'warning' },
-            { label: 'Worker - Total', value: Complaints?.WorkerComplaints?.Total || 0, status: 'default' },
-            { label: 'Worker - Open', value: Complaints?.WorkerComplaints?.Open || 0,
-              status: (Complaints?.WorkerComplaints?.Open || 0) > 0 ? 'error' : 'success'
+            { label: 'Customer - In Progress', value: complaints?.customerComplaints?.inProgress || 0, status: 'warning' },
+            { label: 'Worker - Total', value: complaints?.workerComplaints?.total || 0, status: 'default' },
+            { label: 'Worker - Open', value: complaints?.workerComplaints?.open || 0,
+              status: (complaints?.workerComplaints?.open || 0) > 0 ? 'error' : 'success'
             },
-            { label: 'Worker - In Progress', value: Complaints?.WorkerComplaints?.InProgress || 0, status: 'warning' },
+            { label: 'Worker - In Progress', value: complaints?.workerComplaints?.inProgress || 0, status: 'warning' },
           ]}
         />
       </Box>
@@ -398,7 +399,7 @@ export const DashboardPage: React.FC = () => {
               Dashboard automatically refreshes every minute to show the latest data from all modules.
             </Typography>
             <Typography variant="caption" color="textSecondary">
-              Total Asset Value: ${Assets?.TotalValue?.toLocaleString() || '0'}
+              Total Asset Value: ${assets?.totalValue?.toLocaleString() || '0'}
             </Typography>
           </Box>
         </CardContent>

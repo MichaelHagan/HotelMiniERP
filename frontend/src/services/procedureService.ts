@@ -4,14 +4,25 @@ import {
   CreateProcedureDto,
   UpdateProcedureDto,
   PaginatedResponse,
-  PaginationParams
+  ProcedureQueryParams
 } from '../types';
 
 export class ProcedureService {
   private readonly basePath = '/procedures';
 
-  async getProcedures(params?: PaginationParams & { category?: string }): Promise<PaginatedResponse<Procedure>> {
-    const queryString = params ? new URLSearchParams(params as any).toString() : '';
+  async getProcedures(params?: ProcedureQueryParams): Promise<PaginatedResponse<Procedure>> {
+    if (!params) {
+      return apiClient.get<PaginatedResponse<Procedure>>(this.basePath);
+    }
+    
+    const filteredParams = Object.entries(params).reduce((acc, [key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        acc[key] = String(value);
+      }
+      return acc;
+    }, {} as Record<string, string>);
+    
+    const queryString = new URLSearchParams(filteredParams).toString();
     const url = queryString ? `${this.basePath}?${queryString}` : this.basePath;
     return apiClient.get<PaginatedResponse<Procedure>>(url);
   }

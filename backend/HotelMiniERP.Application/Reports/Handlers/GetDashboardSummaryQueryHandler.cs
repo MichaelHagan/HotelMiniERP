@@ -50,8 +50,8 @@ public class GetDashboardSummaryQueryHandler : IRequestHandler<GetDashboardSumma
                            w.Status != WorkOrderStatus.Completed && 
                            w.Status != WorkOrderStatus.Cancelled, cancellationToken);
 
-        // Equipment Summary (now Inventory)
-        var totalEquipment = await _context.Inventory.CountAsync(cancellationToken);
+        // Inventory Summary
+        var totalInventory = await _context.Inventory.CountAsync(cancellationToken);
         var lowStockItems = await _context.Inventory.CountAsync(e => e.MinimumStock.HasValue && e.Quantity <= e.MinimumStock.Value, cancellationToken);
         var inStockItems = await _context.Inventory.CountAsync(e => !e.MinimumStock.HasValue || e.Quantity > e.MinimumStock.Value, cancellationToken);
         var outOfStockItems = await _context.Inventory.CountAsync(e => e.Quantity == 0, cancellationToken);
@@ -82,8 +82,9 @@ public class GetDashboardSummaryQueryHandler : IRequestHandler<GetDashboardSumma
                            u.LastLogin.Value >= now.AddHours(-1), cancellationToken);
         var newUsersThisMonth = await _context.Users
             .CountAsync(u => u.CreatedAt >= startOfMonth, cancellationToken);
+        
 
-        return new DashboardSummaryDto
+        var result = new DashboardSummaryDto
         {
             Assets = new AssetSummaryDto
             {
@@ -102,12 +103,12 @@ public class GetDashboardSummaryQueryHandler : IRequestHandler<GetDashboardSumma
                 HighPriorityWorkOrders = highPriorityWorkOrders,
                 OverdueWorkOrders = overdueWorkOrders
             },
-            Equipment = new EquipmentSummaryDto
+            Inventory = new InventorySummaryDto
             {
-                TotalEquipment = totalEquipment,
-                AvailableEquipment = inStockItems,
-                InUseEquipment = lowStockItems,
-                MaintenanceEquipment = outOfStockItems,
+                TotalInventory = totalInventory,
+                AvailableInventory = inStockItems,
+                InUseInventory = lowStockItems,
+                MaintenanceInventory = outOfStockItems,
                 MaintenanceDueThisWeek = restockNeededCount
             },
             Complaints = new ComplaintsSummaryDto
@@ -135,6 +136,8 @@ public class GetDashboardSummaryQueryHandler : IRequestHandler<GetDashboardSumma
                 NewUsersThisMonth = newUsersThisMonth
             }
         };
+
+        return result;
     }
 }
 

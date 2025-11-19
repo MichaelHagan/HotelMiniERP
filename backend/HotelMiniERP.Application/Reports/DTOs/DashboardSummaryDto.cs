@@ -4,7 +4,7 @@ public class DashboardSummaryDto
 {
     public AssetSummaryDto Assets { get; set; } = new();
     public WorkOrderSummaryDto WorkOrders { get; set; } = new();
-    public EquipmentSummaryDto Equipment { get; set; } = new();
+    public InventorySummaryDto Inventory { get; set; } = new();
     public ComplaintsSummaryDto Complaints { get; set; } = new();
     public UserSummaryDto Users { get; set; } = new();
 }
@@ -28,12 +28,12 @@ public class WorkOrderSummaryDto
     public int OverdueWorkOrders { get; set; }
 }
 
-public class EquipmentSummaryDto
+public class InventorySummaryDto
 {
-    public int TotalEquipment { get; set; }
-    public int AvailableEquipment { get; set; }
-    public int InUseEquipment { get; set; }
-    public int MaintenanceEquipment { get; set; }
+    public int TotalInventory { get; set; }
+    public int AvailableInventory { get; set; }
+    public int InUseInventory { get; set; }
+    public int MaintenanceInventory { get; set; }
     public int MaintenanceDueThisWeek { get; set; }
 }
 

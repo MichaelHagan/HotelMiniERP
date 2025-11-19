@@ -11,7 +11,18 @@ export class InventoryService {
   private readonly basePath = '/inventory';
 
   async getInventory(params?: InventoryQueryParams): Promise<PaginatedResponse<Inventory>> {
-    const queryString = params ? new URLSearchParams(params as any).toString() : '';
+    if (!params) {
+      return apiClient.get<PaginatedResponse<Inventory>>(this.basePath);
+    }
+    
+    const filteredParams = Object.entries(params).reduce((acc, [key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        acc[key] = String(value);
+      }
+      return acc;
+    }, {} as Record<string, string>);
+    
+    const queryString = new URLSearchParams(filteredParams).toString();
     const url = queryString ? `${this.basePath}?${queryString}` : this.basePath;
     return apiClient.get<PaginatedResponse<Inventory>>(url);
   }

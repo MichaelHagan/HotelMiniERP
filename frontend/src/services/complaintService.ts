@@ -14,7 +14,18 @@ export class ComplaintService {
 
   // Worker Complaints
   async getWorkerComplaints(params?: ComplaintQueryParams): Promise<PaginatedResponse<WorkerComplaint>> {
-    const queryString = params ? new URLSearchParams(params as any).toString() : '';
+    if (!params) {
+      return apiClient.get<PaginatedResponse<WorkerComplaint>>(`${this.basePath}/worker`);
+    }
+    
+    const filteredParams = Object.entries(params).reduce((acc, [key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        acc[key] = String(value);
+      }
+      return acc;
+    }, {} as Record<string, string>);
+    
+    const queryString = new URLSearchParams(filteredParams).toString();
     const url = queryString ? `${this.basePath}/worker?${queryString}` : `${this.basePath}/worker`;
     return apiClient.get<PaginatedResponse<WorkerComplaint>>(url);
   }
@@ -41,7 +52,18 @@ export class ComplaintService {
 
   // Customer Complaints
   async getCustomerComplaints(params?: ComplaintQueryParams): Promise<PaginatedResponse<CustomerComplaint>> {
-    const queryString = params ? new URLSearchParams(params as any).toString() : '';
+    if (!params) {
+      return apiClient.get<PaginatedResponse<CustomerComplaint>>(`${this.basePath}/customer`);
+    }
+    
+    const filteredParams = Object.entries(params).reduce((acc, [key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        acc[key] = String(value);
+      }
+      return acc;
+    }, {} as Record<string, string>);
+    
+    const queryString = new URLSearchParams(filteredParams).toString();
     const url = queryString ? `${this.basePath}/customer?${queryString}` : `${this.basePath}/customer`;
     return apiClient.get<PaginatedResponse<CustomerComplaint>>(url);
   }

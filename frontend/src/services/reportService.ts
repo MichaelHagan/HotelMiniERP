@@ -1,13 +1,14 @@
 import { apiClient } from './apiClient';
 import {
   AssetReport,
-  WorkOrderReport
+  WorkOrderReport,
+  DashboardSummaryDto
 } from '../types';
 
 export class ReportService {
   private readonly basePath = '/reports';
 
-  async getDashboardSummary(): Promise<any> {
+  async getDashboardSummary(): Promise<DashboardSummaryDto> {
     return apiClient.get(`${this.basePath}/dashboard`);
   }
 

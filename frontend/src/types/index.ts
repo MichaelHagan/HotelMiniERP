@@ -433,6 +433,10 @@ export interface ComplaintQueryParams extends PaginationParams {
   assignedUserId?: string;
 }
 
+export interface ProcedureQueryParams extends PaginationParams {
+  category?: string;
+}
+
 // Report Types
 export interface AssetReport {
   totalAssets: number;
@@ -468,4 +472,57 @@ export interface PriorityBreakdown {
 export interface MonthlyTrend {
   month: string;
   count: number;
+}
+
+// Dashboard Types
+export interface DashboardSummaryDto {
+  assets: AssetSummaryDto;
+  workOrders: WorkOrderSummaryDto;
+  inventory: InventorySummaryDto;
+  complaints: ComplaintsSummaryDto;
+  users: UserSummaryDto;
+}
+
+export interface AssetSummaryDto {
+  totalAssets: number;
+  activeAssets: number;
+  maintenanceRequired: number;
+  totalValue: number;
+  recentlyAdded: number;
+}
+
+export interface WorkOrderSummaryDto {
+  totalWorkOrders: number;
+  openWorkOrders: number;
+  inProgressWorkOrders: number;
+  completedThisMonth: number;
+  highPriorityWorkOrders: number;
+  overdueWorkOrders: number;
+}
+
+export interface InventorySummaryDto {
+  totalInventory: number;
+  availableInventory: number;
+  inUseInventory: number;
+  maintenanceInventory: number;
+  maintenanceDueThisWeek: number;
+}
+
+export interface ComplaintsSummaryDto {
+  customerComplaints: ComplaintTypeSummaryDto;
+  workerComplaints: ComplaintTypeSummaryDto;
+}
+
+export interface ComplaintTypeSummaryDto {
+  total: number;
+  open: number;
+  inProgress: number;
+  resolvedThisMonth: number;
+}
+
+export interface UserSummaryDto {
+  totalUsers: number;
+  activeUsers: number;
+  onlineUsers: number;
+  newUsersThisMonth: number;
 }

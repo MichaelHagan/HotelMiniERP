@@ -11,7 +11,18 @@ export class MessageService {
   private readonly basePath = '/messages';
 
   async getMessages(params?: PaginationParams): Promise<PaginatedResponse<Message>> {
-    const queryString = params ? new URLSearchParams(params as any).toString() : '';
+    if (!params) {
+      return apiClient.get<PaginatedResponse<Message>>(this.basePath);
+    }
+    
+    const filteredParams = Object.entries(params).reduce((acc, [key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        acc[key] = String(value);
+      }
+      return acc;
+    }, {} as Record<string, string>);
+    
+    const queryString = new URLSearchParams(filteredParams).toString();
     const url = queryString ? `${this.basePath}?${queryString}` : this.basePath;
     return apiClient.get<PaginatedResponse<Message>>(url);
   }

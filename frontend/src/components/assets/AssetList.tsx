@@ -70,10 +70,10 @@ export const AssetList: React.FC = () => {
   });
 
   // Filter assets by search term (client-side)
-  const filteredAssets = (assetsData as any)?.data?.filter((asset: Asset) =>
-    asset.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    asset.assetTag.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    asset.category.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredAssets = assetsData?.data?.filter((asset: Asset) =>
+    asset.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    asset.assetTag?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    asset.category?.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
   const canCreate = user?.role === UserRole.Admin || user?.role === UserRole.Manager;
@@ -305,7 +305,7 @@ export const AssetList: React.FC = () => {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25, 50]}
           component="div"
-          count={(assetsData as any)?.totalCount || 0}
+          count={assetsData?.totalCount || 0}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
