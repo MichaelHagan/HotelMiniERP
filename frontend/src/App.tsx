@@ -126,7 +126,7 @@ function App() {
                       </Layout>
                     </ProtectedRoute>
                   } />
-                  <Route path="/equipment/*" element={
+                  <Route path="/inventory/*" element={
                     <ProtectedRoute>
                       <Layout>
                         <InventoryPage />

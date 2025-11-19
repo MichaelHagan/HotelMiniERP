@@ -231,12 +231,12 @@ export const DashboardPage: React.FC = () => {
           onClick={() => navigate('/workorders')}
         />
         <StatCard
-          title="Equipment Items"
+          title="Inventory Items"
           value={inventory?.totalInventory || 0}
           icon={<Build />}
           color="#4caf50"
           subtitle={`${inventory?.availableInventory || 0} available`}
-          onClick={() => navigate('/equipment')}
+          onClick={() => navigate('/inventory')}
         />
         <StatCard
           title="Open Complaints"
@@ -328,7 +328,7 @@ export const DashboardPage: React.FC = () => {
               color: assetActivePercentage > 90 ? 'success' : assetActivePercentage > 70 ? 'warning' : 'error'
             },
             {
-              label: `Equipment Available (${inventory?.availableInventory || 0}/${inventory?.totalInventory || 0})`,
+              label: `Inventory Available (${inventory?.availableInventory || 0}/${inventory?.totalInventory || 0})`,
               value: inventoryAvailablePercentage,
               color: inventoryAvailablePercentage > 80 ? 'success' : inventoryAvailablePercentage > 60 ? 'warning' : 'error'
             },
@@ -358,11 +358,11 @@ export const DashboardPage: React.FC = () => {
           ]}
         />
 
-        {/* Equipment Summary */}
+        {/* Inventory Summary */}
         <SummaryCard
-          title="Equipment Status"
+          title="Inventory Status"
           items={[
-            { label: 'Total Equipment', value: inventory?.totalInventory || 0, status: 'default' },
+            { label: 'Total Inventory', value: inventory?.totalInventory || 0, status: 'default' },
             { label: 'Available', value: inventory?.availableInventory || 0, status: 'success' },
             { label: 'In Use', value: inventory?.inUseInventory || 0, status: 'info' },
             { label: 'In Maintenance', value: inventory?.maintenanceInventory || 0, status: 'warning' },

@@ -13,12 +13,12 @@
 
 ## 🎯 Application Overview
 
-**Hotel Mini ERP** is a comprehensive Enterprise Resource Planning system designed specifically for hotel operations management. It provides a centralized platform to manage assets, work orders, equipment, team members, complaints, messaging, procedures, and generate detailed reports.
+**Hotel Mini ERP** is a comprehensive Enterprise Resource Planning system designed specifically for hotel operations management. It provides a centralized platform to manage assets, work orders, inventory, team members, complaints, messaging, procedures, and generate detailed reports.
 
 ### Core Capabilities
 - **Asset Management**: Track hotel assets with depreciation, maintenance, and lifecycle management
 - **Work Order System**: Create, assign, and track maintenance and operational tasks
-- **Equipment Inventory**: Manage equipment stock, availability, and maintenance schedules
+- **Inventory Inventory**: Manage inventory stock, availability, and maintenance schedules
 - **Team Management**: User administration with role-based access control
 - **Complaint Handling**: Process both customer and worker complaints with resolution tracking
 - **Real-time Messaging**: Internal communication system with SignalR
@@ -94,7 +94,7 @@ The application uses a **responsive sidebar navigation** with the following stru
 1. **📊 Dashboard** - Overview of all modules
 2. **📦 Assets** - Asset register and management
 3. **📋 Work Orders** - Task management
-4. **🔧 Equipment** - Equipment inventory
+4. **🔧 Inventory** - Inventory inventory
 5. **👥 Users** - Team management (Admin/Manager only)
 6. **📢 Complaints** - Customer and worker complaints
 7. **💬 Messaging** - Internal messaging system
@@ -117,9 +117,9 @@ The application uses a **responsive sidebar navigation** with the following stru
 **Purpose**: Central hub showing real-time overview of all modules
 
 **What You'll See**:
-- **Stat Cards**: 5 key metrics (Assets, Work Orders, Equipment, Complaints, Users)
+- **Stat Cards**: 5 key metrics (Assets, Work Orders, Inventory, Complaints, Users)
 - **Work Orders Overview**: Total, completed this month, status breakdown
-- **System Health**: Progress bars showing asset/equipment availability and work order completion
+- **System Health**: Progress bars showing asset/inventory availability and work order completion
 - **Summary Cards**: Detailed breakdowns by category
 - **Total Asset Value**: Financial summary
 
@@ -139,7 +139,7 @@ The application uses a **responsive sidebar navigation** with the following stru
 
 ### 2. Asset Register (`/assets`)
 
-**Purpose**: Manage all hotel assets (furniture, equipment, fixtures, etc.)
+**Purpose**: Manage all hotel assets (furniture, inventory, fixtures, etc.)
 
 **Features**:
 - **Asset List View**: Table with pagination, search, and filters
@@ -272,19 +272,19 @@ The application uses a **responsive sidebar navigation** with the following stru
 
 ---
 
-### 4. Equipment Inventory (`/equipment`)
+### 4. Inventory Inventory (`/inventory`)
 
-**Purpose**: Track maintenance equipment, tools, and supplies
+**Purpose**: Track maintenance inventory, tools, and supplies
 
 **Features**:
-- **Equipment List**: Searchable, filterable table
-- **Create Equipment**: Add new equipment items
-- **Update Equipment**: Modify details and status
+- **Inventory List**: Searchable, filterable table
+- **Create Inventory**: Add new inventory items
+- **Update Inventory**: Modify details and status
 - **Status Management**: Available, In Use, Under Maintenance, Out of Order
 - **Maintenance Tracking**: Schedule and track maintenance
 - **Filters**: By category, status, location
 
-**Equipment Information**:
+**Inventory Information**:
 - Name & Code (unique)
 - Description & Category
 - Brand, Model, Serial Number
@@ -298,8 +298,8 @@ The application uses a **responsive sidebar navigation** with the following stru
 - Maintenance Notes
 - Minimum Stock Level
 
-**How to Create Equipment**:
-1. Click **"+ Add Equipment"**
+**How to Create Inventory**:
+1. Click **"+ Add Inventory"**
 2. Fill required fields:
    - Name
    - Code (unique)
@@ -314,8 +314,8 @@ The application uses a **responsive sidebar navigation** with the following stru
    - Maintenance Schedule
 4. Click **"Save"**
 
-**How to Update Equipment Status**:
-1. Open equipment item
+**How to Update Inventory Status**:
+1. Open inventory item
 2. Change **Status**:
    - **Available**: Ready to use
    - **In Use**: Currently being used
@@ -519,7 +519,7 @@ The application uses a **responsive sidebar navigation** with the following stru
 - Approved By
 - Approval Date
 - Estimated Duration
-- Required Equipment
+- Required Inventory
 - Safety Notes
 - Tags
 
@@ -534,7 +534,7 @@ The application uses a **responsive sidebar navigation** with the following stru
 3. Add procedure content (steps, instructions)
 4. Optionally add:
    - Estimated Duration
-   - Required Equipment
+   - Required Inventory
    - Safety Notes
    - Tags
 5. Click **"Save"**
@@ -573,11 +573,11 @@ The application uses a **responsive sidebar navigation** with the following stru
 - On-time completion rates
 - **Access**: Admin, Manager
 
-#### Equipment Utilization Report
+#### Inventory Utilization Report
 - Overall utilization rates
 - Utilization by category
-- Most used equipment
-- Underutilized equipment
+- Most used inventory
+- Underutilized inventory
 - **Access**: Admin, Manager
 
 #### Complaints Analysis Report
@@ -623,7 +623,7 @@ The application uses a **responsive sidebar navigation** with the following stru
 
 ### Manager
 **Management Access**:
-- View and manage all assets, work orders, equipment
+- View and manage all assets, work orders, inventory
 - Assign work orders
 - View and manage complaints
 - Access all reports
@@ -634,7 +634,7 @@ The application uses a **responsive sidebar navigation** with the following stru
 **Supervisory Access**:
 - View assigned work orders
 - Update work order status
-- View assets and equipment
+- View assets and inventory
 - Submit complaints
 - View procedures
 - Limited reporting
@@ -672,10 +672,10 @@ The application uses a **responsive sidebar navigation** with the following stru
 4. **Current Value** is auto-calculated
 5. View depreciation in **Reports → Asset Depreciation**
 
-### Task 3: Schedule Equipment Maintenance
+### Task 3: Schedule Inventory Maintenance
 
-1. Navigate to **Equipment**
-2. Open equipment item
+1. Navigate to **Inventory**
+2. Open inventory item
 3. Set **Next Maintenance Date**
 4. Add **Maintenance Notes**
 5. Update **Status** to "Under Maintenance" when servicing
@@ -826,7 +826,7 @@ The application uses a **responsive sidebar navigation** with the following stru
 ### Common Icons
 - 📦 Assets: Inventory icon
 - 📋 Work Orders: Assignment icon
-- 🔧 Equipment: Build icon
+- 🔧 Inventory: Build icon
 - 👥 Users: People icon
 - 📢 Complaints: Report icon
 - 💬 Messaging: Message icon

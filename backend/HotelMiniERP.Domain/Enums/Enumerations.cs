@@ -56,7 +56,7 @@ namespace HotelMiniERP.Domain.Enums
         Notification = 4
     }
 
-    public enum EquipmentStatus
+    public enum InventoryStatus
     {
         Available = 1,
         InUse = 2,

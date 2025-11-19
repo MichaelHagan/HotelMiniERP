@@ -403,7 +403,7 @@ namespace HotelMiniERP.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("RequiredEquipment")
+                    b.Property<string>("RequiredInventory")
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("ReviewDate")

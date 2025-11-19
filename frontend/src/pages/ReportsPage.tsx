@@ -49,7 +49,7 @@ const availableReports: ReportCard[] = [
   {
     id: 'inventory-utilization',
     title: 'Inventory Utilization',
-    description: 'Track equipment usage rates, identify underutilized assets, and optimize equipment allocation.',
+    description: 'Track inventory usage rates, identify underutilized assets, and optimize inventory allocation.',
     icon: <Build sx={{ fontSize: 40 }} />,
     color: '#4caf50',
     requiredRole: ['Admin', 'Manager'],

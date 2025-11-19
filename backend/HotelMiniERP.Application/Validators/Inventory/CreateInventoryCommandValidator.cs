@@ -1,19 +1,19 @@
 using FluentValidation;
 using HotelMiniERP.Application.Inventory.Commands;
 
-namespace HotelMiniERP.Application.Validators.Equipment;
+namespace HotelMiniERP.Application.Validators.Inventory;
 
-public class CreateEquipmentCommandValidator : AbstractValidator<CreateInventoryCommand>
+public class CreateInventoryCommandValidator : AbstractValidator<CreateInventoryCommand>
 {
-    public CreateEquipmentCommandValidator()
+    public CreateInventoryCommandValidator()
     {
         RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("Equipment name is required")
-            .MaximumLength(200).WithMessage("Equipment name cannot exceed 200 characters");
+            .NotEmpty().WithMessage("Inventory name is required")
+            .MaximumLength(200).WithMessage("Inventory name cannot exceed 200 characters");
 
         RuleFor(x => x.Code)
-            .NotEmpty().WithMessage("Equipment code is required")
-            .MaximumLength(50).WithMessage("Equipment code cannot exceed 50 characters");
+            .NotEmpty().WithMessage("Inventory code is required")
+            .MaximumLength(50).WithMessage("Inventory code cannot exceed 50 characters");
 
         RuleFor(x => x.Category)
             .NotEmpty().WithMessage("Category is required")

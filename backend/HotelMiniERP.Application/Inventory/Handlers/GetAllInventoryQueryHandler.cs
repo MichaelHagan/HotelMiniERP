@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelMiniERP.Application.Inventory.Handlers;
 
-public class GetAllEquipmentQueryHandler : IRequestHandler<GetAllInventoryQuery, PaginatedResponse<InventoryDto>>
+public class GetAllInventoryQueryHandler : IRequestHandler<GetAllInventoryQuery, PaginatedResponse<InventoryDto>>
 {
     private readonly IApplicationDbContext _context;
 
-    public GetAllEquipmentQueryHandler(IApplicationDbContext context)
+    public GetAllInventoryQueryHandler(IApplicationDbContext context)
     {
         _context = context;
     }

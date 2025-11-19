@@ -57,12 +57,12 @@ public class ReportsController : ControllerBase
                     HighPriorityWorkOrders = 8,
                     OverdueWorkOrders = 4
                 },
-                Equipment = new
+                Inventory = new
                 {
-                    TotalEquipment = 67,
-                    AvailableEquipment = 52,
-                    InUseEquipment = 12,
-                    MaintenanceEquipment = 3,
+                    TotalInventory = 67,
+                    AvailableInventory = 52,
+                    InUseInventory = 12,
+                    MaintenanceInventory = 3,
                     MaintenanceDueThisWeek = 5
                 },
                 Complaints = new
@@ -138,7 +138,7 @@ public class ReportsController : ControllerBase
                 {
                     new { Category = "Electronics", TotalValue = 125000.00m, DepreciationAmount = 15000.00m, DepreciationPercentage = 12.0 },
                     new { Category = "Furniture", TotalValue = 85000.00m, DepreciationAmount = 8500.00m, DepreciationPercentage = 10.0 },
-                    new { Category = "Equipment", TotalValue = 95000.00m, DepreciationAmount = 12000.00m, DepreciationPercentage = 12.6 },
+                    new { Category = "Inventory", TotalValue = 95000.00m, DepreciationAmount = 12000.00m, DepreciationPercentage = 12.6 },
                     new { Category = "Vehicles", TotalValue = 75000.00m, DepreciationAmount = 7000.00m, DepreciationPercentage = 9.3 }
                 },
                 TopDepreciatingAssets = new[]
@@ -222,9 +222,9 @@ public class ReportsController : ControllerBase
         }
     }
 
-    [HttpGet("equipment/utilization")]
+    [HttpGet("inventory/utilization")]
     [Authorize(Roles = "Admin,Manager")]
-    public async Task<IActionResult> GetEquipmentUtilizationReport([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+    public async Task<IActionResult> GetInventoryUtilizationReport([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
     {
         try
         {
@@ -242,9 +242,9 @@ public class ReportsController : ControllerBase
         }
     }
 
-    [HttpGet("equipment/utilization/mock")]
+    [HttpGet("inventory/utilization/mock")]
     [Authorize(Roles = "Admin,Manager")]
-    public async Task<IActionResult> GetEquipmentUtilizationReportMock([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+    public async Task<IActionResult> GetInventoryUtilizationReportMock([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
     {
         try
         {
@@ -259,20 +259,20 @@ public class ReportsController : ControllerBase
                 OverallUtilization = 78.5,
                 ByCategory = new[]
                 {
-                    new { Category = "Cleaning Equipment", UtilizationRate = 85.2, TotalHours = 1245, AvailableHours = 1460 },
-                    new { Category = "Kitchen Equipment", UtilizationRate = 92.1, TotalHours = 1658, AvailableHours = 1800 },
+                    new { Category = "Cleaning Inventory", UtilizationRate = 85.2, TotalHours = 1245, AvailableHours = 1460 },
+                    new { Category = "Kitchen Inventory", UtilizationRate = 92.1, TotalHours = 1658, AvailableHours = 1800 },
                     new { Category = "Maintenance Tools", UtilizationRate = 65.8, TotalHours = 789, AvailableHours = 1200 }
                 },
-                MostUsedEquipment = new[]
+                MostUsedInventory = new[]
                 {
-                    new { EquipmentName = "Industrial Vacuum #1", UtilizationRate = 96.5, TotalHours = 347, Category = "Cleaning" },
-                    new { EquipmentName = "Floor Buffer", UtilizationRate = 88.2, TotalHours = 318, Category = "Cleaning" },
-                    new { EquipmentName = "Pressure Washer", UtilizationRate = 72.1, TotalHours = 259, Category = "Maintenance" }
+                    new { InventoryName = "Industrial Vacuum #1", UtilizationRate = 96.5, TotalHours = 347, Category = "Cleaning" },
+                    new { InventoryName = "Floor Buffer", UtilizationRate = 88.2, TotalHours = 318, Category = "Cleaning" },
+                    new { InventoryName = "Pressure Washer", UtilizationRate = 72.1, TotalHours = 259, Category = "Maintenance" }
                 },
-                UnderutilizedEquipment = new[]
+                UnderutilizedInventory = new[]
                 {
-                    new { EquipmentName = "Carpet Cleaner #2", UtilizationRate = 23.4, TotalHours = 84, Category = "Cleaning" },
-                    new { EquipmentName = "Power Drill #3", UtilizationRate = 15.8, TotalHours = 57, Category = "Maintenance" }
+                    new { InventoryName = "Carpet Cleaner #2", UtilizationRate = 23.4, TotalHours = 84, Category = "Cleaning" },
+                    new { InventoryName = "Power Drill #3", UtilizationRate = 15.8, TotalHours = 57, Category = "Maintenance" }
                 }
             };
 
@@ -349,7 +349,7 @@ public class ReportsController : ControllerBase
                     {
                         { "Working Conditions", 8 },
                         { "Safety", 7 },
-                        { "Equipment", 5 },
+                        { "Inventory", 5 },
                         { "Management", 3 }
                     },
                     Trends = new
@@ -420,7 +420,7 @@ public class ReportsController : ControllerBase
                         new { Category = "HVAC", Cost = 12500.00m },
                         new { Category = "Plumbing", Cost = 8200.00m },
                         new { Category = "Electrical", Cost = 4800.00m },
-                        new { Category = "Equipment", Cost = 3000.00m }
+                        new { Category = "Inventory", Cost = 3000.00m }
                     }
                 },
                 ROI = new

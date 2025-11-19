@@ -48,10 +48,10 @@ export const InventoryUtilizationReport: React.FC = () => {
   const [endDate, setEndDate] = useState<string>(new Date().toISOString().split('T')[0]);
 
   const { data: reportData, isLoading, error, refetch } = useQuery({
-    queryKey: ['equipment-utilization-report', startDate, endDate],
+    queryKey: ['inventory-utilization-report', startDate, endDate],
     queryFn: async () => {
       const response = await fetch(
-        `/api/reports/equipment/utilization?startDate=${startDate}&endDate=${endDate}`,
+        `/api/reports/inventory/utilization?startDate=${startDate}&endDate=${endDate}`,
         {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
@@ -85,7 +85,7 @@ export const InventoryUtilizationReport: React.FC = () => {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `equipment-utilization-${startDate}-to-${endDate}.csv`;
+    a.download = `inventory-utilization-${startDate}-to-${endDate}.csv`;
     a.click();
   };
 
@@ -112,7 +112,7 @@ export const InventoryUtilizationReport: React.FC = () => {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Build color="primary" />
-          Equipment Utilization Report
+          Inventory Utilization Report
         </Typography>
         <Button
           variant="outlined"
@@ -235,22 +235,22 @@ export const InventoryUtilizationReport: React.FC = () => {
               <CardContent>
                 <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <TrendingUp color="success" />
-                  Most Used Equipment
+                  Most Used Inventory
                 </Typography>
                 <TableContainer component={Paper} variant="outlined">
                   <Table size="small">
                     <TableHead>
                       <TableRow>
-                        <TableCell>Equipment</TableCell>
+                        <TableCell>Inventory</TableCell>
                         <TableCell align="right">Category</TableCell>
                         <TableCell align="right">Rate</TableCell>
                         <TableCell align="right">Hours</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {reportData.MostUsedEquipment?.map((row: any, index: number) => (
+                      {reportData.MostUsedInventory?.map((row: any, index: number) => (
                         <TableRow key={index}>
-                          <TableCell>{row.EquipmentName}</TableCell>
+                          <TableCell>{row.InventoryName}</TableCell>
                           <TableCell align="right">{row.Category}</TableCell>
                           <TableCell align="right">
                             <Chip
@@ -272,22 +272,22 @@ export const InventoryUtilizationReport: React.FC = () => {
               <CardContent>
                 <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <TrendingDown color="warning" />
-                  Underutilized Equipment
+                  Underutilized Inventory
                 </Typography>
                 <TableContainer component={Paper} variant="outlined">
                   <Table size="small">
                     <TableHead>
                       <TableRow>
-                        <TableCell>Equipment</TableCell>
+                        <TableCell>Inventory</TableCell>
                         <TableCell align="right">Category</TableCell>
                         <TableCell align="right">Rate</TableCell>
                         <TableCell align="right">Hours</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {reportData.UnderutilizedEquipment?.map((row: any, index: number) => (
+                      {reportData.UnderutilizedInventory?.map((row: any, index: number) => (
                         <TableRow key={index}>
-                          <TableCell>{row.EquipmentName}</TableCell>
+                          <TableCell>{row.InventoryName}</TableCell>
                           <TableCell align="right">{row.Category}</TableCell>
                           <TableCell align="right">
                             <Chip

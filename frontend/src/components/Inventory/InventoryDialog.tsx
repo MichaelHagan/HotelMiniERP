@@ -23,7 +23,7 @@ import {
 
 const INVENTORY_CATEGORIES = [
   'Cleaning Supplies',
-  'Kitchen Equipment',
+  'Kitchen Inventory',
   'Kitchen Supplies',
   'Food & Beverage',
   'Dry Goods',
@@ -35,7 +35,7 @@ const INVENTORY_CATEGORIES = [
   'Toiletries & Amenities',
   'Maintenance Tools',
   'Office Supplies',
-  'Safety Equipment',
+  'Safety Inventory',
   'Other'
 ];
 

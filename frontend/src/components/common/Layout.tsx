@@ -82,7 +82,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     { text: 'Dashboard', icon: <Dashboard />, path: '/dashboard' },
     { text: 'Assets', icon: <BusinessCenter />, path: '/assets' },
     { text: 'Work Orders', icon: <Assignment />, path: '/work-orders' },
-    { text: 'Inventory', icon: <Inventory2 />, path: '/equipment' },
+    { text: 'Inventory', icon: <Inventory2 />, path: '/inventory' },
     { text: 'Users', icon: <People />, path: '/users', roles: [UserRole.Admin, UserRole.Manager] },
     { text: 'Complaints', icon: <Report />, path: '/complaints' },
     { text: 'Messaging', icon: <Message />, path: '/messaging' },

@@ -207,14 +207,14 @@ public static class DbInitializer
         {
             Title = "Weekly Inventory Inventory",
             Category = "Inventory",
-            Description = "Weekly procedure for checking equipment inventory and condition",
+            Description = "Weekly procedure for checking inventory inventory and condition",
             Version = "1.0",
             IsActive = true,
             ReviewDate = DateTime.UtcNow.AddMonths(3),
             CreatedAt = DateTime.UtcNow,
-            Content = @"1. Count all equipment items
-2. Verify equipment location
-3. Check equipment condition
+            Content = @"1. Count all inventory items
+2. Verify inventory location
+3. Check inventory condition
 4. Update inventory database
 5. Report missing or damaged items"
         };

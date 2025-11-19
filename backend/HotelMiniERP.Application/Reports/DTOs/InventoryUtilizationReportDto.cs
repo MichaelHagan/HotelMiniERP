@@ -5,8 +5,8 @@ public class InventoryUtilizationReportDto
     public ReportPeriodDto ReportPeriod { get; set; } = new();
     public double OverallUtilization { get; set; }
     public List<UtilizationByCategoryDto> ByCategory { get; set; } = new();
-    public List<MostUsedEquipmentDto> MostUsedEquipment { get; set; } = new();
-    public List<UnderutilizedEquipmentDto> UnderutilizedEquipment { get; set; } = new();
+    public List<MostUsedInventoryDto> MostUsedInventory { get; set; } = new();
+    public List<UnderutilizedInventoryDto> UnderutilizedInventory { get; set; } = new();
 }
 
 public class UtilizationByCategoryDto
@@ -17,17 +17,17 @@ public class UtilizationByCategoryDto
     public int AvailableHours { get; set; }
 }
 
-public class MostUsedEquipmentDto
+public class MostUsedInventoryDto
 {
-    public string EquipmentName { get; set; } = string.Empty;
+    public string InventoryName { get; set; } = string.Empty;
     public double UtilizationRate { get; set; }
     public int TotalHours { get; set; }
     public string Category { get; set; } = string.Empty;
 }
 
-public class UnderutilizedEquipmentDto
+public class UnderutilizedInventoryDto
 {
-    public string EquipmentName { get; set; } = string.Empty;
+    public string InventoryName { get; set; } = string.Empty;
     public double UtilizationRate { get; set; }
     public int TotalHours { get; set; }
     public string Category { get; set; } = string.Empty;

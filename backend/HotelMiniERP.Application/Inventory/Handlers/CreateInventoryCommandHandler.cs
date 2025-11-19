@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelMiniERP.Application.Inventory.Handlers;
 
-public class CreateEquipmentCommandHandler : IRequestHandler<CreateInventoryCommand, InventoryDto>
+public class CreateInventoryCommandHandler : IRequestHandler<CreateInventoryCommand, InventoryDto>
 {
     private readonly IApplicationDbContext _context;
 
-    public CreateEquipmentCommandHandler(IApplicationDbContext context)
+    public CreateInventoryCommandHandler(IApplicationDbContext context)
     {
         _context = context;
     }

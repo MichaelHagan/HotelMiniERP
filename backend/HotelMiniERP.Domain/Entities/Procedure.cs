@@ -17,7 +17,7 @@ namespace HotelMiniERP.Domain.Entities
         public DateTime? ApprovalDate { get; set; }
         public string? DocumentUrl { get; set; }
         public int? EstimatedDurationMinutes { get; set; }
-        public string? RequiredEquipment { get; set; }
+        public string? RequiredInventory { get; set; }
         public string? SafetyNotes { get; set; }
     }
 }

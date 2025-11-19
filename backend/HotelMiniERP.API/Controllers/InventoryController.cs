@@ -19,7 +19,7 @@ public class InventoryController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllEquipment(
+    public async Task<IActionResult> GetAllInventory(
         [FromQuery] string? category = null,
         [FromQuery] string? location = null,
         [FromQuery] int page = 1,
@@ -39,12 +39,12 @@ public class InventoryController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An error occurred while retrieving equipment", error = ex.Message });
+            return StatusCode(500, new { message = "An error occurred while retrieving inventory", error = ex.Message });
         }
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetEquipmentById(int id)
+    public async Task<IActionResult> GetInventoryById(int id)
     {
         try
         {
@@ -58,17 +58,17 @@ public class InventoryController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An error occurred while retrieving the equipment", error = ex.Message });
+            return StatusCode(500, new { message = "An error occurred while retrieving the inventory", error = ex.Message });
         }
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateEquipment([FromBody] CreateInventoryCommand command)
+    public async Task<IActionResult> CreateInventory([FromBody] CreateInventoryCommand command)
     {
         try
         {
             var result = await _mediator.Send(command);
-            return CreatedAtAction(nameof(GetEquipmentById), new { id = result.Id }, result);
+            return CreatedAtAction(nameof(GetInventoryById), new { id = result.Id }, result);
         }
         catch (InvalidOperationException ex)
         {
@@ -76,12 +76,12 @@ public class InventoryController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An error occurred while creating the equipment", error = ex.Message });
+            return StatusCode(500, new { message = "An error occurred while creating the inventory", error = ex.Message });
         }
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateEquipment(int id, [FromBody] UpdateInventoryCommand command)
+    public async Task<IActionResult> UpdateInventory(int id, [FromBody] UpdateInventoryCommand command)
     {
         try
         {
@@ -101,13 +101,13 @@ public class InventoryController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An error occurred while updating the equipment", error = ex.Message });
+            return StatusCode(500, new { message = "An error occurred while updating the inventory", error = ex.Message });
         }
     }
 
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin,Manager")]
-    public async Task<IActionResult> DeleteEquipment(int id)
+    public async Task<IActionResult> DeleteInventory(int id)
     {
         try
         {
@@ -116,10 +116,10 @@ public class InventoryController : ControllerBase
 
             if (!success)
             {
-                return NotFound(new { message = "Equipment not found" });
+                return NotFound(new { message = "Inventory not found" });
             }
 
-            return Ok(new { message = "Equipment deleted successfully" });
+            return Ok(new { message = "Inventory deleted successfully" });
         }
         catch (InvalidOperationException ex)
         {
@@ -127,7 +127,7 @@ public class InventoryController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An error occurred while deleting the equipment", error = ex.Message });
+            return StatusCode(500, new { message = "An error occurred while deleting the inventory", error = ex.Message });
         }
     }
 }

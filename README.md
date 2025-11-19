@@ -1,6 +1,6 @@
 # Hotel Mini ERP System
 
-A comprehensive Hotel Management ERP system built with ASP.NET Core Clean Architecture, featuring asset management, work orders, user management, equipment tracking, complaint handling, messaging, and comprehensive reporting capabilities.
+A comprehensive Hotel Management ERP system built with ASP.NET Core Clean Architecture, featuring asset management, work orders, user management, inventory tracking, complaint handling, messaging, and comprehensive reporting capabilities.
 
 ## 🏗️ Architecture
 
@@ -33,8 +33,8 @@ The system follows Clean Architecture principles with CQRS (Command Query Respon
    - Profile management and password changes
    - Active/inactive user management
 
-4. **Equipment Inventory**
-   - Equipment tracking and categorization
+4. **Inventory Inventory**
+   - Inventory tracking and categorization
    - Maintenance scheduling and history
    - Utilization reporting
    - Status management (Available, In Use, Maintenance)
@@ -61,7 +61,7 @@ The system follows Clean Architecture principles with CQRS (Command Query Respon
    - Dashboard with key metrics
    - Asset depreciation reports
    - Work order performance analytics
-   - Equipment utilization reports
+   - Inventory utilization reports
    - Complaint analysis and trends
    - Financial summaries and ROI calculations
 
@@ -112,7 +112,7 @@ Users
 ├── CreatedAt, LastLoginAt
 └── PhoneNumber, Department
 
-Equipment
+Inventory
 ├── Id, Name, Model, SerialNumber, Category
 ├── Status, Location, Purchase information
 ├── Warranty and maintenance data
@@ -182,14 +182,14 @@ Complaints (Worker/Customer)
 - `PUT /api/users/{id}/activate` - Activate user (Admin only)
 - `PUT /api/users/{id}/deactivate` - Deactivate user (Admin only)
 
-### Equipment
-- `GET /api/equipment` - List equipment with pagination
-- `GET /api/equipment/{id}` - Get equipment by ID
-- `POST /api/equipment` - Create equipment entry
-- `PUT /api/equipment/{id}` - Update equipment
-- `PUT /api/equipment/{id}/status` - Update status
-- `GET /api/equipment/maintenance-schedule` - Maintenance schedule
-- `POST /api/equipment/{id}/maintenance` - Record maintenance
+### Inventory
+- `GET /api/inventory` - List inventory with pagination
+- `GET /api/inventory/{id}` - Get inventory by ID
+- `POST /api/inventory` - Create inventory entry
+- `PUT /api/inventory/{id}` - Update inventory
+- `PUT /api/inventory/{id}/status` - Update status
+- `GET /api/inventory/maintenance-schedule` - Maintenance schedule
+- `POST /api/inventory/{id}/maintenance` - Record maintenance
 
 ### Complaints
 - `GET /api/complaints/worker` - Worker complaints
@@ -219,7 +219,7 @@ Complaints (Worker/Customer)
 - `GET /api/reports/dashboard` - Dashboard summary
 - `GET /api/reports/assets/depreciation` - Asset depreciation
 - `GET /api/reports/workorders/performance` - Work order analytics
-- `GET /api/reports/equipment/utilization` - Equipment utilization
+- `GET /api/reports/inventory/utilization` - Inventory utilization
 - `GET /api/reports/complaints/analysis` - Complaint analysis
 - `GET /api/reports/financial/summary` - Financial overview (Admin only)
 

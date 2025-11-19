@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelMiniERP.Application.Reports.Handlers;
 
-public class GetEquipmentUtilizationReportQueryHandler : IRequestHandler<GetInventoryUtilizationReportQuery, InventoryUtilizationReportDto>
+public class GetInventoryUtilizationReportQueryHandler : IRequestHandler<GetInventoryUtilizationReportQuery, InventoryUtilizationReportDto>
 {
     private readonly IApplicationDbContext _context;
 
-    public GetEquipmentUtilizationReportQueryHandler(IApplicationDbContext context)
+    public GetInventoryUtilizationReportQueryHandler(IApplicationDbContext context)
     {
         _context = context;
     }
@@ -25,9 +25,9 @@ public class GetEquipmentUtilizationReportQueryHandler : IRequestHandler<GetInve
         var inventory = await _context.Inventory.ToListAsync(cancellationToken);
 
         // Calculate inventory utilization based on stock levels
-        var totalEquipment = inventory.Count;
+        var totalInventory = inventory.Count;
         var lowStockCount = inventory.Count(e => e.MinimumStock.HasValue && e.Quantity <= e.MinimumStock.Value);
-        var overallUtilization = totalEquipment > 0 ? (double)(totalEquipment - lowStockCount) / totalEquipment * 100 : 0;
+        var overallUtilization = totalInventory > 0 ? (double)(totalInventory - lowStockCount) / totalInventory * 100 : 0;
 
         // By Category
         var byCategory = inventory
@@ -44,9 +44,9 @@ public class GetEquipmentUtilizationReportQueryHandler : IRequestHandler<GetInve
         // Most stocked items
         var mostUsed = inventory
             .OrderByDescending(e => e.Quantity)
-            .Select(e => new MostUsedEquipmentDto
+            .Select(e => new MostUsedInventoryDto
             {
-                EquipmentName = e.Name,
+                InventoryName = e.Name,
                 UtilizationRate = e.MinimumStock.HasValue && e.MinimumStock.Value > 0 
                     ? (double)e.Quantity / e.MinimumStock.Value * 100 
                     : 100.0,
@@ -59,9 +59,9 @@ public class GetEquipmentUtilizationReportQueryHandler : IRequestHandler<GetInve
         // Low stock items
         var underutilized = inventory
             .Where(e => e.MinimumStock.HasValue && e.Quantity <= e.MinimumStock.Value)
-            .Select(e => new UnderutilizedEquipmentDto
+            .Select(e => new UnderutilizedInventoryDto
             {
-                EquipmentName = e.Name,
+                InventoryName = e.Name,
                 UtilizationRate = e.MinimumStock.HasValue && e.MinimumStock.Value > 0 
                     ? (double)e.Quantity / e.MinimumStock.Value * 100 
                     : 0,
@@ -81,8 +81,8 @@ public class GetEquipmentUtilizationReportQueryHandler : IRequestHandler<GetInve
             },
             OverallUtilization = Math.Round(overallUtilization, 1),
             ByCategory = byCategory,
-            MostUsedEquipment = mostUsed,
-            UnderutilizedEquipment = underutilized
+            MostUsedInventory = mostUsed,
+            UnderutilizedInventory = underutilized
         };
     }
 }

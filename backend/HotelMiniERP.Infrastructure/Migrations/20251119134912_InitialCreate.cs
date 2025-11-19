@@ -96,7 +96,7 @@ namespace HotelMiniERP.Infrastructure.Migrations
                     ApprovalDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     DocumentUrl = table.Column<string>(type: "text", nullable: true),
                     EstimatedDurationMinutes = table.Column<int>(type: "integer", nullable: true),
-                    RequiredEquipment = table.Column<string>(type: "text", nullable: true),
+                    RequiredInventory = table.Column<string>(type: "text", nullable: true),
                     SafetyNotes = table.Column<string>(type: "text", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),

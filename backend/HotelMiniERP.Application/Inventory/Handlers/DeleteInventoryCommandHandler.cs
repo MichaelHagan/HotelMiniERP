@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelMiniERP.Application.Inventory.Handlers;
 
-public class DeleteEquipmentCommandHandler : IRequestHandler<DeleteInventoryCommand, bool>
+public class DeleteInventoryCommandHandler : IRequestHandler<DeleteInventoryCommand, bool>
 {
     private readonly IApplicationDbContext _context;
 
-    public DeleteEquipmentCommandHandler(IApplicationDbContext context)
+    public DeleteInventoryCommandHandler(IApplicationDbContext context)
     {
         _context = context;
     }

@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelMiniERP.Application.Inventory.Handlers;
 
-public class UpdateEquipmentCommandHandler : IRequestHandler<UpdateInventoryCommand, InventoryDto>
+public class UpdateInventoryCommandHandler : IRequestHandler<UpdateInventoryCommand, InventoryDto>
 {
     private readonly IApplicationDbContext _context;
 
-    public UpdateEquipmentCommandHandler(IApplicationDbContext context)
+    public UpdateInventoryCommandHandler(IApplicationDbContext context)
     {
         _context = context;
     }

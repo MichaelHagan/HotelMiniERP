@@ -134,7 +134,7 @@ const UserDetailDialog: React.FC<UserDetailDialogProps> = ({ open, onClose, user
                     <Typography variant="caption" display="block" sx={{ mt: 1 }} color="textSecondary">
                       {user.role === UserRole.Admin && 'Full system access with all permissions'}
                       {user.role === UserRole.Manager && 'Can manage staff and view reports'}
-                      {user.role === UserRole.Supervisor && 'Can supervise work orders and equipment'}
+                      {user.role === UserRole.Supervisor && 'Can supervise work orders and inventory'}
                       {user.role === UserRole.Worker && 'Standard user access'}
                     </Typography>
                   </Box>

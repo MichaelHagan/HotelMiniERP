@@ -12,13 +12,13 @@
 ### Migration Status
 - ✅ InitialCreate migration applied successfully
 - ✅ All 8 entity tables created with proper relationships
-- ✅ Unique indexes on AssetCode, Email, Username, WorkOrderNumber, ComplaintNumber, EquipmentCode
+- ✅ Unique indexes on AssetCode, Email, Username, WorkOrderNumber, ComplaintNumber, InventoryCode
 - ✅ Foreign key constraints with DeleteBehavior.Restrict
 
 ### Seeded Data Summary
 - **Users**: 4 accounts created
 - **Assets**: 3 sample assets
-- **Equipment**: 2 equipment items
+- **Inventory**: 2 inventory items
 - **Procedures**: 2 sample procedures
 
 ---
@@ -89,7 +89,7 @@
    - Location: Floor 3 - Utility Room
    - Status: Active
 
-### Equipment (2 items)
+### Inventory (2 items)
 
 1. **Vacuum Cleaner - Industrial** (VAC-001)
    - Category: Cleaning
@@ -115,7 +115,7 @@
    - Status: Active
    - Steps: Thermostat check, filter inspection, airflow verification
 
-2. **Weekly Equipment Inventory**
+2. **Weekly Inventory Inventory**
    - Category: Inventory
    - Version: 1.0
    - Status: Active
@@ -149,7 +149,7 @@
 ### ✅ Completed
 - PostgreSQL database configuration
 - EF Core migrations (InitialCreate)
-- Database seeding with users, assets, equipment, procedures
+- Database seeding with users, assets, inventory, procedures
 - Authentication system with JWT tokens
 - Password hashing (PBKDF2 with 100K iterations)
 - MediatR CQRS pattern for Login and Register
@@ -161,7 +161,7 @@
    - Manager-only assignment validation
    - Auto-close linked complaints when work order completes
 3. Implement Users CQRS handlers
-4. Implement Equipment CQRS handlers
+4. Implement Inventory CQRS handlers
 5. Implement Complaints CQRS handlers (Worker & Customer)
 6. Implement Messages CQRS handlers with soft delete
 7. Implement Procedures CQRS handlers
@@ -180,7 +180,7 @@
 ### Tables Created
 1. **Users** - User accounts with roles (Admin, Manager, Worker)
 2. **Assets** - Hotel assets with depreciation tracking
-3. **Equipment** - Maintenance equipment inventory
+3. **Inventory** - Maintenance inventory inventory
 4. **WorkOrders** - Work requests and assignments
 5. **WorkerComplaints** - Internal worker complaints
 6. **CustomerComplaints** - Customer complaints
@@ -188,7 +188,7 @@
 8. **Procedures** - Standard operating procedures
 
 ### Indexes
-- Unique: AssetCode, Email, Username, WorkOrderNumber, ComplaintNumber, EquipmentCode
+- Unique: AssetCode, Email, Username, WorkOrderNumber, ComplaintNumber, InventoryCode
 - Foreign Keys: All relationships with ON DELETE RESTRICT
 
 ---

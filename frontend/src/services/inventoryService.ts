@@ -43,11 +43,11 @@ export class InventoryService {
     await apiClient.delete(`${this.basePath}/${id}`);
   }
 
-  async getEquipmentByCategory(category: string): Promise<Inventory[]> {
+  async getInventoryByCategory(category: string): Promise<Inventory[]> {
     return apiClient.get<Inventory[]>(`${this.basePath}/category/${category}`);
   }
 
-  async getEquipmentByLocation(location: string): Promise<Inventory[]> {
+  async getInventoryByLocation(location: string): Promise<Inventory[]> {
     return apiClient.get<Inventory[]>(`${this.basePath}/location/${encodeURIComponent(location)}`);
   }
 
