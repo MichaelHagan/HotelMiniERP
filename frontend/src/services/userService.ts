@@ -43,6 +43,24 @@ export class UserService {
   async getActiveUsers(): Promise<User[]> {
     return apiClient.get<User[]>(`${this.basePath}/active`);
   }
+
+  async updateProfile(profileData: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber?: string;
+    profilePicture?: string;
+    address?: string;
+  }): Promise<User> {
+    return apiClient.put<User>(`${this.basePath}/me`, profileData);
+  }
+
+  async changePassword(passwordData: {
+    currentPassword: string;
+    newPassword: string;
+  }): Promise<{ message: string }> {
+    return apiClient.put<{ message: string }>(`${this.basePath}/me/password`, passwordData);
+  }
 }
 
 export const userService = new UserService();

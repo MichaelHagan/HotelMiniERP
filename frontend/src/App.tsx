@@ -17,6 +17,7 @@ import { ComplaintsPage } from './pages/ComplaintsPage';
 import { MessagingPage } from './pages/MessagingPage';
 import { ProceduresPage } from './pages/ProceduresPage';
 import { ReportsPage } from './pages/ReportsPage';
+import { ProfilePage } from './pages/ProfilePage';
 import { Message, UserRole } from './types';
 
 // Create a client for React Query
@@ -164,6 +165,13 @@ function App() {
                     <ProtectedRoute>
                       <Layout>
                         <ReportsPage />
+                      </Layout>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/profile" element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <ProfilePage />
                       </Layout>
                     </ProtectedRoute>
                   } />

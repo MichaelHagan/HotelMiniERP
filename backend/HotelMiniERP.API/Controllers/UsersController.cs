@@ -117,4 +117,56 @@ public class UsersController : ControllerBase
             return StatusCode(500, new { message = "An error occurred while deleting the user", error = ex.Message });
         }
     }
+
+    [HttpPut("me")]
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileCommand command)
+    {
+        try
+        {
+            // Get the current user's ID from the JWT token
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return Unauthorized(new { message = "User not authenticated" });
+            }
+
+            command.UserId = int.Parse(userIdClaim.Value);
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An error occurred while updating profile", error = ex.Message });
+        }
+    }
+
+    [HttpPut("me/password")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command)
+    {
+        try
+        {
+            // Get the current user's ID from the JWT token
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return Unauthorized(new { message = "User not authenticated" });
+            }
+
+            command.UserId = int.Parse(userIdClaim.Value);
+            var result = await _mediator.Send(command);
+            return Ok(new { message = "Password changed successfully" });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An error occurred while changing password", error = ex.Message });
+        }
+    }
 }
