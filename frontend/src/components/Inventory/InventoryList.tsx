@@ -58,14 +58,14 @@ const InventoryList: React.FC = () => {
   };
 
   const { data, isLoading } = useQuery({
-    queryKey: ['inventory?', queryParams],
+    queryKey: ['inventory', queryParams],
     queryFn: () => inventoryService.getInventory(queryParams),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => inventoryService.deleteInventory(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['inventory?'] });
+      queryClient.invalidateQueries({ queryKey: ['inventory'] });
     },
   });
 

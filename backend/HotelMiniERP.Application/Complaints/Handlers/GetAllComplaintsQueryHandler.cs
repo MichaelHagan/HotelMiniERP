@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelMiniERP.Application.Complaints.Handlers;
 
-public class GetAllComplaintsQueryHandler : IRequestHandler<GetAllComplaintsQuery, List<ComplaintDto>>
+public class GetAllComplaintsQueryHandler : IRequestHandler<GetAllComplaintsQuery, PaginatedResponse<ComplaintDto>>
 {
     private readonly IApplicationDbContext _context;
 
@@ -16,7 +16,7 @@ public class GetAllComplaintsQueryHandler : IRequestHandler<GetAllComplaintsQuer
         _context = context;
     }
 
-    public async Task<List<ComplaintDto>> Handle(GetAllComplaintsQuery request, CancellationToken cancellationToken)
+    public async Task<PaginatedResponse<ComplaintDto>> Handle(GetAllComplaintsQuery request, CancellationToken cancellationToken)
     {
         var complaints = new List<ComplaintDto>();
 
@@ -109,6 +109,21 @@ public class GetAllComplaintsQueryHandler : IRequestHandler<GetAllComplaintsQuer
             complaints.AddRange(customerComplaints);
         }
 
-        return complaints.OrderByDescending(c => c.CreatedAt).ToList();
+        // Sort all complaints and apply pagination
+        var sortedComplaints = complaints.OrderByDescending(c => c.CreatedAt).ToList();
+        var totalCount = sortedComplaints.Count;
+        var paginatedComplaints = sortedComplaints
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ToList();
+
+        return new PaginatedResponse<ComplaintDto>
+        {
+            Data = paginatedComplaints,
+            TotalCount = totalCount,
+            Page = request.Page,
+            PageSize = request.PageSize,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)request.PageSize)
+        };
     }
 }

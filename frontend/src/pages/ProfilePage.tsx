@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Box,
@@ -17,7 +17,7 @@ import { userService } from '../services';
 import { useAuth } from '../context/AuthContext';
 
 export const ProfilePage: React.FC = () => {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const queryClient = useQueryClient();
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
@@ -38,11 +38,25 @@ export const ProfilePage: React.FC = () => {
     confirmPassword: '',
   });
 
+  // Update profileData when user changes (after refreshUser)
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        email: user.email || '',
+        phoneNumber: user.phoneNumber || '',
+        address: user.address || '',
+      });
+    }
+  }, [user]);
+
   const updateProfileMutation = useMutation({
     mutationFn: (data: typeof profileData) => userService.updateProfile(data),
-    onSuccess: () => {
+    onSuccess: async () => {
       setSuccess('Profile updated successfully!');
       setError('');
+      await refreshUser(); // Refresh the user data in auth context
       queryClient.invalidateQueries({ queryKey: ['currentUser'] });
       setTimeout(() => setSuccess(''), 3000);
     },

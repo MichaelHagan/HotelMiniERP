@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelMiniERP.Application.Inventory.Handlers;
 
-public class GetAllEquipmentQueryHandler : IRequestHandler<GetAllInventoryQuery, List<InventoryDto>>
+public class GetAllEquipmentQueryHandler : IRequestHandler<GetAllInventoryQuery, PaginatedResponse<InventoryDto>>
 {
     private readonly IApplicationDbContext _context;
 
@@ -15,7 +15,7 @@ public class GetAllEquipmentQueryHandler : IRequestHandler<GetAllInventoryQuery,
         _context = context;
     }
 
-    public async Task<List<InventoryDto>> Handle(GetAllInventoryQuery request, CancellationToken cancellationToken)
+    public async Task<PaginatedResponse<InventoryDto>> Handle(GetAllInventoryQuery request, CancellationToken cancellationToken)
     {
         var query = _context.Inventory.AsQueryable();
 
@@ -29,8 +29,13 @@ public class GetAllEquipmentQueryHandler : IRequestHandler<GetAllInventoryQuery,
             query = query.Where(e => e.Location == request.Location);
         }
 
+        // Get total count before pagination
+        var totalCount = await query.CountAsync(cancellationToken);
+
         var inventory = await query
             .OrderBy(e => e.Name)
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
             .Select(e => new InventoryDto
             {
                 Id = e.Id,
@@ -55,6 +60,13 @@ public class GetAllEquipmentQueryHandler : IRequestHandler<GetAllInventoryQuery,
             })
             .ToListAsync(cancellationToken);
 
-        return inventory;
+        return new PaginatedResponse<InventoryDto>
+        {
+            Data = inventory,
+            TotalCount = totalCount,
+            Page = request.Page,
+            PageSize = request.PageSize,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)request.PageSize)
+        };
     }
 }

@@ -381,7 +381,7 @@ export const ComplaintList: React.FC = () => {
                       ? `${complaint.assignedUser.firstName} ${complaint.assignedUser.lastName}`
                       : 'Unassigned'}
                   </TableCell>
-                  <TableCell>{formatDateTime(complaint.createdDate)}</TableCell>
+                  <TableCell>{formatDateTime(complaint.createdAt)}</TableCell>
                   <TableCell align="right">
                     <Tooltip title="View Details">
                       <IconButton size="small" onClick={() => handleView(complaint)}>

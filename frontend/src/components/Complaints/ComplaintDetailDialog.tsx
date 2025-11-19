@@ -278,14 +278,14 @@ export const ComplaintDetailDialog: React.FC<ComplaintDetailDialogProps> = ({
                 <Typography variant="caption" color="textSecondary">
                   Created Date
                 </Typography>
-                <Typography variant="body2">{formatDateTime(complaint.createdDate)}</Typography>
+                <Typography variant="body2">{formatDateTime(complaint.createdAt)}</Typography>
               </Box>
               <Box>
                 <Typography variant="caption" color="textSecondary">
                   Last Modified
                 </Typography>
                 <Typography variant="body2">
-                  {formatDateTime(complaint.lastModifiedDate)}
+                  {formatDateTime(complaint.updatedAt)}
                 </Typography>
               </Box>
             </Box>

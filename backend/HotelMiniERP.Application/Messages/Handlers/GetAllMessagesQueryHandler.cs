@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelMiniERP.Application.Messages.Handlers;
 
-public class GetAllMessagesQueryHandler : IRequestHandler<GetAllMessagesQuery, List<MessageDto>>
+public class GetAllMessagesQueryHandler : IRequestHandler<GetAllMessagesQuery, PaginatedResponse<MessageDto>>
 {
     private readonly IApplicationDbContext _context;
 
@@ -16,7 +16,7 @@ public class GetAllMessagesQueryHandler : IRequestHandler<GetAllMessagesQuery, L
         _context = context;
     }
 
-    public async Task<List<MessageDto>> Handle(GetAllMessagesQuery request, CancellationToken cancellationToken)
+    public async Task<PaginatedResponse<MessageDto>> Handle(GetAllMessagesQuery request, CancellationToken cancellationToken)
     {
         var query = _context.Messages
             .Where(m => !m.IsDeleted); // Soft delete filter
@@ -33,8 +33,13 @@ public class GetAllMessagesQueryHandler : IRequestHandler<GetAllMessagesQuery, L
         if (request.IsRead.HasValue)
             query = query.Where(m => m.IsRead == request.IsRead.Value);
 
+        // Get total count before pagination
+        var totalCount = await query.CountAsync(cancellationToken);
+
         var messages = await query
             .OrderByDescending(m => m.CreatedAt)
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
             .Select(m => new MessageDto
             {
                 Id = m.Id,
@@ -50,6 +55,13 @@ public class GetAllMessagesQueryHandler : IRequestHandler<GetAllMessagesQuery, L
             })
             .ToListAsync(cancellationToken);
 
-        return messages;
+        return new PaginatedResponse<MessageDto>
+        {
+            Data = messages,
+            TotalCount = totalCount,
+            Page = request.Page,
+            PageSize = request.PageSize,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)request.PageSize)
+        };
     }
 }

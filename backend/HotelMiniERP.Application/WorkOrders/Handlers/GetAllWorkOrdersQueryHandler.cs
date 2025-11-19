@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelMiniERP.Application.WorkOrders.Handlers;
 
-public class GetAllWorkOrdersQueryHandler : IRequestHandler<GetAllWorkOrdersQuery, List<WorkOrderDto>>
+public class GetAllWorkOrdersQueryHandler : IRequestHandler<GetAllWorkOrdersQuery, PaginatedResponse<WorkOrderDto>>
 {
     private readonly IApplicationDbContext _context;
 
@@ -16,7 +16,7 @@ public class GetAllWorkOrdersQueryHandler : IRequestHandler<GetAllWorkOrdersQuer
         _context = context;
     }
 
-    public async Task<List<WorkOrderDto>> Handle(GetAllWorkOrdersQuery request, CancellationToken cancellationToken)
+    public async Task<PaginatedResponse<WorkOrderDto>> Handle(GetAllWorkOrdersQuery request, CancellationToken cancellationToken)
     {
         var query = _context.WorkOrders.AsQueryable();
 
@@ -40,8 +40,13 @@ public class GetAllWorkOrdersQueryHandler : IRequestHandler<GetAllWorkOrdersQuer
             query = query.Where(w => w.AssetId == request.AssetId.Value);
         }
 
+        // Get total count before pagination
+        var totalCount = await query.CountAsync(cancellationToken);
+
         var workOrders = await query
             .OrderByDescending(w => w.CreatedAt)
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
             .Select(w => new WorkOrderDto
             {
                 Id = w.Id,
@@ -71,6 +76,13 @@ public class GetAllWorkOrdersQueryHandler : IRequestHandler<GetAllWorkOrdersQuer
             })
             .ToListAsync(cancellationToken);
 
-        return workOrders;
+        return new PaginatedResponse<WorkOrderDto>
+        {
+            Data = workOrders,
+            TotalCount = totalCount,
+            Page = request.Page,
+            PageSize = request.PageSize,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)request.PageSize)
+        };
     }
 }

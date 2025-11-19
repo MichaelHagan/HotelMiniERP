@@ -22,14 +22,18 @@ public class ProceduresController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllProcedures(
         [FromQuery] string? category = null,
-        [FromQuery] bool? isActive = null)
+        [FromQuery] bool? isActive = null,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
     {
         try
         {
             var query = new GetAllProceduresQuery
             {
                 Category = category,
-                IsActive = isActive
+                IsActive = isActive,
+                Page = page,
+                PageSize = pageSize
             };
             var result = await _mediator.Send(query);
             return Ok(result);

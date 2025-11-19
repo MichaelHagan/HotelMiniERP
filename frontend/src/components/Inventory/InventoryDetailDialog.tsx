@@ -223,13 +223,13 @@ const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({ open, onC
               <DetailRow
                 icon={<CalendarIcon fontSize="small" />}
                 label="Created"
-                value={formatDateTime(inventory.createdDate)}
+                value={formatDateTime(inventory.createdAt)}
               />
 
               <DetailRow
                 icon={<CalendarIcon fontSize="small" />}
                 label="Last Modified"
-                value={formatDateTime(inventory.lastModifiedDate)}
+                value={formatDateTime(inventory.updatedAt)}
               />
             </Box>
           </Box>

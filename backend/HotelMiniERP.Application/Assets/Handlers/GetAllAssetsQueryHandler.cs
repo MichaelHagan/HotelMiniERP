@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelMiniERP.Application.Assets.Handlers;
 
-public class GetAllAssetsQueryHandler : IRequestHandler<GetAllAssetsQuery, List<AssetDto>>
+public class GetAllAssetsQueryHandler : IRequestHandler<GetAllAssetsQuery, PaginatedResponse<AssetDto>>
 {
     private readonly IApplicationDbContext _context;
 
@@ -16,7 +16,7 @@ public class GetAllAssetsQueryHandler : IRequestHandler<GetAllAssetsQuery, List<
         _context = context;
     }
 
-    public async Task<List<AssetDto>> Handle(GetAllAssetsQuery request, CancellationToken cancellationToken)
+    public async Task<PaginatedResponse<AssetDto>> Handle(GetAllAssetsQuery request, CancellationToken cancellationToken)
     {
         var query = _context.Assets.AsQueryable();
 
@@ -41,8 +41,13 @@ public class GetAllAssetsQueryHandler : IRequestHandler<GetAllAssetsQuery, List<
                 a.Location.ToLower().Contains(searchTerm));
         }
 
+        // Get total count before pagination
+        var totalCount = await query.CountAsync(cancellationToken);
+
         var assets = await query
             .OrderByDescending(a => a.CreatedAt)
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
             .Select(a => new AssetDto
             {
                 Id = a.Id,
@@ -67,6 +72,13 @@ public class GetAllAssetsQueryHandler : IRequestHandler<GetAllAssetsQuery, List<
             })
             .ToListAsync(cancellationToken);
 
-        return assets;
+        return new PaginatedResponse<AssetDto>
+        {
+            Data = assets,
+            TotalCount = totalCount,
+            Page = request.Page,
+            PageSize = request.PageSize,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)request.PageSize)
+        };
     }
 }

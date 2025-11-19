@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelMiniERP.Application.Procedures.Handlers;
 
-public class GetAllProceduresQueryHandler : IRequestHandler<GetAllProceduresQuery, List<ProcedureDto>>
+public class GetAllProceduresQueryHandler : IRequestHandler<GetAllProceduresQuery, PaginatedResponse<ProcedureDto>>
 {
     private readonly IApplicationDbContext _context;
 
@@ -15,7 +15,7 @@ public class GetAllProceduresQueryHandler : IRequestHandler<GetAllProceduresQuer
         _context = context;
     }
 
-    public async Task<List<ProcedureDto>> Handle(GetAllProceduresQuery request, CancellationToken cancellationToken)
+    public async Task<PaginatedResponse<ProcedureDto>> Handle(GetAllProceduresQuery request, CancellationToken cancellationToken)
     {
         var query = _context.Procedures
             .Where(p => !p.IsDeleted);
@@ -26,8 +26,13 @@ public class GetAllProceduresQueryHandler : IRequestHandler<GetAllProceduresQuer
         if (request.IsActive.HasValue)
             query = query.Where(p => p.IsActive == request.IsActive.Value);
 
+        // Get total count before pagination
+        var totalCount = await query.CountAsync(cancellationToken);
+
         var procedures = await query
             .OrderByDescending(p => p.CreatedAt)
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
             .Select(p => new ProcedureDto
             {
                 Id = p.Id,
@@ -45,6 +50,13 @@ public class GetAllProceduresQueryHandler : IRequestHandler<GetAllProceduresQuer
             })
             .ToListAsync(cancellationToken);
 
-        return procedures;
+        return new PaginatedResponse<ProcedureDto>
+        {
+            Data = procedures,
+            TotalCount = totalCount,
+            Page = request.Page,
+            PageSize = request.PageSize,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)request.PageSize)
+        };
     }
 }

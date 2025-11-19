@@ -1,5 +1,6 @@
 using HotelMiniERP.Application.Commands.Auth;
 using HotelMiniERP.Application.DTOs;
+using HotelMiniERP.Application.Users.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -80,29 +81,29 @@ public class AuthController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetCurrentUser()
     {
-        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        var usernameClaim = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
-        var emailClaim = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
-        var roleClaim = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
-        var fullNameClaim = User.FindFirst("FullName")?.Value;
-
-        if (userIdClaim == null || usernameClaim == null)
+        try
         {
-            return Unauthorized();
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized();
+            }
+
+            // Fetch current user data from database instead of using JWT claims
+            var query = new GetUserByIdQuery { Id = userId };
+            var user = await _mediator.Send(query);
+
+            if (user == null)
+            {
+                return NotFound(new { Message = "User not found" });
+            }
+
+            return Ok(user);
         }
-
-        var names = fullNameClaim?.Split(' ') ?? new[] { "Unknown", "User" };
-        
-        var user = new UserDto
+        catch (Exception ex)
         {
-            Id = int.Parse(userIdClaim),
-            Username = usernameClaim,
-            Email = emailClaim ?? "admin@hotel.com",
-            FirstName = names.Length > 0 ? names[0] : "Unknown",
-            LastName = names.Length > 1 ? string.Join(" ", names.Skip(1)) : "User",
-            Role = Enum.Parse<Domain.Enums.UserRole>(roleClaim ?? "Admin")
-        };
-
-        return Ok(user);
+            return StatusCode(500, new { Message = "An error occurred while fetching user data", Error = ex.Message });
+        }
     }
 }

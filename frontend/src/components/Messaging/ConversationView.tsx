@@ -68,7 +68,7 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
           (msg.senderId === userId && msg.recipientId === user?.id)
       );
       setConversationMessages(filtered.sort((a, b) => 
-        new Date(a.createdDate).getTime() - new Date(b.createdDate).getTime()
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       ));
     }
   }, [messagesData, userId, user]);
@@ -218,7 +218,7 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
                         color: isOwnMessage ? 'rgba(255, 255, 255, 0.7)' : 'text.secondary'
                       }}
                     >
-                      {formatDateTime(message.createdDate)}
+                      {formatDateTime(message.createdAt)}
                       {message.isRead && isOwnMessage && ' • Read'}
                     </Typography>
                   </Paper>

@@ -27,7 +27,9 @@ public class MessagesController : ControllerBase
         [FromQuery] string? type = null,
         [FromQuery] int? sentByUserId = null,
         [FromQuery] int? sentToUserId = null,
-        [FromQuery] bool? isRead = null)
+        [FromQuery] bool? isRead = null,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
     {
         try
         {
@@ -36,7 +38,9 @@ public class MessagesController : ControllerBase
                 Type = type,
                 SentByUserId = sentByUserId,
                 SentToUserId = sentToUserId,
-                IsRead = isRead
+                IsRead = isRead,
+                Page = page,
+                PageSize = pageSize
             };
             var result = await _mediator.Send(query);
             return Ok(result);

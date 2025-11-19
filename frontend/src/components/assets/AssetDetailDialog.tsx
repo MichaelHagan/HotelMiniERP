@@ -121,8 +121,8 @@ export const AssetDetailDialog: React.FC<AssetDetailDialogProps> = ({
               </Typography>
               <Divider sx={{ mb: 2 }} />
               
-              <DetailRow label="Created" value={formatTimeAgo(asset.createdDate)} />
-              <DetailRow label="Last Modified" value={formatTimeAgo(asset.lastModifiedDate)} />
+              <DetailRow label="Created" value={formatTimeAgo(asset.createdAt)} />
+              <DetailRow label="Last Modified" value={formatTimeAgo(asset.updatedAt)} />
             </Box>
           </Box>
         </Box>

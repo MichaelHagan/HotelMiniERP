@@ -204,13 +204,13 @@ const UserDetailDialog: React.FC<UserDetailDialogProps> = ({ open, onClose, user
               <DetailRow
                 icon={<CalendarIcon fontSize="small" />}
                 label="Created"
-                value={formatDateTime(user.createdDate)}
+                value={formatDateTime(user.createdAt)}
               />
 
               <DetailRow
                 icon={<CalendarIcon fontSize="small" />}
                 label="Last Modified"
-                value={formatDateTime(user.lastModifiedDate)}
+                value={formatDateTime(user.updatedAt)}
               />
             </Box>
           </Box>

@@ -308,7 +308,7 @@ const WorkOrderList: React.FC = () => {
                   <TableCell>
                     {workOrder.scheduledDate ? formatDateTime(workOrder.scheduledDate) : 'N/A'}
                   </TableCell>
-                  <TableCell>{formatDateTime(workOrder.createdDate)}</TableCell>
+                  <TableCell>{formatDateTime(workOrder.createdAt)}</TableCell>
                   <TableCell align="right">
                     <Tooltip title="View Details">
                       <IconButton size="small" onClick={() => handleViewClick(workOrder)}>

@@ -1,6 +1,7 @@
 // User Types
 export interface User {
   id: string;
+  username?: string;
   email: string;
   firstName: string;
   lastName: string;
@@ -10,8 +11,9 @@ export interface User {
   address?: string;
   isActive: boolean;
   profilePictureUrl?: string;
-  createdDate: string;
-  lastModifiedDate: string;
+  lastLogin?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export enum UserRole {
@@ -76,8 +78,8 @@ export interface Asset {
   nextMaintenanceDate?: string;
   assignedUserId?: string;
   assignedUser?: User;
-  createdDate: string;
-  lastModifiedDate: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export enum AssetStatus {
@@ -133,8 +135,8 @@ export interface WorkOrder {
   scheduledDate?: string;
   completedDate?: string;
   notes?: string;
-  createdDate: string;
-  lastModifiedDate: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export enum Priority {
@@ -194,8 +196,8 @@ export interface Inventory {
   warrantyExpiryDate?: string;
   lastRestockedDate?: string;
   specifications?: Record<string, any>;
-  createdDate: string;
-  lastModifiedDate: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CreateInventoryDto {
@@ -282,8 +284,8 @@ export interface WorkerComplaint {
   assignedUser?: User;
   resolutionNotes?: string;
   resolutionDate?: string;
-  createdDate: string;
-  lastModifiedDate: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CustomerComplaint {
@@ -301,8 +303,8 @@ export interface CustomerComplaint {
   assignedUser?: User;
   resolutionNotes?: string;
   resolutionDate?: string;
-  createdDate: string;
-  lastModifiedDate: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export enum ComplaintCategory {
@@ -362,7 +364,7 @@ export interface Message {
   recipient?: User;
   isRead: boolean;
   readDate?: string;
-  createdDate: string;
+  createdAt: string;
 }
 
 export enum MessageType {

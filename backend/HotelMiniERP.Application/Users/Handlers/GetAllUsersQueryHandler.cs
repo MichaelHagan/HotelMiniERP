@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelMiniERP.Application.Users.Handlers;
 
-public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, List<UserDto>>
+public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, PaginatedResponse<UserDto>>
 {
     private readonly IApplicationDbContext _context;
 
@@ -16,7 +16,7 @@ public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, List<Us
         _context = context;
     }
 
-    public async Task<List<UserDto>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
+    public async Task<PaginatedResponse<UserDto>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
     {
         var query = _context.Users.AsQueryable();
 
@@ -45,9 +45,15 @@ public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, List<Us
                 u.LastName.ToLower().Contains(searchLower));
         }
 
+        // Get total count before pagination
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        // Apply sorting and pagination
         var users = await query
             .OrderBy(u => u.LastName)
             .ThenBy(u => u.FirstName)
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
             .Select(u => new UserDto
             {
                 Id = u.Id,
@@ -65,6 +71,13 @@ public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, List<Us
             })
             .ToListAsync(cancellationToken);
 
-        return users;
+        return new PaginatedResponse<UserDto>
+        {
+            Data = users,
+            TotalCount = totalCount,
+            Page = request.Page,
+            PageSize = request.PageSize,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)request.PageSize)
+        };
     }
 }

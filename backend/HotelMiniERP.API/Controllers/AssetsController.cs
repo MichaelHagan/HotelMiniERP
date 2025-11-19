@@ -20,7 +20,12 @@ public class AssetsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllAssets([FromQuery] string? category, [FromQuery] string? status, [FromQuery] string? searchTerm)
+    public async Task<IActionResult> GetAllAssets(
+        [FromQuery] string? category = null, 
+        [FromQuery] string? status = null, 
+        [FromQuery] string? searchTerm = null,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
     {
         try
         {
@@ -28,16 +33,13 @@ public class AssetsController : ControllerBase
             {
                 Category = category,
                 Status = status,
-                SearchTerm = searchTerm
+                SearchTerm = searchTerm,
+                Page = page,
+                PageSize = pageSize
             };
 
-            var assets = await _mediator.Send(query);
-
-            return Ok(new
-            {
-                Assets = assets,
-                TotalCount = assets.Count
-            });
+            var result = await _mediator.Send(query);
+            return Ok(result);
         }
         catch (Exception ex)
         {

@@ -21,14 +21,18 @@ public class InventoryController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllEquipment(
         [FromQuery] string? category = null,
-        [FromQuery] string? location = null)
+        [FromQuery] string? location = null,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
     {
         try
         {
             var query = new GetAllInventoryQuery
             {
                 Category = category,
-                Location = location
+                Location = location,
+                Page = page,
+                PageSize = pageSize
             };
             var result = await _mediator.Send(query);
             return Ok(result);

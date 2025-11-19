@@ -117,8 +117,12 @@ const UserList: React.FC = () => {
   const isAdmin = currentUser?.role === UserRole.Admin;
   const canEdit = isAdmin || currentUser?.role === UserRole.Manager;
 
-  // Filter users based on search and filters
-  const filteredUsers = (data?.data || []).filter((user) => {
+  // Now using backend pagination
+  const users = data?.data || [];
+  const totalCount = data?.totalCount || 0;
+
+  // Apply client-side filters on the current page
+  const filteredUsers = users.filter((user) => {
     const matchesSearch = !searchTerm || 
       user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -132,8 +136,6 @@ const UserList: React.FC = () => {
 
     return matchesSearch && matchesRole && matchesStatus;
   });
-
-  const totalCount = filteredUsers.length;
 
   return (
     <Box>
@@ -247,7 +249,7 @@ const UserList: React.FC = () => {
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2">
-                      {formatDateTime(user.createdDate)}
+                      {formatDateTime(user.createdAt)}
                     </Typography>
                   </TableCell>
                   <TableCell align="right">

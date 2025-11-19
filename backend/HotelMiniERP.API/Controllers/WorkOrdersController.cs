@@ -24,7 +24,9 @@ public class WorkOrdersController : ControllerBase
         [FromQuery] string? status = null,
         [FromQuery] string? priority = null,
         [FromQuery] int? assignedToUserId = null,
-        [FromQuery] int? assetId = null)
+        [FromQuery] int? assetId = null,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
     {
         try
         {
@@ -33,11 +35,13 @@ public class WorkOrdersController : ControllerBase
                 Status = status,
                 Priority = priority,
                 AssignedToUserId = assignedToUserId,
-                AssetId = assetId
+                AssetId = assetId,
+                Page = page,
+                PageSize = pageSize
             };
 
-            var workOrders = await _mediator.Send(query);
-            return Ok(workOrders);
+            var result = await _mediator.Send(query);
+            return Ok(result);
         }
         catch (Exception ex)
         {

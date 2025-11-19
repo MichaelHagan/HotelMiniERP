@@ -376,7 +376,7 @@ export const MessageList: React.FC = () => {
                         </Typography>
                       </Box>
                       <Typography variant="caption" color="textSecondary" sx={{ whiteSpace: 'nowrap' }}>
-                        {formatDateTime(message.createdDate)}
+                        {formatDateTime(message.createdAt)}
                       </Typography>
                     </Box>
                   </ListItemButton>

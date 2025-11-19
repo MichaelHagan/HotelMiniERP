@@ -24,7 +24,9 @@ public class ComplaintsController : ControllerBase
         [FromQuery] string? status = null,
         [FromQuery] string? priority = null,
         [FromQuery] string? category = null,
-        [FromQuery] int? assignedToUserId = null)
+        [FromQuery] int? assignedToUserId = null,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
     {
         try
         {
@@ -34,7 +36,9 @@ public class ComplaintsController : ControllerBase
                 Status = status,
                 Priority = priority,
                 Category = category,
-                AssignedToUserId = assignedToUserId
+                AssignedToUserId = assignedToUserId,
+                Page = page,
+                PageSize = pageSize
             };
             var result = await _mediator.Send(query);
             return Ok(result);

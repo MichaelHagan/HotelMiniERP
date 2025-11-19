@@ -220,13 +220,13 @@ const WorkOrderDetailDialog: React.FC<WorkOrderDetailDialogProps> = ({
               <Typography variant="caption" color="text.secondary" display="block">
                 Created Date
               </Typography>
-              <Typography variant="body2">{formatDateTime(workOrder.createdDate)}</Typography>
+              <Typography variant="body2">{formatDateTime(workOrder.createdAt)}</Typography>
             </Box>
             <Box>
               <Typography variant="caption" color="text.secondary" display="block">
                 Last Modified
               </Typography>
-              <Typography variant="body2">{formatDateTime(workOrder.lastModifiedDate)}</Typography>
+              <Typography variant="body2">{formatDateTime(workOrder.updatedAt)}</Typography>
             </Box>
           </Box>
         </Box>

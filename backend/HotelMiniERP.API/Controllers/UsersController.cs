@@ -20,13 +20,20 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllUsers([FromQuery] string? role = null, [FromQuery] bool? isActive = null, [FromQuery] string? department = null)
+    public async Task<IActionResult> GetAllUsers(
+        [FromQuery] string? role = null, 
+        [FromQuery] bool? isActive = null, 
+        [FromQuery] string? department = null,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
     {
         var query = new GetAllUsersQuery 
         { 
             Role = role,
             IsActive = isActive,
-            Department = department
+            Department = department,
+            Page = page,
+            PageSize = pageSize
         };
         var result = await _mediator.Send(query);
         return Ok(result);
