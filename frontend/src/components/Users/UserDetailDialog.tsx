@@ -57,7 +57,9 @@ const UserDetailDialog: React.FC<UserDetailDialogProps> = ({ open, onClose, user
         return 'error';
       case UserRole.Manager:
         return 'warning';
-      case UserRole.Employee:
+      case UserRole.Supervisor:
+        return 'info';
+      case UserRole.Worker:
         return 'info';
       default:
         return 'info';
@@ -132,7 +134,8 @@ const UserDetailDialog: React.FC<UserDetailDialogProps> = ({ open, onClose, user
                     <Typography variant="caption" display="block" sx={{ mt: 1 }} color="textSecondary">
                       {user.role === UserRole.Admin && 'Full system access with all permissions'}
                       {user.role === UserRole.Manager && 'Can manage staff and view reports'}
-                      {user.role === UserRole.Employee && 'Standard user access'}
+                      {user.role === UserRole.Supervisor && 'Can supervise work orders and equipment'}
+                      {user.role === UserRole.Worker && 'Standard user access'}
                     </Typography>
                   </Box>
                 }

@@ -25,7 +25,8 @@ import {
   Visibility as ViewIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
-  Search as SearchIcon
+  Search as SearchIcon,
+  AssignmentInd as WorkOrderIcon
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { complaintService } from '../../services/complaintService';
@@ -34,10 +35,12 @@ import {
   CustomerComplaint,
   ComplaintStatus,
   Priority,
-  ComplaintCategory
+  ComplaintCategory,
+  UserRole
 } from '../../types';
 import { ComplaintDialog } from './ComplaintDialog';
 import { ComplaintDetailDialog } from './ComplaintDetailDialog';
+import WorkOrderDialog from '../WorkOrders/WorkOrderDialog';
 import { useAuth } from '../../context/AuthContext';
 import { formatDateTime } from '../../utils/dateUtils';
 
@@ -57,7 +60,9 @@ export const ComplaintList: React.FC = () => {
   
   const [dialogOpen, setDialogOpen] = useState(false);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+  const [workOrderDialogOpen, setWorkOrderDialogOpen] = useState(false);
   const [selectedComplaint, setSelectedComplaint] = useState<WorkerComplaint | CustomerComplaint | null>(null);
+  const [workOrderComplaintId, setWorkOrderComplaintId] = useState<{ worker?: string; customer?: string }>({});
 
   // Fetch worker complaints
   const { data: workerData, isLoading: workerLoading } = useQuery({
@@ -146,6 +151,20 @@ export const ComplaintList: React.FC = () => {
     setSelectedComplaint(null);
   };
 
+  const handleCreateWorkOrder = (complaint: WorkerComplaint | CustomerComplaint) => {
+    if (isWorkerComplaint(complaint)) {
+      setWorkOrderComplaintId({ worker: complaint.id, customer: undefined });
+    } else {
+      setWorkOrderComplaintId({ worker: undefined, customer: complaint.id });
+    }
+    setWorkOrderDialogOpen(true);
+  };
+
+  const handleWorkOrderDialogClose = () => {
+    setWorkOrderDialogOpen(false);
+    setWorkOrderComplaintId({});
+  };
+
   const getStatusColor = (status: ComplaintStatus): 'default' | 'primary' | 'success' | 'error' | 'warning' => {
     switch (status) {
       case ComplaintStatus.Open:
@@ -207,9 +226,9 @@ export const ComplaintList: React.FC = () => {
     });
   }, [currentData, searchTerm, complaintType]);
 
-  const canCreate = user?.role === 'Admin' || user?.role === 'Manager' || user?.role === 'Employee';
-  const canEdit = user?.role === 'Admin' || user?.role === 'Manager';
-  const canDelete = user?.role === 'Admin';
+  const canCreate = user?.role === UserRole.Admin || user?.role === UserRole.Manager || user?.role === UserRole.Supervisor || user?.role === UserRole.Worker;
+  const canEdit = user?.role === UserRole.Admin || user?.role === UserRole.Manager;
+  const canDelete = user?.role === UserRole.Admin;
 
   return (
     <Box>
@@ -376,6 +395,13 @@ export const ComplaintList: React.FC = () => {
                         </IconButton>
                       </Tooltip>
                     )}
+                    {canEdit && (
+                      <Tooltip title="Create Work Order">
+                        <IconButton size="small" onClick={() => handleCreateWorkOrder(complaint)} color="primary">
+                          <WorkOrderIcon />
+                        </IconButton>
+                      </Tooltip>
+                    )}
                     {canDelete && (
                       <Tooltip title="Delete">
                         <IconButton size="small" onClick={() => handleDelete(complaint.id)}>
@@ -412,6 +438,14 @@ export const ComplaintList: React.FC = () => {
         onClose={handleDetailDialogClose}
         complaint={selectedComplaint}
         complaintType={complaintType}
+      />
+
+      <WorkOrderDialog
+        open={workOrderDialogOpen}
+        onClose={handleWorkOrderDialogClose}
+        workOrder={null}
+        workerComplaintId={workOrderComplaintId.worker}
+        customerComplaintId={workOrderComplaintId.customer}
       />
     </Box>
   );

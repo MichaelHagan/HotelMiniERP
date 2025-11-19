@@ -12,7 +12,7 @@ namespace HotelMiniERP.Application.Interfaces
         DbSet<CustomerComplaint> CustomerComplaints { get; set; }
         DbSet<Message> Messages { get; set; }
         DbSet<Procedure> Procedures { get; set; }
-        DbSet<HotelMiniERP.Domain.Entities.Equipment> Equipment { get; set; }
+        DbSet<HotelMiniERP.Domain.Entities.Inventory> Inventory { get; set; }
         
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }

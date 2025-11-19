@@ -20,7 +20,8 @@ import {
   UpdateComplaintDto,
   ComplaintCategory,
   Priority,
-  ComplaintStatus
+  ComplaintStatus,
+  UserRole
 } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 
@@ -196,7 +197,7 @@ export const ComplaintDialog: React.FC<ComplaintDialogProps> = ({
     }
   };
 
-  const canEditStatus = user?.role === 'Admin' || user?.role === 'Manager';
+  const canEditStatus = user?.role === UserRole.Admin || user?.role === UserRole.Manager;
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>

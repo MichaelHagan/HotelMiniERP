@@ -30,7 +30,7 @@ import {
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { messageService } from '../../services/messageService';
-import { Message, MessageType } from '../../types';
+import { Message, MessageType, User, UserRole } from '../../types';
 import { MessageDialog } from './MessageDialog';
 import { ConversationView } from './ConversationView';
 import { useAuth } from '../../context/AuthContext';
@@ -186,7 +186,7 @@ export const MessageList: React.FC = () => {
   };
 
   const canDelete = (message: Message) => {
-    return user?.role === 'Admin' || message.senderId === user?.id;
+    return user?.role === UserRole.Admin || message.senderId === user?.id;
   };
 
   return (

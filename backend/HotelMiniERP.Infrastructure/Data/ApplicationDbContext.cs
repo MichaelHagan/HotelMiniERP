@@ -17,7 +17,7 @@ namespace HotelMiniERP.Infrastructure.Data
         public DbSet<CustomerComplaint> CustomerComplaints { get; set; } = null!;
         public DbSet<Message> Messages { get; set; } = null!;
         public DbSet<Procedure> Procedures { get; set; } = null!;
-        public DbSet<Equipment> Equipment { get; set; } = null!;
+        public DbSet<Inventory> Inventory { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -163,8 +163,8 @@ namespace HotelMiniERP.Infrastructure.Data
                 entity.Property(e => e.ApprovedBy).HasMaxLength(200);
             });
 
-            // Equipment Configuration
-            modelBuilder.Entity<Equipment>(entity =>
+            // Inventory Configuration
+            modelBuilder.Entity<Inventory>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(200);

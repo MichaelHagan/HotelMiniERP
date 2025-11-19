@@ -67,6 +67,7 @@ public class AssetsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> CreateAsset([FromBody] CreateAssetCommand command)
     {
         try
@@ -95,6 +96,7 @@ public class AssetsController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> UpdateAsset(int id, [FromBody] UpdateAssetCommand command)
     {
         try
@@ -120,6 +122,7 @@ public class AssetsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteAsset(int id)
     {
         try

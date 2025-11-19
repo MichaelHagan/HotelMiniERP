@@ -18,8 +18,9 @@ public class GetDashboardSummaryQueryHandler : IRequestHandler<GetDashboardSumma
 
     public async Task<DashboardSummaryDto> Handle(GetDashboardSummaryQuery request, CancellationToken cancellationToken)
     {
+        Console.WriteLine("\n\n\n\n\n\n\n Handling GetDashboardSummaryQuery... \n\n\n\n\n\n\n");
         var now = DateTime.UtcNow;
-        var startOfMonth = new DateTime(now.Year, now.Month, 1);
+        var startOfMonth = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
         var thirtyDaysAgo = now.AddDays(-30);
         var oneWeekFromNow = now.AddDays(7);
 
@@ -49,15 +50,12 @@ public class GetDashboardSummaryQueryHandler : IRequestHandler<GetDashboardSumma
                            w.Status != WorkOrderStatus.Completed && 
                            w.Status != WorkOrderStatus.Cancelled, cancellationToken);
 
-        // Equipment Summary
-        var totalEquipment = await _context.Equipment.CountAsync(cancellationToken);
-        var availableEquipment = await _context.Equipment.CountAsync(e => e.Status == EquipmentStatus.Available, cancellationToken);
-        var inUseEquipment = await _context.Equipment.CountAsync(e => e.Status == EquipmentStatus.InUse, cancellationToken);
-        var maintenanceEquipment = await _context.Equipment.CountAsync(e => e.Status == EquipmentStatus.UnderMaintenance, cancellationToken);
-        var maintenanceDueThisWeek = await _context.Equipment
-            .CountAsync(e => e.NextMaintenanceDate.HasValue && 
-                           e.NextMaintenanceDate.Value <= oneWeekFromNow && 
-                           e.NextMaintenanceDate.Value >= now, cancellationToken);
+        // Equipment Summary (now Inventory)
+        var totalEquipment = await _context.Inventory.CountAsync(cancellationToken);
+        var lowStockItems = await _context.Inventory.CountAsync(e => e.MinimumStock.HasValue && e.Quantity <= e.MinimumStock.Value, cancellationToken);
+        var inStockItems = await _context.Inventory.CountAsync(e => !e.MinimumStock.HasValue || e.Quantity > e.MinimumStock.Value, cancellationToken);
+        var outOfStockItems = await _context.Inventory.CountAsync(e => e.Quantity == 0, cancellationToken);
+        var restockNeededCount = lowStockItems;
 
         // Complaints Summary
         var customerComplaintsTotal = await _context.CustomerComplaints.CountAsync(cancellationToken);
@@ -107,10 +105,10 @@ public class GetDashboardSummaryQueryHandler : IRequestHandler<GetDashboardSumma
             Equipment = new EquipmentSummaryDto
             {
                 TotalEquipment = totalEquipment,
-                AvailableEquipment = availableEquipment,
-                InUseEquipment = inUseEquipment,
-                MaintenanceEquipment = maintenanceEquipment,
-                MaintenanceDueThisWeek = maintenanceDueThisWeek
+                AvailableEquipment = inStockItems,
+                InUseEquipment = lowStockItems,
+                MaintenanceEquipment = outOfStockItems,
+                MaintenanceDueThisWeek = restockNeededCount
             },
             Complaints = new ComplaintsSummaryDto
             {

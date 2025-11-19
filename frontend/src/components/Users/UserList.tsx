@@ -105,7 +105,9 @@ const UserList: React.FC = () => {
         return 'error';
       case UserRole.Manager:
         return 'warning';
-      case UserRole.Employee:
+      case UserRole.Supervisor:
+        return 'info';
+      case UserRole.Worker:
         return 'info';
       default:
         return 'info';
@@ -171,7 +173,8 @@ const UserList: React.FC = () => {
                 <MenuItem value="">All Roles</MenuItem>
                 <MenuItem value={UserRole.Admin}>Admin</MenuItem>
                 <MenuItem value={UserRole.Manager}>Manager</MenuItem>
-                <MenuItem value={UserRole.Employee}>Employee</MenuItem>
+                <MenuItem value={UserRole.Supervisor}>Supervisor</MenuItem>
+                <MenuItem value={UserRole.Worker}>Worker</MenuItem>
               </Select>
             </FormControl>
 

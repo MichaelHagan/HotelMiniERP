@@ -20,7 +20,7 @@ public class GetComplaintsAnalysisReportQueryHandler : IRequestHandler<GetCompla
     {
         var startDate = request.StartDate ?? DateTime.UtcNow.AddMonths(-3);
         var endDate = request.EndDate ?? DateTime.UtcNow;
-        var startOfThisMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
+        var startOfThisMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 0, 0, 0, DateTimeKind.Utc);
         var startOfLastMonth = startOfThisMonth.AddMonths(-1);
         var endOfLastMonth = startOfThisMonth.AddDays(-1);
 

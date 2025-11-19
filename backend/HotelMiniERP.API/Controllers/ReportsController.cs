@@ -130,8 +130,8 @@ public class ReportsController : ControllerBase
             {
                 ReportPeriod = new
                 {
-                    StartDate = startDate ?? DateTime.Now.AddYears(-1),
-                    EndDate = endDate ?? DateTime.Now
+                    StartDate = startDate ?? DateTime.UtcNow.AddYears(-1),
+                    EndDate = endDate ?? DateTime.UtcNow
                 },
                 TotalDepreciation = 42500.00m,
                 AssetsByCategory = new[]
@@ -188,8 +188,8 @@ public class ReportsController : ControllerBase
             {
                 ReportPeriod = new
                 {
-                    StartDate = startDate ?? DateTime.Now.AddMonths(-1),
-                    EndDate = endDate ?? DateTime.Now
+                    StartDate = startDate ?? DateTime.UtcNow.AddMonths(-1),
+                    EndDate = endDate ?? DateTime.UtcNow
                 },
                 Summary = new
                 {
@@ -228,7 +228,7 @@ public class ReportsController : ControllerBase
     {
         try
         {
-            var query = new GetEquipmentUtilizationReportQuery 
+            var query = new GetInventoryUtilizationReportQuery 
             { 
                 StartDate = startDate, 
                 EndDate = endDate 
@@ -253,8 +253,8 @@ public class ReportsController : ControllerBase
             {
                 ReportPeriod = new
                 {
-                    StartDate = startDate ?? DateTime.Now.AddMonths(-1),
-                    EndDate = endDate ?? DateTime.Now
+                    StartDate = startDate ?? DateTime.UtcNow.AddMonths(-1),
+                    EndDate = endDate ?? DateTime.UtcNow
                 },
                 OverallUtilization = 78.5,
                 ByCategory = new[]
@@ -315,8 +315,8 @@ public class ReportsController : ControllerBase
             {
                 ReportPeriod = new
                 {
-                    StartDate = startDate ?? DateTime.Now.AddMonths(-3),
-                    EndDate = endDate ?? DateTime.Now
+                    StartDate = startDate ?? DateTime.UtcNow.AddMonths(-3),
+                    EndDate = endDate ?? DateTime.UtcNow
                 },
                 CustomerComplaints = new
                 {
@@ -400,8 +400,8 @@ public class ReportsController : ControllerBase
             {
                 ReportPeriod = new
                 {
-                    StartDate = startDate ?? DateTime.Now.AddMonths(-12),
-                    EndDate = endDate ?? DateTime.Now
+                    StartDate = startDate ?? DateTime.UtcNow.AddMonths(-12),
+                    EndDate = endDate ?? DateTime.UtcNow
                 },
                 AssetInvestments = new
                 {

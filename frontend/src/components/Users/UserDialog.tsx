@@ -41,7 +41,7 @@ const UserDialog: React.FC<UserDialogProps> = ({ open, onClose, user }) => {
     firstName: '',
     lastName: '',
     password: '',
-    role: UserRole.Employee,
+    role: UserRole.Worker,
     department: '',
   });
 
@@ -86,7 +86,7 @@ const UserDialog: React.FC<UserDialogProps> = ({ open, onClose, user }) => {
         firstName: '',
         lastName: '',
         password: '',
-        role: UserRole.Employee,
+        role: UserRole.Worker,
         department: '',
       });
     }
@@ -100,7 +100,7 @@ const UserDialog: React.FC<UserDialogProps> = ({ open, onClose, user }) => {
       firstName: '',
       lastName: '',
       password: '',
-      role: UserRole.Employee,
+      role: UserRole.Worker,
       department: '',
     });
     setErrors({});
@@ -241,13 +241,14 @@ const UserDialog: React.FC<UserDialogProps> = ({ open, onClose, user }) => {
               <FormControl fullWidth required>
                 <InputLabel>Role</InputLabel>
                 <Select
-                  value={formData.role || UserRole.Employee}
+                  value={formData.role || UserRole.Worker}
                   label="Role"
                   onChange={(e) => handleChange('role', e.target.value as UserRole)}
                 >
-                  <MenuItem value={UserRole.Employee}>Employee</MenuItem>
-                  <MenuItem value={UserRole.Manager}>Manager</MenuItem>
                   <MenuItem value={UserRole.Admin}>Admin</MenuItem>
+                  <MenuItem value={UserRole.Manager}>Manager</MenuItem>
+                  <MenuItem value={UserRole.Supervisor}>Supervisor</MenuItem>
+                  <MenuItem value={UserRole.Worker}>Worker</MenuItem>
                 </Select>
               </FormControl>
 

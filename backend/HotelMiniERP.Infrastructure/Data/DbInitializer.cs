@@ -143,8 +143,8 @@ public static class DbInitializer
         context.Assets.AddRange(asset1, asset2, asset3);
         await context.SaveChangesAsync();
 
-        // Seed Equipment
-        var equipment1 = new Equipment
+        // Seed Inventory
+        var inventory1 = new Inventory
         {
             Name = "Vacuum Cleaner - Industrial",
             Code = "VAC-001",
@@ -156,12 +156,14 @@ public static class DbInitializer
             PurchaseDate = DateTime.UtcNow.AddMonths(-8),
             UnitCost = 500.00m,
             Location = "Housekeeping Storage",
-            Status = EquipmentStatus.Available,
-            Quantity = 1,
+            Quantity = 5,
+            MinimumStock = 2,
+            Supplier = "CleanPro Supplies",
+            LastRestockedDate = DateTime.UtcNow.AddMonths(-1),
             CreatedAt = DateTime.UtcNow
         };
 
-        var equipment2 = new Equipment
+        var inventory2 = new Inventory
         {
             Name = "Toolset - Maintenance",
             Code = "TOOL-001",
@@ -173,12 +175,14 @@ public static class DbInitializer
             PurchaseDate = DateTime.UtcNow.AddYears(-1),
             UnitCost = 1200.00m,
             Location = "Maintenance Room",
-            Status = EquipmentStatus.Available,
-            Quantity = 1,
+            Quantity = 3,
+            MinimumStock = 1,
+            Supplier = "ToolMaster Direct",
+            LastRestockedDate = DateTime.UtcNow.AddMonths(-2),
             CreatedAt = DateTime.UtcNow
         };
 
-        context.Equipment.AddRange(equipment1, equipment2);
+        context.Inventory.AddRange(inventory1, inventory2);
         await context.SaveChangesAsync();
 
         // Seed Sample Procedures
@@ -201,7 +205,7 @@ public static class DbInitializer
 
         var procedure2 = new Procedure
         {
-            Title = "Weekly Equipment Inventory",
+            Title = "Weekly Inventory Inventory",
             Category = "Inventory",
             Description = "Weekly procedure for checking equipment inventory and condition",
             Version = "1.0",
@@ -221,7 +225,7 @@ public static class DbInitializer
         Console.WriteLine("Database seeding completed successfully!");
         Console.WriteLine($"Seeded Users: {await context.Users.CountAsync()}");
         Console.WriteLine($"Seeded Assets: {await context.Assets.CountAsync()}");
-        Console.WriteLine($"Seeded Equipment: {await context.Equipment.CountAsync()}");
+        Console.WriteLine($"Seeded Inventory: {await context.Inventory.CountAsync()}");
         Console.WriteLine($"Seeded Procedures: {await context.Procedures.CountAsync()}");
     }
 }

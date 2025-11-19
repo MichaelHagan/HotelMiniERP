@@ -22,7 +22,6 @@ import {
 import {
   Menu as MenuIcon,
   Dashboard,
-  Inventory,
   Assignment,
   Build,
   People,
@@ -34,9 +33,12 @@ import {
   Settings,
   Logout,
   NotificationsNone,
+  Inventory2,
+  BusinessCenter,
 } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
 import { useSignalR } from '../../context/SignalRContext';
+import { UserRole } from '../../types';
 
 const drawerWidth = 280;
 
@@ -69,12 +71,19 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     navigate('/login');
   };
 
-  const menuItems = [
+  interface MenuItem {
+    text: string;
+    icon: React.ReactElement;
+    path: string;
+    roles?: UserRole[];
+  }
+
+  const menuItems: MenuItem[] = [
     { text: 'Dashboard', icon: <Dashboard />, path: '/dashboard' },
-    { text: 'Assets', icon: <Inventory />, path: '/assets' },
+    { text: 'Assets', icon: <BusinessCenter />, path: '/assets' },
     { text: 'Work Orders', icon: <Assignment />, path: '/work-orders' },
-    { text: 'Equipment', icon: <Build />, path: '/equipment' },
-    { text: 'Users', icon: <People />, path: '/users', roles: ['Admin', 'Manager'] },
+    { text: 'Inventory', icon: <Inventory2 />, path: '/equipment' },
+    { text: 'Users', icon: <People />, path: '/users', roles: [UserRole.Admin, UserRole.Manager] },
     { text: 'Complaints', icon: <Report />, path: '/complaints' },
     { text: 'Messaging', icon: <Message />, path: '/messaging' },
     { text: 'Procedures', icon: <Book />, path: '/procedures' },
@@ -185,19 +194,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
               open={Boolean(anchorEl)}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleClose}>
-                <ListItemIcon>
-                  <AccountCircle fontSize="small" />
-                </ListItemIcon>
-                <ListItemText>Profile</ListItemText>
-              </MenuItem>
-              <MenuItem onClick={handleClose}>
-                <ListItemIcon>
-                  <Settings fontSize="small" />
-                </ListItemIcon>
-                <ListItemText>Settings</ListItemText>
-              </MenuItem>
-              <Divider />
               <MenuItem onClick={handleLogout}>
                 <ListItemIcon>
                   <Logout fontSize="small" />

@@ -32,7 +32,7 @@ import {
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { workOrderService } from '../../services/workOrderService';
-import { WorkOrder, WorkOrderStatus, Priority } from '../../types';
+import { WorkOrder, WorkOrderStatus, Priority, UserRole } from '../../types';
 import WorkOrderDialog from './WorkOrderDialog';
 import WorkOrderDetailDialog from './WorkOrderDetailDialog';
 import { formatDateTime } from '../../utils/dateUtils';
@@ -160,16 +160,16 @@ const WorkOrderList: React.FC = () => {
   const canComplete = (workOrder: WorkOrder) => {
     return (
       workOrder.status === WorkOrderStatus.InProgress &&
-      (user?.id === workOrder.assignedUserId || user?.role === 'Admin' || user?.role === 'Manager')
+      (user?.id === workOrder.assignedUserId || user?.role === UserRole.Admin || user?.role === UserRole.Manager || user?.role === UserRole.Supervisor)
     );
   };
 
   const canEdit = (workOrder: WorkOrder) => {
-    return user?.role === 'Admin' || user?.role === 'Manager' || user?.id === workOrder.requesterId;
+    return user?.role === UserRole.Admin || user?.role === UserRole.Manager || user?.id === workOrder.requesterId;
   };
 
   const canDelete = (workOrder: WorkOrder) => {
-    return user?.role === 'Admin' || user?.role === 'Manager';
+    return user?.role === UserRole.Admin || user?.role === UserRole.Manager;
   };
 
   return (

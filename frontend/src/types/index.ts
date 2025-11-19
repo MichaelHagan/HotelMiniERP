@@ -15,7 +15,8 @@ export interface User {
 export enum UserRole {
   Admin = 'Admin',
   Manager = 'Manager',
-  Employee = 'Employee'
+  Supervisor = 'Supervisor',
+  Worker = 'Worker'
 }
 
 export interface CreateUserDto {
@@ -123,6 +124,8 @@ export interface WorkOrder {
   assignedUser?: User;
   requesterId: string;
   requester?: User;
+  workerComplaintId?: string;
+  customerComplaintId?: string;
   estimatedHours?: number;
   actualHours?: number;
   scheduledDate?: string;
@@ -152,6 +155,8 @@ export interface CreateWorkOrderDto {
   priority: Priority;
   assetId?: string;
   assignedUserId?: string;
+  workerComplaintId?: string;
+  customerComplaintId?: string;
   estimatedHours?: number;
   scheduledDate?: string;
 }
@@ -169,8 +174,8 @@ export interface UpdateWorkOrderDto {
   notes?: string;
 }
 
-// Equipment Types
-export interface Equipment {
+// Inventory Types
+export interface Inventory {
   id: string;
   name: string;
   description?: string;
@@ -179,25 +184,19 @@ export interface Equipment {
   serialNumber: string;
   location: string;
   category: string;
-  status: EquipmentStatus;
+  quantity: number;
+  minimumStock?: number;
+  unitCost?: number;
+  supplier?: string;
   purchaseDate: string;
   warrantyExpiryDate?: string;
-  lastMaintenanceDate?: string;
-  nextMaintenanceDate?: string;
-  operatingHours: number;
+  lastRestockedDate?: string;
   specifications?: Record<string, any>;
   createdDate: string;
   lastModifiedDate: string;
 }
 
-export enum EquipmentStatus {
-  Operational = 'Operational',
-  Maintenance = 'Maintenance',
-  OutOfService = 'OutOfService',
-  Retired = 'Retired'
-}
-
-export interface CreateEquipmentDto {
+export interface CreateInventoryDto {
   name: string;
   description?: string;
   model: string;
@@ -205,20 +204,26 @@ export interface CreateEquipmentDto {
   serialNumber: string;
   location: string;
   category: string;
+  quantity: number;
+  minimumStock?: number;
+  unitCost?: number;
+  supplier?: string;
   purchaseDate: string;
   warrantyExpiryDate?: string;
+  lastRestockedDate?: string;
   specifications?: Record<string, any>;
 }
 
-export interface UpdateEquipmentDto {
+export interface UpdateInventoryDto {
   name?: string;
   description?: string;
   location?: string;
   category?: string;
-  status?: EquipmentStatus;
-  operatingHours?: number;
-  lastMaintenanceDate?: string;
-  nextMaintenanceDate?: string;
+  quantity?: number;
+  minimumStock?: number;
+  unitCost?: number;
+  supplier?: string;
+  lastRestockedDate?: string;
   specifications?: Record<string, any>;
 }
 
@@ -228,45 +233,37 @@ export interface Procedure {
   title: string;
   description: string;
   category: string;
-  steps: ProcedureStep[];
-  estimatedDuration?: number;
-  requiredSkills?: string[];
-  safetyNotes?: string;
-  version: number;
+  content: string;
   isActive: boolean;
-  createdById: string;
-  createdBy?: User;
-  createdDate: string;
-  lastModifiedDate: string;
-}
-
-export interface ProcedureStep {
-  stepNumber: number;
-  title: string;
-  description: string;
-  estimatedDuration?: number;
-  warningNotes?: string;
+  version: string;
+  reviewDate?: string;
+  approvedBy?: string;
+  approvalDate?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CreateProcedureDto {
   title: string;
   description: string;
   category: string;
-  steps: ProcedureStep[];
-  estimatedDuration?: number;
-  requiredSkills?: string[];
-  safetyNotes?: string;
+  content: string;
+  version?: string;
+  reviewDate?: string;
+  approvedBy?: string;
+  approvalDate?: string;
 }
 
 export interface UpdateProcedureDto {
   title?: string;
   description?: string;
   category?: string;
-  steps?: ProcedureStep[];
-  estimatedDuration?: number;
-  requiredSkills?: string[];
-  safetyNotes?: string;
+  content?: string;
   isActive?: boolean;
+  version?: string;
+  reviewDate?: string;
+  approvedBy?: string;
+  approvalDate?: string;
 }
 
 // Complaint Types
@@ -419,10 +416,9 @@ export interface WorkOrderQueryParams extends PaginationParams {
   assetId?: string;
 }
 
-export interface EquipmentQueryParams extends PaginationParams {
+export interface InventoryQueryParams extends PaginationParams {
   searchTerm?: string;
   category?: string;
-  status?: EquipmentStatus;
   location?: string;
 }
 

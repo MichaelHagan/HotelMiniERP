@@ -15,7 +15,7 @@ import {
   Divider,
 } from '@mui/material';
 import {
-  Inventory,
+  Inventory as InventoryIcon,
   Assignment,
   Build,
   Report,
@@ -183,11 +183,11 @@ export const DashboardPage: React.FC = () => {
     );
   }
 
-  const { Assets, WorkOrders, Equipment, Complaints, Users } = dashboardData || {};
+  const { Assets, WorkOrders, Inventory, Complaints, Users } = dashboardData || {};
 
   // Calculate percentages for progress bars
   const assetActivePercentage = Assets ? Math.round((Assets.ActiveAssets / Assets.TotalAssets) * 100) : 0;
-  const equipmentAvailablePercentage = Equipment ? Math.round((Equipment.AvailableEquipment / Equipment.TotalEquipment) * 100) : 0;
+  const equipmentAvailablePercentage = Inventory ? Math.round((Inventory.AvailableEquipment / Inventory.TotalEquipment) * 100) : 0;
   const workOrderCompletionPercentage = WorkOrders && WorkOrders.TotalWorkOrders > 0
     ? Math.round(((WorkOrders.TotalWorkOrders - WorkOrders.OpenWorkOrders - WorkOrders.InProgressWorkOrders) / WorkOrders.TotalWorkOrders) * 100)
     : 0;
@@ -216,7 +216,7 @@ export const DashboardPage: React.FC = () => {
         <StatCard
           title="Total Assets"
           value={Assets?.TotalAssets || 0}
-          icon={<Inventory />}
+          icon={<InventoryIcon />}
           color="#1976d2"
           subtitle={`${Assets?.MaintenanceRequired || 0} need maintenance`}
           onClick={() => navigate('/assets')}
@@ -231,10 +231,10 @@ export const DashboardPage: React.FC = () => {
         />
         <StatCard
           title="Equipment Items"
-          value={Equipment?.TotalEquipment || 0}
+          value={Inventory?.TotalEquipment || 0}
           icon={<Build />}
           color="#4caf50"
-          subtitle={`${Equipment?.AvailableEquipment || 0} available`}
+          subtitle={`${Inventory?.AvailableEquipment || 0} available`}
           onClick={() => navigate('/equipment')}
         />
         <StatCard
@@ -327,7 +327,7 @@ export const DashboardPage: React.FC = () => {
               color: assetActivePercentage > 90 ? 'success' : assetActivePercentage > 70 ? 'warning' : 'error'
             },
             {
-              label: `Equipment Available (${Equipment?.AvailableEquipment || 0}/${Equipment?.TotalEquipment || 0})`,
+              label: `Equipment Available (${Inventory?.AvailableEquipment || 0}/${Inventory?.TotalEquipment || 0})`,
               value: equipmentAvailablePercentage,
               color: equipmentAvailablePercentage > 80 ? 'success' : equipmentAvailablePercentage > 60 ? 'warning' : 'error'
             },
@@ -361,12 +361,12 @@ export const DashboardPage: React.FC = () => {
         <SummaryCard
           title="Equipment Status"
           items={[
-            { label: 'Total Equipment', value: Equipment?.TotalEquipment || 0, status: 'default' },
-            { label: 'Available', value: Equipment?.AvailableEquipment || 0, status: 'success' },
-            { label: 'In Use', value: Equipment?.InUseEquipment || 0, status: 'info' },
-            { label: 'In Maintenance', value: Equipment?.MaintenanceEquipment || 0, status: 'warning' },
-            { label: 'Maintenance Due This Week', value: Equipment?.MaintenanceDueThisWeek || 0, 
-              status: (Equipment?.MaintenanceDueThisWeek || 0) > 0 ? 'warning' : 'success' 
+            { label: 'Total Equipment', value: Inventory?.TotalEquipment || 0, status: 'default' },
+            { label: 'Available', value: Inventory?.AvailableEquipment || 0, status: 'success' },
+            { label: 'In Use', value: Inventory?.InUseEquipment || 0, status: 'info' },
+            { label: 'In Maintenance', value: Inventory?.MaintenanceEquipment || 0, status: 'warning' },
+            { label: 'Maintenance Due This Week', value: Inventory?.MaintenanceDueThisWeek || 0, 
+              status: (Inventory?.MaintenanceDueThisWeek || 0) > 0 ? 'warning' : 'success' 
             },
           ]}
         />

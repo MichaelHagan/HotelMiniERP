@@ -18,7 +18,7 @@ import {
 } from '@mui/icons-material';
 import { AssetDepreciationReport } from '../components/reports/AssetDepreciationReport';
 import { WorkOrderPerformanceReport } from '../components/reports/WorkOrderPerformanceReport';
-import { EquipmentUtilizationReport } from '../components/reports/EquipmentUtilizationReport';
+import { InventoryUtilizationReport } from '../components/reports/InventoryUtilizationReport';
 
 interface ReportCard {
   id: string;
@@ -47,8 +47,8 @@ const availableReports: ReportCard[] = [
     requiredRole: ['Admin', 'Manager'],
   },
   {
-    id: 'equipment-utilization',
-    title: 'Equipment Utilization',
+    id: 'inventory-utilization',
+    title: 'Inventory Utilization',
     description: 'Track equipment usage rates, identify underutilized assets, and optimize equipment allocation.',
     icon: <Build sx={{ fontSize: 40 }} />,
     color: '#4caf50',
@@ -81,8 +81,8 @@ export const ReportsPage: React.FC = () => {
         return <AssetDepreciationReport />;
       case 'workorder-performance':
         return <WorkOrderPerformanceReport />;
-      case 'equipment-utilization':
-        return <EquipmentUtilizationReport />;
+      case 'inventory-utilization':
+        return <InventoryUtilizationReport />;
       default:
         return null;
     }

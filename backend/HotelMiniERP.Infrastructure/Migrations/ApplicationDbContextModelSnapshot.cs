@@ -207,7 +207,7 @@ namespace HotelMiniERP.Infrastructure.Migrations
                     b.ToTable("CustomerComplaints");
                 });
 
-            modelBuilder.Entity("HotelMiniERP.Domain.Entities.Equipment", b =>
+            modelBuilder.Entity("HotelMiniERP.Domain.Entities.Inventory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -242,16 +242,13 @@ namespace HotelMiniERP.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("LastMaintenanceDate")
+                    b.Property<DateTime?>("LastRestockedDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
-
-                    b.Property<string>("MaintenanceNotes")
-                        .HasColumnType("text");
 
                     b.Property<int?>("MinimumStock")
                         .HasColumnType("integer");
@@ -264,9 +261,6 @@ namespace HotelMiniERP.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<DateTime?>("NextMaintenanceDate")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
@@ -278,9 +272,6 @@ namespace HotelMiniERP.Infrastructure.Migrations
 
                     b.Property<string>("SerialNumber")
                         .HasColumnType("text");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
 
                     b.Property<string>("Supplier")
                         .HasMaxLength(200)
@@ -303,7 +294,7 @@ namespace HotelMiniERP.Infrastructure.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("Equipment");
+                    b.ToTable("Inventory");
                 });
 
             modelBuilder.Entity("HotelMiniERP.Domain.Entities.Message", b =>

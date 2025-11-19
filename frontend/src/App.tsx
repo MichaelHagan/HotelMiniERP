@@ -11,7 +11,7 @@ import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { AssetsPage } from './pages/AssetsPage';
 import { WorkOrdersPage } from './pages/WorkOrdersPage';
-import { EquipmentPage } from './pages/EquipmentPage';
+import { InventoryPage } from './pages/InventoryPage';
 import { UsersPage } from './pages/UsersPage';
 import { ComplaintsPage } from './pages/ComplaintsPage';
 import { MessagingPage } from './pages/MessagingPage';
@@ -128,7 +128,7 @@ function App() {
                   <Route path="/equipment/*" element={
                     <ProtectedRoute>
                       <Layout>
-                        <EquipmentPage />
+                        <InventoryPage />
                       </Layout>
                     </ProtectedRoute>
                   } />

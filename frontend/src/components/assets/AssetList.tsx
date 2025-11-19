@@ -32,13 +32,15 @@ import {
   Assignment,
 } from '@mui/icons-material';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Asset, AssetStatus, AssetQueryParams } from '../../types';
+import { Asset, AssetStatus, AssetQueryParams, UserRole } from '../../types';
 import { assetService } from '../../services';
 import { formatDate, formatCurrency, getStatusColor, getStatusText } from '../../utils';
 import { AssetDialog } from './AssetDialog';
 import { AssetDetailDialog } from './AssetDetailDialog';
+import { useAuth } from '../../context/AuthContext';
 
 export const AssetList: React.FC = () => {
+  const { user } = useAuth();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
@@ -73,6 +75,10 @@ export const AssetList: React.FC = () => {
     asset.assetTag.toLowerCase().includes(searchTerm.toLowerCase()) ||
     asset.category.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
+
+  const canCreate = user?.role === UserRole.Admin || user?.role === UserRole.Manager;
+  const canEdit = user?.role === UserRole.Admin || user?.role === UserRole.Manager;
+  const canDelete = user?.role === UserRole.Admin;
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -133,13 +139,15 @@ export const AssetList: React.FC = () => {
         <Typography variant="h4">
           Asset Register
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<Add />}
-          onClick={handleCreateAsset}
-        >
-          Add Asset
-        </Button>
+        {canCreate && (
+          <Button
+            variant="contained"
+            startIcon={<Add />}
+            onClick={handleCreateAsset}
+          >
+            Add Asset
+          </Button>
+        )}
       </Box>
 
       {/* Filters */}
@@ -261,11 +269,13 @@ export const AssetList: React.FC = () => {
                             <Visibility />
                           </IconButton>
                         </Tooltip>
-                        <Tooltip title="Edit Asset">
-                          <IconButton size="small" onClick={() => handleEditAsset(asset)}>
-                            <Edit />
-                          </IconButton>
-                        </Tooltip>
+                        {canEdit && (
+                          <Tooltip title="Edit Asset">
+                            <IconButton size="small" onClick={() => handleEditAsset(asset)}>
+                              <Edit />
+                            </IconButton>
+                          </Tooltip>
+                        )}
                         <Tooltip title="Create Work Order">
                           <IconButton size="small" onClick={() => handleCreateWorkOrder(asset)}>
                             <Assignment />
@@ -276,11 +286,13 @@ export const AssetList: React.FC = () => {
                             <Build />
                           </IconButton>
                         </Tooltip>
-                        <Tooltip title="Delete Asset">
-                          <IconButton size="small" color="error" onClick={() => handleDeleteAsset(asset)}>
-                            <Delete />
-                          </IconButton>
-                        </Tooltip>
+                        {canDelete && (
+                          <Tooltip title="Delete Asset">
+                            <IconButton size="small" color="error" onClick={() => handleDeleteAsset(asset)}>
+                              <Delete />
+                            </IconButton>
+                          </Tooltip>
+                        )}
                       </Box>
                     </TableCell>
                   </TableRow>

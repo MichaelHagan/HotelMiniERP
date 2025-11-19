@@ -14,7 +14,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { messageService } from '../../services/messageService';
 import { userService } from '../../services/userService';
-import { CreateMessageDto, MessageType, User } from '../../types';
+import { CreateMessageDto, MessageType, User, UserRole } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 import { useSignalR } from '../../context/SignalRContext';
 
@@ -146,7 +146,7 @@ export const MessageDialog: React.FC<MessageDialogProps> = ({
   };
 
   const availableUsers = usersData?.data.filter(u => u.id !== user?.id) || [];
-  const canSendBroadcast = user?.role === 'Admin' || user?.role === 'Manager';
+  const canSendBroadcast = user?.role === UserRole.Admin || user?.role === UserRole.Manager;
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>

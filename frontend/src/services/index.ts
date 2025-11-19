@@ -4,7 +4,7 @@ export { AuthService, authService } from './authService';
 export { AssetService, assetService } from './assetService';
 export { WorkOrderService, workOrderService } from './workOrderService';
 export { UserService, userService } from './userService';
-export { EquipmentService, equipmentService } from './equipmentService';
+export { InventoryService, inventoryService } from './inventoryService';
 export { ComplaintService, complaintService } from './complaintService';
 export { MessageService, messageService } from './messageService';
 export { ProcedureService, procedureService } from './procedureService';

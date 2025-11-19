@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import { useAuth } from './AuthContext';
 import { Message } from '../types';
+import config from '../config';
 
 interface SignalRContextType {
   connection: HubConnection | null;
@@ -40,8 +41,8 @@ export const SignalRProvider: React.FC<SignalRProviderProps> = ({
   useEffect(() => {
     if (isAuthenticated && user) {
       const newConnection = new HubConnectionBuilder()
-        .withUrl('http://localhost:5253/messagehub', {
-          accessTokenFactory: () => localStorage.getItem('authToken') || ''
+        .withUrl('http://localhost:5253/messaginghub', {
+          accessTokenFactory: () => localStorage.getItem(config.auth.tokenKey) || ''
         })
         .withAutomaticReconnect()
         .configureLogging(LogLevel.Information)

@@ -18,21 +18,32 @@ import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { workOrderService } from '../../services/workOrderService';
 import { assetService } from '../../services/assetService';
 import { userService } from '../../services/userService';
+import { complaintService } from '../../services/complaintService';
 import {
   WorkOrder,
   CreateWorkOrderDto,
   UpdateWorkOrderDto,
   Priority,
   WorkOrderStatus,
+  WorkerComplaint,
+  CustomerComplaint,
 } from '../../types';
 
 interface WorkOrderDialogProps {
   open: boolean;
   onClose: () => void;
   workOrder: WorkOrder | null;
+  workerComplaintId?: string;
+  customerComplaintId?: string;
 }
 
-const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({ open, onClose, workOrder }) => {
+const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({ 
+  open, 
+  onClose, 
+  workOrder,
+  workerComplaintId,
+  customerComplaintId 
+}) => {
   const queryClient = useQueryClient();
   const isEditMode = Boolean(workOrder);
 
@@ -56,6 +67,18 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({ open, onClose, workOr
     queryKey: ['users'],
     queryFn: () => userService.getUsers({ page: 1, pageSize: 100 }),
     enabled: open,
+  });
+
+  const { data: workerComplaintsData, isLoading: workerComplaintsLoading } = useQuery({
+    queryKey: ['workerComplaints'],
+    queryFn: () => complaintService.getWorkerComplaints({ page: 1, pageSize: 100 }),
+    enabled: open && !isEditMode,
+  });
+
+  const { data: customerComplaintsData, isLoading: customerComplaintsLoading } = useQuery({
+    queryKey: ['customerComplaints'],
+    queryFn: () => complaintService.getCustomerComplaints({ page: 1, pageSize: 100 }),
+    enabled: open && !isEditMode,
   });
 
   const createMutation = useMutation({
@@ -98,11 +121,13 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({ open, onClose, workOr
         priority: Priority.Medium,
         assetId: undefined,
         assignedUserId: undefined,
+        workerComplaintId: workerComplaintId,
+        customerComplaintId: customerComplaintId,
         estimatedHours: undefined,
         scheduledDate: undefined,
       });
     }
-  }, [workOrder, open]);
+  }, [workOrder, open, workerComplaintId, customerComplaintId]);
 
   const handleClose = () => {
     setFormData({
@@ -111,6 +136,8 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({ open, onClose, workOr
       priority: Priority.Medium,
       assetId: undefined,
       assignedUserId: undefined,
+      workerComplaintId: undefined,
+      customerComplaintId: undefined,
       estimatedHours: undefined,
       scheduledDate: undefined,
     });
@@ -132,6 +159,8 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({ open, onClose, workOr
 
   const assets = assetsData?.data || [];
   const users = usersData?.data || [];
+  const workerComplaints = workerComplaintsData?.data || [];
+  const customerComplaints = customerComplaintsData?.data || [];
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
@@ -201,10 +230,12 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({ open, onClose, workOr
                   value={assets.find((a) => a.id === (formData as any).assetId) || null}
                   onChange={(_e, value) => handleChange('assetId', value?.id)}
                   loading={assetsLoading}
+                  disabled={!!(formData as any).workerComplaintId || !!(formData as any).customerComplaintId}
                   renderInput={(params) => (
                     <TextField
                       {...params}
                       label="Related Asset"
+                      helperText={(formData as any).workerComplaintId || (formData as any).customerComplaintId ? "Asset selection disabled when linked to complaint" : ""}
                       InputProps={{
                         ...params.InputProps,
                         endAdornment: (
@@ -218,6 +249,70 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({ open, onClose, workOr
                   )}
                 />
               </Box>
+
+              {!isEditMode && (
+                <>
+                  <Box sx={{ gridColumn: { xs: '1', sm: '1 / -1' } }}>
+                    <Autocomplete
+                      options={workerComplaints}
+                      getOptionLabel={(option) => `${option.title} (${option.category})`}
+                      value={workerComplaints.find((c) => c.id === (formData as any).workerComplaintId) || null}
+                      onChange={(_e, value) => {
+                        handleChange('workerComplaintId', value?.id);
+                        if (value?.id) handleChange('customerComplaintId', undefined);
+                      }}
+                      loading={workerComplaintsLoading}
+                      disabled={!!(formData as any).customerComplaintId}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Related Worker Complaint (Optional)"
+                          helperText={(formData as any).customerComplaintId ? "Cannot link both complaint types" : ""}
+                          InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                              <>
+                                {workerComplaintsLoading ? <CircularProgress size={20} /> : null}
+                                {params.InputProps.endAdornment}
+                              </>
+                            ),
+                          }}
+                        />
+                      )}
+                    />
+                  </Box>
+
+                  <Box sx={{ gridColumn: { xs: '1', sm: '1 / -1' } }}>
+                    <Autocomplete
+                      options={customerComplaints}
+                      getOptionLabel={(option) => `${option.title} - ${option.customerName} (${option.category})`}
+                      value={customerComplaints.find((c) => c.id === (formData as any).customerComplaintId) || null}
+                      onChange={(_e, value) => {
+                        handleChange('customerComplaintId', value?.id);
+                        if (value?.id) handleChange('workerComplaintId', undefined);
+                      }}
+                      loading={customerComplaintsLoading}
+                      disabled={!!(formData as any).workerComplaintId}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Related Customer Complaint (Optional)"
+                          helperText={(formData as any).workerComplaintId ? "Cannot link both complaint types" : ""}
+                          InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                              <>
+                                {customerComplaintsLoading ? <CircularProgress size={20} /> : null}
+                                {params.InputProps.endAdornment}
+                              </>
+                            ),
+                          }}
+                        />
+                      )}
+                    />
+                  </Box>
+                </>
+              )}
 
               <Autocomplete
                 options={users}
