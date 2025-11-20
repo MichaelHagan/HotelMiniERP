@@ -33,8 +33,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Check for stored user data on app load
     const initializeAuth = async () => {
       try {
-        const storedUser = authService.getStoredUser();
         const token = authService.getStoredToken();
+        const storedUser = authService.getStoredUser();
+
+        // Check if token is expired before attempting to use it
+        if (authService.isTokenExpired()) {
+          console.log('Token expired on app load, clearing auth state');
+          authService.logout();
+          setUser(null);
+          setIsLoading(false);
+          return;
+        }
 
         if (storedUser && token) {
           // Verify the token is still valid by fetching current user
@@ -42,7 +51,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             const currentUser = await authService.getCurrentUser();
             setUser(currentUser);
           } catch (error) {
-            // Token is invalid, clear storage
+            // Token is invalid or server rejected it, clear storage
+            console.log('Token validation failed, clearing auth state');
             authService.logout();
             setUser(null);
           }
@@ -57,6 +67,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     initializeAuth();
+
+    // Set up periodic token expiry check (every minute)
+    const expiryCheckInterval = setInterval(() => {
+      if (authService.isTokenExpired()) {
+        console.log('Token expired during session, logging out');
+        logout();
+      }
+    }, 60000); // Check every minute
+
+    return () => clearInterval(expiryCheckInterval);
   }, []);
 
   const login = async (loginDto: LoginDto): Promise<void> => {

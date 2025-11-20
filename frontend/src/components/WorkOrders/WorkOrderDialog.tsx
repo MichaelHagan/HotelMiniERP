@@ -113,8 +113,8 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({
         description: workOrder.description,
         priority: workOrder.priority,
         status: workOrder.status,
-        assetId: workOrder.assetId,
-        assignedToUserId: workOrder.assignedToUserId,
+        assetId: workOrder.assetId ? Number(workOrder.assetId) : undefined,
+        assignedToUserId: workOrder.assignedToUserId ? Number(workOrder.assignedToUserId) : undefined,
         estimatedCost: workOrder.estimatedCost,
         actualCost: workOrder.actualCost,
         scheduledDate: workOrder.scheduledDate
@@ -224,7 +224,7 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({
                   <MenuItem value={Priority.Low}>Low</MenuItem>
                   <MenuItem value={Priority.Medium}>Medium</MenuItem>
                   <MenuItem value={Priority.High}>High</MenuItem>
-                  <MenuItem value={Priority.Critical}>Critical</MenuItem>
+                  <MenuItem value={Priority.Urgent}>Urgent</MenuItem>
                 </Select>
               </FormControl>
 

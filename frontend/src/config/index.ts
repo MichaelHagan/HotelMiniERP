@@ -5,8 +5,11 @@
 
 export const config = {
   api: {
-    url: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
+    url: process.env.REACT_APP_API_URL || 'http://localhost:5253/api',
     timeout: Number(process.env.REACT_APP_API_TIMEOUT) || 30000,
+  },
+  signalr: {
+    hubUrl: process.env.REACT_APP_SIGNALR_HUB_URL || 'http://localhost:5253/messaginghub',
   },
   auth: {
     tokenKey: process.env.REACT_APP_TOKEN_STORAGE_KEY || 'hotelminierp_token',

@@ -23,9 +23,28 @@ export class ApiClient {
     this.instance.interceptors.request.use(
       (axiosConfig) => {
         const token = localStorage.getItem(config.auth.tokenKey);
-        if (token) {
-          axiosConfig.headers.Authorization = `Bearer ${token}`;
+        const tokenExpiryKey = 'hotelminierp_token_expiry';
+        const expiryStr = localStorage.getItem(tokenExpiryKey);
+        
+        // Check if token is expired before adding to request
+        if (token && expiryStr) {
+          const expiry = parseInt(expiryStr, 10);
+          const now = Math.floor(Date.now() / 1000);
+          const isExpired = now >= (expiry - 60); // 60 second buffer
+          
+          if (!isExpired) {
+            axiosConfig.headers.Authorization = `Bearer ${token}`;
+          } else {
+            // Token expired, clear it and reject the request
+            console.log('Token expired in request interceptor');
+            localStorage.removeItem(config.auth.tokenKey);
+            localStorage.removeItem(config.auth.userKey);
+            localStorage.removeItem(tokenExpiryKey);
+            window.location.href = '/login';
+            return Promise.reject(new Error('Token expired'));
+          }
         }
+        
         return axiosConfig;
       },
       (error) => {

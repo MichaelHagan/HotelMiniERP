@@ -40,9 +40,43 @@ export const SignalRProvider: React.FC<SignalRProviderProps> = ({
 
   useEffect(() => {
     if (isAuthenticated && user) {
+      const tokenExpiryKey = 'hotelminierp_token_expiry';
+      const expiryStr = localStorage.getItem(tokenExpiryKey);
+      
+      // Don't connect if token is expired
+      if (expiryStr) {
+        const expiry = parseInt(expiryStr, 10);
+        const now = Math.floor(Date.now() / 1000);
+        const isExpired = now >= (expiry - 60);
+        
+        if (isExpired) {
+          console.log('Token expired, not connecting SignalR');
+          return;
+        }
+      }
+
       const newConnection = new HubConnectionBuilder()
-        .withUrl('http://localhost:5253/messaginghub', {
-          accessTokenFactory: () => localStorage.getItem(config.auth.tokenKey) || ''
+        .withUrl(config.signalr.hubUrl, {
+          accessTokenFactory: () => {
+            const token = localStorage.getItem(config.auth.tokenKey);
+            const expiryStr = localStorage.getItem(tokenExpiryKey);
+            
+            if (!token || !expiryStr) {
+              console.log('Token invalid in SignalR factory');
+              return '';
+            }
+            
+            const expiry = parseInt(expiryStr, 10);
+            const now = Math.floor(Date.now() / 1000);
+            const isExpired = now >= (expiry - 60);
+            
+            if (isExpired) {
+              console.log('Token expired in SignalR factory');
+              return '';
+            }
+            
+            return token;
+          }
         })
         .withAutomaticReconnect()
         .configureLogging(LogLevel.Information)

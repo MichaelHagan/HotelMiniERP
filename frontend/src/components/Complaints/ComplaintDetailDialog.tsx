@@ -55,7 +55,7 @@ export const ComplaintDetailDialog: React.FC<ComplaintDetailDialogProps> = ({
 
   const getPriorityColor = (priority: Priority): 'default' | 'primary' | 'success' | 'error' | 'warning' => {
     switch (priority) {
-      case Priority.Critical:
+      case Priority.Urgent:
         return 'error';
       case Priority.High:
         return 'warning';

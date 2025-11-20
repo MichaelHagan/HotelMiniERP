@@ -260,7 +260,7 @@ export const ComplaintDialog: React.FC<ComplaintDialogProps> = ({
               <MenuItem value={Priority.Low}>Low</MenuItem>
               <MenuItem value={Priority.Medium}>Medium</MenuItem>
               <MenuItem value={Priority.High}>High</MenuItem>
-              <MenuItem value={Priority.Critical}>Critical</MenuItem>
+              <MenuItem value={Priority.Urgent}>Urgent</MenuItem>
             </TextField>
           </Box>
 

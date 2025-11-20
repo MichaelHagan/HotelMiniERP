@@ -158,7 +158,7 @@ export enum Priority {
   Low = 'Low',
   Medium = 'Medium',
   High = 'High',
-  Critical = 'Critical'
+  Urgent = 'Urgent'
 }
 
 export enum WorkOrderStatus {
@@ -185,13 +185,14 @@ export interface CreateWorkOrderDto {
 }
 
 export interface UpdateWorkOrderDto {
-  title?: string;
-  description?: string;
-  priority?: Priority;
-  status?: WorkOrderStatus;
+  title: string;
+  description: string;
+  priority: Priority;
+  status: WorkOrderStatus;
   workType?: string;
   location?: string;
-  assignedToUserId?: string;
+  assignedToUserId?: number;
+  assetId?: number;
   estimatedCost?: number;
   actualCost?: number;
   scheduledDate?: string;

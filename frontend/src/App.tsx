@@ -7,6 +7,7 @@ import { AuthProvider } from './context/AuthContext';
 import { SignalRProvider } from './context/SignalRContext';
 import { ProtectedRoute } from './components/common/ProtectedRoute';
 import { Layout } from './components/common/Layout';
+import { TokenExpiryWarning } from './components/common/TokenExpiryWarning';
 import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { AssetsPage } from './pages/AssetsPage';
@@ -90,6 +91,7 @@ function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <AuthProvider>
+          <TokenExpiryWarning />
           <SignalRProvider 
             onMessageReceived={handleMessageReceived}
             onNotificationReceived={handleNotificationReceived}

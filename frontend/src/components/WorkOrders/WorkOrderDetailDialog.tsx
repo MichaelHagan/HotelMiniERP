@@ -53,7 +53,7 @@ const WorkOrderDetailDialog: React.FC<WorkOrderDetailDialogProps> = ({
 
   const getPriorityColor = (priority: Priority) => {
     switch (priority) {
-      case Priority.Critical:
+      case Priority.Urgent:
         return 'error';
       case Priority.High:
         return 'warning';

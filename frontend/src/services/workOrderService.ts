@@ -45,12 +45,8 @@ export class WorkOrderService {
   }
 
   async updateWorkOrder(id: string, workOrderDto: UpdateWorkOrderDto): Promise<WorkOrder> {
-    // Convert string IDs to numbers for backend compatibility
-    const payload = {
-      ...workOrderDto,
-      assignedToUserId: workOrderDto.assignedToUserId ? parseInt(workOrderDto.assignedToUserId, 10) : undefined,
-    };
-    return apiClient.put<WorkOrder>(`${this.basePath}/${id}`, payload);
+    // Backend expects these fields to always be present for updates
+    return apiClient.put<WorkOrder>(`${this.basePath}/${id}`, workOrderDto);
   }
 
   async deleteWorkOrder(id: string): Promise<void> {

@@ -144,7 +144,7 @@ const WorkOrderList: React.FC = () => {
 
   const getPriorityColor = (priority: Priority) => {
     switch (priority) {
-      case Priority.Critical:
+      case Priority.Urgent:
         return 'error';
       case Priority.High:
         return 'warning';
@@ -223,7 +223,7 @@ const WorkOrderList: React.FC = () => {
               onChange={(e) => setPriorityFilter(e.target.value as Priority | 'All')}
             >
               <MenuItem value="All">All</MenuItem>
-              <MenuItem value={Priority.Critical}>Critical</MenuItem>
+              <MenuItem value={Priority.Urgent}>Urgent</MenuItem>
               <MenuItem value={Priority.High}>High</MenuItem>
               <MenuItem value={Priority.Medium}>Medium</MenuItem>
               <MenuItem value={Priority.Low}>Low</MenuItem>

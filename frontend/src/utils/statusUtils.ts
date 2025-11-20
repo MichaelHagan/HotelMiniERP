@@ -36,7 +36,7 @@ export const getPriorityColor = (priority: Priority): 'default' | 'primary' | 's
       return 'info';
     case Priority.High:
       return 'warning';
-    case Priority.Critical:
+    case Priority.Urgent:
       return 'error';
     default:
       return 'default';
