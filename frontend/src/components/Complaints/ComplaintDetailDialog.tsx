@@ -195,12 +195,10 @@ export const ComplaintDetailDialog: React.FC<ComplaintDetailDialogProps> = ({
               <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
                 <Box>
                   <Typography variant="caption" color="textSecondary">
-                    Complainant
+                    Submitted By (User ID)
                   </Typography>
                   <Typography variant="body1">
-                    {complaint.submittedByUser
-                      ? `${complaint.submittedByUser.firstName} ${complaint.submittedByUser.lastName}`
-                      : 'Not specified'}
+                    {complaint.submittedByUserId || 'Not specified'}
                   </Typography>
                 </Box>
               </Box>
@@ -216,22 +214,12 @@ export const ComplaintDetailDialog: React.FC<ComplaintDetailDialogProps> = ({
             <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
               <Box>
                 <Typography variant="caption" color="textSecondary">
-                  Assigned To
+                  Assigned To (User ID)
                 </Typography>
                 <Typography variant="body1">
-                  {complaint.assignedToUser
-                    ? `${complaint.assignedToUser.firstName} ${complaint.assignedToUser.lastName}`
-                    : 'Unassigned'}
+                  {complaint.assignedToUserId || 'Unassigned'}
                 </Typography>
               </Box>
-              {complaint.assignedToUser && (
-                <Box>
-                  <Typography variant="caption" color="textSecondary">
-                    Role
-                  </Typography>
-                  <Typography variant="body1">{complaint.assignedToUser.role}</Typography>
-                </Box>
-              )}
             </Box>
           </Box>
 

@@ -286,9 +286,9 @@ const WorkOrderList: React.FC = () => {
                     />
                   </TableCell>
                   <TableCell>
-                    {workOrder.assignedToUser ? (
+                    {workOrder.assignedToUserName ? (
                       <Typography variant="body2">
-                        {workOrder.assignedToUser.firstName} {workOrder.assignedToUser.lastName}
+                        {workOrder.assignedToUserName}
                       </Typography>
                     ) : (
                       <Typography variant="body2" color="text.secondary">
@@ -297,8 +297,8 @@ const WorkOrderList: React.FC = () => {
                     )}
                   </TableCell>
                   <TableCell>
-                    {workOrder.asset ? (
-                      <Typography variant="body2">{workOrder.asset.assetName}</Typography>
+                    {workOrder.assetName ? (
+                      <Typography variant="body2">{workOrder.assetName}</Typography>
                     ) : (
                       <Typography variant="body2" color="text.secondary">
                         N/A

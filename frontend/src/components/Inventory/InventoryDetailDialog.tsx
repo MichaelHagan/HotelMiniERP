@@ -7,22 +7,11 @@ import {
   Button,
   Box,
   Typography,
-  Divider,
   Chip,
+  Divider,
 } from '@mui/material';
-import {
-  Build as BuildIcon,
-  Category as CategoryIcon,
-  LocationOn as LocationIcon,
-  CalendarMonth as CalendarIcon,
-  Verified as WarrantyIcon,
-  Info as InfoIcon,
-  Inventory as InventoryIcon,
-  AttachMoney as MoneyIcon,
-  LocalShipping as SupplierIcon,
-} from '@mui/icons-material';
 import { Inventory } from '../../types';
-import { formatDateTime } from '../../utils/dateUtils';
+import { formatDate, formatCurrency } from '../../utils';
 
 interface InventoryDetailDialogProps {
   open: boolean;
@@ -30,30 +19,25 @@ interface InventoryDetailDialogProps {
   inventory: Inventory | null;
 }
 
-interface DetailRowProps {
-  icon: React.ReactElement;
-  label: string;
-  value: React.ReactNode;
-}
+const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({
+  open,
+  onClose,
+  inventory,
+}) => {
+  if (!inventory) return null;
 
-const DetailRow: React.FC<DetailRowProps> = ({ icon, label, value }) => (
-  <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
-    <Box sx={{ color: 'primary.main', mr: 2, mt: 0.5 }}>{icon}</Box>
-    <Box sx={{ flex: 1 }}>
-      <Typography variant="caption" color="textSecondary" display="block">
-        {label}
+  const isLowStock = inventory.minimumStock && inventory.quantity <= inventory.minimumStock;
+
+  const DetailRow: React.FC<{ label: string; value: React.ReactNode }> = ({ label, value }) => (
+    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 1 }}>
+      <Typography variant="body2" color="textSecondary" sx={{ minWidth: 120 }}>
+        {label}:
       </Typography>
-      <Typography variant="body2" sx={{ mt: 0.5 }}>
+      <Typography variant="body2" sx={{ textAlign: 'right' }}>
         {value}
       </Typography>
     </Box>
-  </Box>
-);
-
-const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({ open, onClose, inventory }) => {
-  if (!inventory) return null;
-  
-  const isLowStock = inventory.minimumStock && inventory.quantity <= inventory.minimumStock;
+  );
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -61,82 +45,46 @@ const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({ open, onC
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="h6">{inventory.name}</Typography>
           {isLowStock && (
-            <Chip
-              label="Low Stock"
-              color="error"
-              size="small"
-            />
+            <Chip label="Low Stock" color="error" size="small" />
           )}
         </Box>
       </DialogTitle>
 
       <DialogContent>
-        <Box sx={{ mt: 1 }}>
-          {/* Basic Information */}
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="subtitle2" gutterBottom>
-              Basic Information
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
+        <Box sx={{ mt: 2 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
+            <Box>
+              <Typography variant="h6" gutterBottom>
+                Basic Information
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+              
+              <DetailRow label="Code" value={inventory.code} />
+              <DetailRow label="Category" value={inventory.category} />
+              <DetailRow label="Location" value={inventory.location} />
+              <DetailRow label="Supplier" value={inventory.supplier || 'Not specified'} />
+              <DetailRow label="Brand" value={inventory.brand || 'Not specified'} />
 
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
-              <DetailRow
-                icon={<InfoIcon fontSize="small" />}
-                label="Model"
-                value={inventory.model}
-              />
-
-              <DetailRow
-                icon={<InfoIcon fontSize="small" />}
-                label="Serial Number"
-                value={
-                  <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
-                    {inventory.serialNumber}
+              {inventory.description && (
+                <>
+                  <Typography variant="subtitle2" sx={{ mt: 2, mb: 1 }}>
+                    Description
                   </Typography>
-                }
-              />
-
-              <DetailRow
-                icon={<CategoryIcon fontSize="small" />}
-                label="Category"
-                value={inventory.category}
-              />
-
-              <DetailRow
-                icon={<LocationIcon fontSize="small" />}
-                label="Location"
-                value={inventory.location}
-              />
-
-              <DetailRow
-                icon={<SupplierIcon fontSize="small" />}
-                label="Supplier"
-                value={inventory.supplier || 'Not specified'}
-              />
+                  <Typography variant="body2" color="textSecondary">
+                    {inventory.description}
+                  </Typography>
+                </>
+              )}
             </Box>
 
-            {inventory.description && (
-              <Box sx={{ mt: 2 }}>
-                <DetailRow
-                  icon={<InfoIcon fontSize="small" />}
-                  label="Description"
-                  value={inventory.description}
-                />
-              </Box>
-            )}
-          </Box>
-
-          {/* Stock Information */}
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="subtitle2" gutterBottom>
-              Stock Information
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
-
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
-              <DetailRow
-                icon={<InventoryIcon fontSize="small" />}
-                label="Quantity"
+            <Box>
+              <Typography variant="h6" gutterBottom>
+                Stock Information
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+              
+              <DetailRow 
+                label="Quantity" 
                 value={
                   <Typography 
                     variant="body2" 
@@ -145,65 +93,29 @@ const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({ open, onC
                   >
                     {inventory.quantity}
                   </Typography>
-                }
+                } 
               />
+              <DetailRow label="Minimum Stock" value={inventory.minimumStock || 'Not set'} />
+              <DetailRow label="Unit Cost" value={inventory.unitCost ? formatCurrency(inventory.unitCost) : 'Not specified'} />
+              <DetailRow label="Last Restocked" value={inventory.lastRestockedDate ? formatDate(inventory.lastRestockedDate) : 'Not recorded'} />
 
-              <DetailRow
-                icon={<InventoryIcon fontSize="small" />}
-                label="Minimum Stock"
-                value={inventory.minimumStock || 'Not set'}
-              />
+              <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+                Dates & Warranty
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+              
+              <DetailRow label="Purchase Date" value={inventory.purchaseDate ? formatDate(inventory.purchaseDate) : 'Not specified'} />
+              {inventory.warrantyExpiry && (
+                <DetailRow label="Warranty Expires" value={formatDate(inventory.warrantyExpiry)} />
+              )}
 
-              <DetailRow
-                icon={<MoneyIcon fontSize="small" />}
-                label="Unit Cost"
-                value={inventory.unitCost ? `$${inventory.unitCost.toFixed(2)}` : 'Not specified'}
-              />
-
-              <DetailRow
-                icon={<CalendarIcon fontSize="small" />}
-                label="Last Restocked"
-                value={inventory.lastRestockedDate ? formatDateTime(inventory.lastRestockedDate) : 'Not recorded'}
-              />
-            </Box>
-          </Box>
-
-          {/* Dates & Warranty */}
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="subtitle2" gutterBottom>
-              Dates & Warranty
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
-
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
-              <DetailRow
-                icon={<CalendarIcon fontSize="small" />}
-                label="Purchase Date"
-                value={inventory.purchaseDate ? formatDateTime(inventory.purchaseDate) : 'Not specified'}
-              />
-
-              <DetailRow
-                icon={<WarrantyIcon fontSize="small" />}
-                label="Warranty Expiry"
-                value={inventory.warrantyExpiry ? formatDateTime(inventory.warrantyExpiry) : 'Not specified'}
-              />
-            </Box>
-          </Box>
-
-          {/* Metadata */}
-          <Box sx={{ mt: 3, pt: 3, borderTop: 1, borderColor: 'divider' }}>
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
-              <DetailRow
-                icon={<CalendarIcon fontSize="small" />}
-                label="Created"
-                value={formatDateTime(inventory.createdAt)}
-              />
-
-              <DetailRow
-                icon={<CalendarIcon fontSize="small" />}
-                label="Last Modified"
-                value={formatDateTime(inventory.updatedAt)}
-              />
+              <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+                System Information
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+              
+              <DetailRow label="Created" value={formatDate(inventory.createdAt)} />
+              <DetailRow label="Last Modified" value={formatDate(inventory.updatedAt)} />
             </Box>
           </Box>
         </Box>

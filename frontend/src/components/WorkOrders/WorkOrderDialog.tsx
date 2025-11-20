@@ -31,16 +31,26 @@ interface WorkOrderDialogProps {
   open: boolean;
   onClose: () => void;
   workOrder: WorkOrder | null;
+  assetId?: string;
+  assetName?: string;
+  workType?: string;
   workerComplaintId?: string;
   customerComplaintId?: string;
+  complaintTitle?: string;
+  complaintDescription?: string;
 }
 
 const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({ 
   open, 
   onClose, 
   workOrder,
+  assetId,
+  assetName,
+  workType,
   workerComplaintId,
-  customerComplaintId 
+  customerComplaintId,
+  complaintTitle,
+  complaintDescription
 }) => {
   const queryClient = useQueryClient();
   const isEditMode = Boolean(workOrder);
@@ -113,11 +123,26 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({
         notes: workOrder.notes,
       });
     } else {
+      const isMaintenanceWorkOrder = workType === 'Maintenance' && assetName;
+      const hasComplaintData = (workerComplaintId || customerComplaintId) && (complaintTitle || complaintDescription);
+      
+      let title = '';
+      let description = '';
+      
+      if (isMaintenanceWorkOrder) {
+        title = `Maintenance for ${assetName}`;
+        description = `Scheduled maintenance work for ${assetName}. Please inspect, service, and perform necessary maintenance tasks to ensure optimal performance and longevity.`;
+      } else if (hasComplaintData) {
+        title = complaintTitle ? `Work Order: ${complaintTitle}` : '';
+        description = complaintDescription || '';
+      }
+      
       setFormData({
-        title: '',
-        description: '',
+        title,
+        description,
         priority: Priority.Medium,
-        assetId: undefined,
+        assetId: assetId,
+        workType: workType,
         assignedToUserId: undefined,
         workerComplaintId: workerComplaintId,
         customerComplaintId: customerComplaintId,
@@ -125,7 +150,7 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({
         scheduledDate: undefined,
       });
     }
-  }, [workOrder, open, workerComplaintId, customerComplaintId]);
+  }, [workOrder, open, assetId, assetName, workType, workerComplaintId, customerComplaintId, complaintTitle, complaintDescription]);
 
   const handleClose = () => {
     setFormData({
@@ -228,12 +253,11 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({
                   value={assets.find((a) => a.id === (formData as any).assetId) || null}
                   onChange={(_e, value) => handleChange('assetId', value?.id)}
                   loading={assetsLoading}
-                  disabled={!!(formData as any).workerComplaintId || !!(formData as any).customerComplaintId}
                   renderInput={(params) => (
                     <TextField
                       {...params}
                       label="Related Asset"
-                      helperText={(formData as any).workerComplaintId || (formData as any).customerComplaintId ? "Asset selection disabled when linked to complaint" : ""}
+                      helperText={(formData as any).workerComplaintId || (formData as any).customerComplaintId ? "Select the asset related to this complaint (if applicable)" : ""}
                       InputProps={{
                         ...params.InputProps,
                         endAdornment: (

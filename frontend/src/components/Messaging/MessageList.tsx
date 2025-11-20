@@ -93,15 +93,15 @@ export const MessageList: React.FC = () => {
   };
 
   const handleMessageClick = (message: Message) => {
-    if (!message.isRead && message.receiverId === user?.id) {
+    if (!message.isRead && message.receiverId === Number(user?.id)) {
       markAsReadMutation.mutate(message.id);
     }
     
     // Open conversation if it's a personal message
     if (message.messageType === MessageType.Personal) {
-      const otherUserId = message.senderId === user?.id ? message.receiverId : message.senderId;
+      const otherUserId = message.senderId === Number(user?.id) ? message.receiverId : message.senderId;
       if (otherUserId) {
-        setSelectedUserId(otherUserId);
+        setSelectedUserId(String(otherUserId));
         setConversationOpen(true);
       }
     }
@@ -146,9 +146,9 @@ export const MessageList: React.FC = () => {
 
     // Filter by view
     if (view === 'inbox') {
-      messages = messages.filter(m => m.receiverId === user?.id || m.messageType === MessageType.Broadcast);
+      messages = messages.filter(m => m.receiverId === Number(user?.id) || m.messageType === MessageType.Broadcast);
     } else if (view === 'sent') {
-      messages = messages.filter(m => m.senderId === user?.id);
+      messages = messages.filter(m => m.senderId === Number(user?.id));
     } else if (view === 'broadcast') {
       messages = messages.filter(m => m.messageType === MessageType.Broadcast);
     }
@@ -161,18 +161,16 @@ export const MessageList: React.FC = () => {
     // Filter by search term
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
-      messages = messages.filter(m => 
+      messages = messages.filter(m =>
         m.content.toLowerCase().includes(searchLower) ||
-        m.subject?.toLowerCase().includes(searchLower) ||
-        m.sender?.firstName.toLowerCase().includes(searchLower) ||
-        m.sender?.lastName.toLowerCase().includes(searchLower)
+        m.subject?.toLowerCase().includes(searchLower)
       );
     }
 
     return messages;
   }, [messagesData, view, typeFilter, searchTerm, user]);
 
-  const unreadCount = filteredMessages.filter(m => !m.isRead && m.receiverId === user?.id).length;
+  const unreadCount = filteredMessages.filter(m => !m.isRead && m.receiverId === Number(user?.id)).length;
 
   const getMessageIcon = (messageType: MessageType) => {
     switch (messageType) {
@@ -186,7 +184,7 @@ export const MessageList: React.FC = () => {
   };
 
   const canDelete = (message: Message) => {
-    return user?.role === UserRole.Admin || message.senderId === user?.id;
+    return user?.role === UserRole.Admin || message.senderId === Number(user?.id);
   };
 
   return (
@@ -297,7 +295,7 @@ export const MessageList: React.FC = () => {
                   disablePadding
                   secondaryAction={
                     <Box sx={{ display: 'flex', gap: 1 }}>
-                      {!message.isRead && message.receiverId === user?.id && (
+                      {!message.isRead && message.receiverId === Number(user?.id) && (
                         <Tooltip title="Mark as read">
                           <IconButton 
                             size="small" 
@@ -323,7 +321,7 @@ export const MessageList: React.FC = () => {
                   <ListItemButton onClick={() => handleMessageClick(message)}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
                       <Avatar sx={{ bgcolor: message.isRead ? 'grey.400' : 'primary.main' }}>
-                        {message.sender?.firstName?.[0] || 'S'}
+                        M
                       </Avatar>
                       <Box sx={{ flexGrow: 1, minWidth: 0 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
@@ -337,8 +335,8 @@ export const MessageList: React.FC = () => {
                             }}
                           >
                             {view === 'sent' 
-                              ? `To: ${message.receiver?.firstName} ${message.receiver?.lastName}` 
-                              : `${message.sender?.firstName} ${message.sender?.lastName}`}
+                              ? `To: User ID ${message.receiverId}` 
+                              : `From: User ID ${message.senderId}`}
                           </Typography>
                           {getMessageIcon(message.messageType) && (
                             <Chip 
@@ -348,7 +346,7 @@ export const MessageList: React.FC = () => {
                               variant="outlined"
                             />
                           )}
-                          {!message.isRead && message.receiverId === user?.id && (
+                          {!message.isRead && message.receiverId === Number(user?.id) && (
                             <Chip label="Unread" size="small" color="error" />
                           )}
                         </Box>

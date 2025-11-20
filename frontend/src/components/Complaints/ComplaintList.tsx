@@ -61,6 +61,7 @@ export const ComplaintList: React.FC = () => {
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [workOrderDialogOpen, setWorkOrderDialogOpen] = useState(false);
   const [selectedComplaint, setSelectedComplaint] = useState<WorkerComplaint | CustomerComplaint | null>(null);
+  const [workOrderComplaint, setWorkOrderComplaint] = useState<WorkerComplaint | CustomerComplaint | null>(null);
   const [workOrderComplaintId, setWorkOrderComplaintId] = useState<{ worker?: string; customer?: string }>({});
 
   // Fetch worker complaints
@@ -151,6 +152,8 @@ export const ComplaintList: React.FC = () => {
   };
 
   const handleCreateWorkOrder = (complaint: WorkerComplaint | CustomerComplaint) => {
+    console.log('Creating work order for complaint:', complaint.id, complaint.title);
+    setWorkOrderComplaint(complaint);
     if (isWorkerComplaint(complaint)) {
       setWorkOrderComplaintId({ worker: complaint.id, customer: undefined });
     } else {
@@ -161,6 +164,7 @@ export const ComplaintList: React.FC = () => {
 
   const handleWorkOrderDialogClose = () => {
     setWorkOrderDialogOpen(false);
+    setWorkOrderComplaint(null);
     setWorkOrderComplaintId({});
   };
 
@@ -195,7 +199,7 @@ export const ComplaintList: React.FC = () => {
   };
 
   const isWorkerComplaint = (complaint: WorkerComplaint | CustomerComplaint): complaint is WorkerComplaint => {
-    return 'complainantId' in complaint;
+    return 'submittedByUserId' in complaint;
   };
 
   const currentData = complaintType === 'worker' ? workerData : customerData;
@@ -215,7 +219,7 @@ export const ComplaintList: React.FC = () => {
       const descMatch = complaint.description.toLowerCase().includes(searchLower);
       
       if (complaintType === 'customer' && !isWorkerComplaint(complaint)) {
-        const customerMatch = complaint.customerName.toLowerCase().includes(searchLower) ||
+        const customerMatch = (complaint.customerName?.toLowerCase().includes(searchLower) || false) ||
                              complaint.customerEmail?.toLowerCase().includes(searchLower) ||
                              complaint.roomNumber?.toLowerCase().includes(searchLower);
         return titleMatch || descMatch || customerMatch;
@@ -376,8 +380,8 @@ export const ComplaintList: React.FC = () => {
                     </>
                   )}
                   <TableCell>
-                    {complaint.assignedToUser 
-                      ? `${complaint.assignedToUser.firstName} ${complaint.assignedToUser.lastName}`
+                    {complaint.assignedToUserId 
+                      ? `User ID: ${complaint.assignedToUserId}`
                       : 'Unassigned'}
                   </TableCell>
                   <TableCell>{formatDateTime(complaint.createdAt)}</TableCell>
@@ -445,6 +449,8 @@ export const ComplaintList: React.FC = () => {
         workOrder={null}
         workerComplaintId={workOrderComplaintId.worker}
         customerComplaintId={workOrderComplaintId.customer}
+        complaintTitle={workOrderComplaint?.title}
+        complaintDescription={workOrderComplaint?.description}
       />
     </Box>
   );

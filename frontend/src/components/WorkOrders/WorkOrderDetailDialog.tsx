@@ -14,6 +14,7 @@ import {
 import {
   CalendarToday as CalendarIcon,
   Person as PersonIcon,
+  AssignmentInd as AssignmentIndIcon,
   Business as AssetIcon,
   Timer as TimerIcon,
   Flag as PriorityIcon,
@@ -123,44 +124,20 @@ const WorkOrderDetailDialog: React.FC<WorkOrderDetailDialogProps> = ({
               <DetailRow
                 icon={<PersonIcon fontSize="small" />}
                 label="Requester"
-                value={
-                  workOrder.requestedByUser
-                    ? `${workOrder.requestedByUser.firstName} ${workOrder.requestedByUser.lastName}`
-                    : 'Unknown'
-                }
+                value={workOrder.requestedByUserName || 'Unknown'}
               />
 
               <DetailRow
-                icon={<PersonIcon fontSize="small" />}
+                icon={<AssignmentIndIcon fontSize="small" />}
                 label="Assigned To"
-                value={
-                  workOrder.assignedToUser ? (
-                    <Box>
-                      <Typography variant="body2">
-                        {workOrder.assignedToUser.firstName} {workOrder.assignedToUser.lastName}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {workOrder.assignedToUser.department}
-                      </Typography>
-                    </Box>
-                  ) : (
-                    'Unassigned'
-                  )
-                }
+                value={workOrder.assignedToUserName || 'Unassigned'}
               />
 
-              {workOrder.asset && (
+              {workOrder.assetName && (
                 <DetailRow
                   icon={<AssetIcon fontSize="small" />}
                   label="Related Asset"
-                  value={
-                    <Box>
-                      <Typography variant="body2">{workOrder.asset.assetName}</Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {workOrder.asset.category} - {workOrder.asset.location}
-                      </Typography>
-                    </Box>
-                  }
+                  value={workOrder.assetName}
                 />
               )}
             </Box>

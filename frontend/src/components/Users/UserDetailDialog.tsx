@@ -176,28 +176,6 @@ const UserDetailDialog: React.FC<UserDetailDialogProps> = ({ open, onClose, user
             />
           </Box>
 
-          {/* Profile Picture */}
-          {user.profilePicture && (
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle2" gutterBottom>
-                Profile Picture
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-
-              <Box
-                component="img"
-                src={user.profilePicture}
-                alt={`${user.firstName} ${user.lastName}`}
-                sx={{
-                  width: 100,
-                  height: 100,
-                  borderRadius: 2,
-                  objectFit: 'cover',
-                }}
-              />
-            </Box>
-          )}
-
           {/* Metadata */}
           <Box sx={{ pt: 3, borderTop: 1, borderColor: 'divider' }}>
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>

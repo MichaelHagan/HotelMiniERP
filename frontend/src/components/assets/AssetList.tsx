@@ -37,6 +37,7 @@ import { assetService } from '../../services';
 import { formatDate, formatCurrency, getStatusColor, getStatusText } from '../../utils';
 import { AssetDialog } from './AssetDialog';
 import { AssetDetailDialog } from './AssetDetailDialog';
+import WorkOrderDialog from '../WorkOrders/WorkOrderDialog';
 import { useAuth } from '../../context/AuthContext';
 
 export const AssetList: React.FC = () => {
@@ -51,7 +52,11 @@ export const AssetList: React.FC = () => {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+  const [workOrderDialogOpen, setWorkOrderDialogOpen] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
+  const [workOrderAssetId, setWorkOrderAssetId] = useState<string | undefined>();
+  const [workOrderAssetName, setWorkOrderAssetName] = useState<string | undefined>();
+  const [workOrderType, setWorkOrderType] = useState<string | undefined>();
 
   const queryClient = useQueryClient();
 
@@ -116,13 +121,24 @@ export const AssetList: React.FC = () => {
   };
 
   const handleCreateWorkOrder = (asset: Asset) => {
-    // Navigate to work orders with pre-filled asset
-    console.log('Create work order for asset:', asset.id);
+    setWorkOrderAssetId(asset.id);
+    setWorkOrderAssetName(asset.assetName);
+    setWorkOrderType(undefined);
+    setWorkOrderDialogOpen(true);
   };
 
   const handleScheduleMaintenance = (asset: Asset) => {
-    // Open maintenance scheduling dialog
-    console.log('Schedule maintenance for asset:', asset.id);
+    setWorkOrderAssetId(asset.id);
+    setWorkOrderAssetName(asset.assetName);
+    setWorkOrderType('Maintenance');
+    setWorkOrderDialogOpen(true);
+  };
+
+  const handleCloseWorkOrderDialog = () => {
+    setWorkOrderDialogOpen(false);
+    setWorkOrderAssetId(undefined);
+    setWorkOrderAssetName(undefined);
+    setWorkOrderType(undefined);
   };
 
   if (error) {
@@ -249,7 +265,7 @@ export const AssetList: React.FC = () => {
                       />
                     </TableCell>
                     <TableCell>{formatDate(asset.purchaseDate)}</TableCell>
-                    <TableCell>{formatCurrency(asset.currentValue)}</TableCell>
+                    <TableCell>{asset.currentValue ? formatCurrency(asset.currentValue) : '-'}</TableCell>
                     <TableCell>
                       <Box sx={{ display: 'flex', gap: 0.5 }}>
                         <Tooltip title="View Details">
@@ -328,6 +344,15 @@ export const AssetList: React.FC = () => {
         open={detailDialogOpen}
         onClose={() => setDetailDialogOpen(false)}
         asset={selectedAsset}
+      />
+
+      <WorkOrderDialog
+        open={workOrderDialogOpen}
+        onClose={handleCloseWorkOrderDialog}
+        workOrder={null}
+        assetId={workOrderAssetId}
+        assetName={workOrderAssetName}
+        workType={workOrderType}
       />
     </Box>
   );

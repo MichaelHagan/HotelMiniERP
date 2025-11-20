@@ -64,8 +64,8 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
       // Filter messages for this conversation
       const filtered = messagesData.data.filter(
         (msg) =>
-          (msg.senderId === user?.id && msg.receiverId === userId) ||
-          (msg.senderId === userId && msg.receiverId === user?.id)
+          (msg.senderId === Number(user?.id) && msg.receiverId === Number(userId)) ||
+          (msg.senderId === Number(userId) && msg.receiverId === Number(user?.id))
       );
       setConversationMessages(filtered.sort((a, b) => 
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
@@ -79,8 +79,8 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
       const handleMessageReceived = (message: Message) => {
         // Only add message if it's part of this conversation
         if (
-          (message.senderId === user?.id && message.receiverId === userId) ||
-          (message.senderId === userId && message.receiverId === user?.id)
+          (message.senderId === Number(user?.id) && message.receiverId === Number(userId)) ||
+          (message.senderId === Number(userId) && message.receiverId === Number(user?.id))
         ) {
           setConversationMessages(prev => [...prev, message]);
           queryClient.invalidateQueries({ queryKey: ['messages'] });
@@ -170,7 +170,7 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
         ) : (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {conversationMessages.map((message) => {
-              const isOwnMessage = message.senderId === user?.id;
+              const isOwnMessage = message.senderId === Number(user?.id);
               
               return (
                 <Box

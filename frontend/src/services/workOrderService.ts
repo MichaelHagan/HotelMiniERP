@@ -32,11 +32,25 @@ export class WorkOrderService {
   }
 
   async createWorkOrder(workOrderDto: CreateWorkOrderDto): Promise<WorkOrder> {
-    return apiClient.post<WorkOrder>(this.basePath, workOrderDto);
+    // Convert string IDs to numbers for backend compatibility
+    const payload = {
+      ...workOrderDto,
+      assetId: workOrderDto.assetId ? parseInt(workOrderDto.assetId, 10) : undefined,
+      assignedToUserId: workOrderDto.assignedToUserId ? parseInt(workOrderDto.assignedToUserId, 10) : undefined,
+      requestedByUserId: workOrderDto.requestedByUserId ? parseInt(workOrderDto.requestedByUserId, 10) : undefined,
+      workerComplaintId: workOrderDto.workerComplaintId ? parseInt(workOrderDto.workerComplaintId, 10) : undefined,
+      customerComplaintId: workOrderDto.customerComplaintId ? parseInt(workOrderDto.customerComplaintId, 10) : undefined,
+    };
+    return apiClient.post<WorkOrder>(this.basePath, payload);
   }
 
   async updateWorkOrder(id: string, workOrderDto: UpdateWorkOrderDto): Promise<WorkOrder> {
-    return apiClient.put<WorkOrder>(`${this.basePath}/${id}`, workOrderDto);
+    // Convert string IDs to numbers for backend compatibility
+    const payload = {
+      ...workOrderDto,
+      assignedToUserId: workOrderDto.assignedToUserId ? parseInt(workOrderDto.assignedToUserId, 10) : undefined,
+    };
+    return apiClient.put<WorkOrder>(`${this.basePath}/${id}`, payload);
   }
 
   async deleteWorkOrder(id: string): Promise<void> {

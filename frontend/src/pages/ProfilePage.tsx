@@ -29,7 +29,6 @@ export const ProfilePage: React.FC = () => {
     lastName: user?.lastName || '',
     email: user?.email || '',
     phoneNumber: user?.phoneNumber || '',
-    address: user?.address || '',
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -46,7 +45,6 @@ export const ProfilePage: React.FC = () => {
         lastName: user.lastName || '',
         email: user.email || '',
         phoneNumber: user.phoneNumber || '',
-        address: user.address || '',
       });
     }
   }, [user]);
@@ -197,16 +195,6 @@ export const ProfilePage: React.FC = () => {
                     value={profileData.phoneNumber}
                     onChange={(e) =>
                       setProfileData({ ...profileData, phoneNumber: e.target.value })
-                    }
-                  />
-                  <TextField
-                    fullWidth
-                    label="Address"
-                    multiline
-                    rows={3}
-                    value={profileData.address}
-                    onChange={(e) =>
-                      setProfileData({ ...profileData, address: e.target.value })
                     }
                   />
                   <Button

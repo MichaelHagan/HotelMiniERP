@@ -37,12 +37,12 @@ const UserDialog: React.FC<UserDialogProps> = ({ open, onClose, user }) => {
   const isEditMode = Boolean(user);
 
   const [formData, setFormData] = useState<CreateUserDto | UpdateUserDto>({
+    username: '',
     email: '',
     firstName: '',
     lastName: '',
     password: '',
     role: UserRole.Worker,
-    department: '',
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -74,20 +74,20 @@ const UserDialog: React.FC<UserDialogProps> = ({ open, onClose, user }) => {
   useEffect(() => {
     if (user) {
       setFormData({
+        email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
         role: user.role,
-        department: user.department,
         isActive: user.isActive,
       });
     } else {
       setFormData({
+        username: '',
         email: '',
         firstName: '',
         lastName: '',
         password: '',
         role: UserRole.Worker,
-        department: '',
       });
     }
     setErrors({});
@@ -96,12 +96,12 @@ const UserDialog: React.FC<UserDialogProps> = ({ open, onClose, user }) => {
 
   const handleClose = () => {
     setFormData({
+      username: '',
       email: '',
       firstName: '',
       lastName: '',
       password: '',
       role: UserRole.Worker,
-      department: '',
     });
     setErrors({});
     setShowPassword(false);
@@ -251,14 +251,6 @@ const UserDialog: React.FC<UserDialogProps> = ({ open, onClose, user }) => {
                   <MenuItem value={UserRole.Worker}>Worker</MenuItem>
                 </Select>
               </FormControl>
-
-              <TextField
-                fullWidth
-                label="Department"
-                value={formData.department || ''}
-                onChange={(e) => handleChange('department', e.target.value)}
-                placeholder="e.g., Housekeeping, Front Desk, Maintenance"
-              />
 
               {isEditMode && (
                 <FormControl fullWidth>

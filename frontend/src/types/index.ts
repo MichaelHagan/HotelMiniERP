@@ -1,18 +1,14 @@
 // User Types
 export interface User {
   id: string;
+  username: string;
+  email: string;
   firstName: string;
   lastName: string;
-  email: string;
-  phoneNumber: string;
-  username: string;
+  phoneNumber?: string;
   role: UserRole;
   department?: string;
-  position?: string;
-  hireDate?: string;
   isActive: boolean;
-  profilePicture?: string;
-  address?: string;
   lastLogin?: string;
   createdAt: string;
   updatedAt: string;
@@ -26,22 +22,22 @@ export enum UserRole {
 }
 
 export interface CreateUserDto {
+  username: string;
   email: string;
+  password: string;
   firstName: string;
   lastName: string;
-  password: string;
   role: UserRole;
-  department?: string;
-  profilePictureUrl?: string;
+  phoneNumber?: string;
 }
 
 export interface UpdateUserDto {
-  firstName?: string;
-  lastName?: string;
-  role?: UserRole;
-  department?: string;
-  profilePictureUrl?: string;
-  isActive?: boolean;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: UserRole;
+  phoneNumber?: string;
+  isActive: boolean;
 }
 
 // Authentication Types
@@ -59,6 +55,7 @@ export interface AuthResponse {
 export interface ChangePasswordDto {
   currentPassword: string;
   newPassword: string;
+  confirmPassword: string;
 }
 
 // Asset Types
@@ -68,17 +65,17 @@ export interface Asset {
   assetCode: string;
   description?: string;
   category: string;
-  location: string;
-  purchaseDate: string;
   purchasePrice: number;
-  currentValue: number;
-  depreciationRate: number;
+  purchaseDate: string;
   supplier: string;
-  warrantyExpiry?: string;
+  location: string;
   status: AssetStatus;
+  warrantyExpiry?: string;
   serialNumber?: string;
   model?: string;
   brand?: string;
+  depreciationRate?: number;
+  currentValue?: number;
   notes?: string;
   createdAt: string;
   updatedAt: string;
@@ -96,10 +93,10 @@ export interface CreateAssetDto {
   assetCode: string;
   description?: string;
   category: string;
-  location: string;
-  purchaseDate: string;
   purchasePrice: number;
+  purchaseDate: string;
   supplier: string;
+  location: string;
   status: AssetStatus;
   warrantyExpiry?: string;
   serialNumber?: string;
@@ -115,10 +112,10 @@ export interface UpdateAssetDto {
   assetCode: string;
   description?: string;
   category: string;
-  location: string;
-  purchaseDate: string;
   purchasePrice: number;
+  purchaseDate: string;
   supplier: string;
+  location: string;
   status: AssetStatus;
   warrantyExpiry?: string;
   serialNumber?: string;
@@ -146,15 +143,13 @@ export interface WorkOrder {
   location?: string;
   notes?: string;
   assetId?: string;
-  asset?: Asset;
+  assetName?: string;
   assignedToUserId?: string;
-  assignedToUser?: User;
+  assignedToUserName?: string;
   requestedByUserId?: string;
-  requestedByUser?: User;
+  requestedByUserName?: string;
   workerComplaintId?: string;
-  workerComplaint?: WorkerComplaint;
   customerComplaintId?: string;
-  customerComplaint?: CustomerComplaint;
   createdAt: string;
   updatedAt: string;
 }
@@ -209,7 +204,7 @@ export interface Inventory {
   id: string;
   name: string;
   code: string;
-  description: string;
+  description?: string;
   category: string;
   brand?: string;
   model?: string;
@@ -230,7 +225,7 @@ export interface Inventory {
 export interface CreateInventoryDto {
   name: string;
   code: string;
-  description: string;
+  description?: string;
   category: string;
   brand?: string;
   model?: string;
@@ -269,18 +264,13 @@ export interface Procedure {
   id: string;
   title: string;
   description: string;
-  category: string;
   content: string;
-  tags?: string;
-  version: string;
+  category: string;
   isActive: boolean;
+  version: string;
   reviewDate?: string;
   approvedBy?: string;
   approvalDate?: string;
-  documentUrl?: string;
-  estimatedDurationMinutes?: number;
-  requiredInventory?: string;
-  safetyNotes?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -288,75 +278,64 @@ export interface Procedure {
 export interface CreateProcedureDto {
   title: string;
   description: string;
-  category: string;
   content: string;
-  tags?: string;
+  category: string;
   version?: string;
   reviewDate?: string;
   approvedBy?: string;
   approvalDate?: string;
-  documentUrl?: string;
-  estimatedDurationMinutes?: number;
-  requiredInventory?: string;
-  safetyNotes?: string;
 }
 
 export interface UpdateProcedureDto {
   title?: string;
   description?: string;
-  category?: string;
   content?: string;
-  tags?: string;
+  category?: string;
   isActive?: boolean;
   version?: string;
   reviewDate?: string;
   approvedBy?: string;
   approvalDate?: string;
-  documentUrl?: string;
-  estimatedDurationMinutes?: number;
-  requiredInventory?: string;
-  safetyNotes?: string;
 }
 
 // Complaint Types
 export interface WorkerComplaint {
   id: string;
+  type: string;
   complaintNumber: string;
   title: string;
   description: string;
-  category: string;
-  priority: Priority;
   status: ComplaintStatus;
+  priority: Priority;
+  category: string;
   location?: string;
-  submittedByUserId: string;
-  submittedByUser?: User;
-  assignedToUserId?: string;
-  assignedToUser?: User;
   resolvedDate?: string;
   resolution?: string;
   notes?: string;
+  submittedByUserId?: number;
+  assignedToUserId?: number;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface CustomerComplaint {
   id: string;
+  type: string;
   complaintNumber: string;
   title: string;
   description: string;
-  category: string;
-  priority: Priority;
   status: ComplaintStatus;
+  priority: Priority;
+  category: string;
   location?: string;
-  customerName: string;
-  customerEmail: string;
-  customerPhone?: string;
-  roomNumber?: string;
-  assignedToUserId?: string;
-  assignedToUser?: User;
   resolvedDate?: string;
   resolution?: string;
   notes?: string;
+  assignedToUserId?: number;
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
+  roomNumber?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -373,6 +352,7 @@ export interface CreateWorkerComplaintDto {
   description: string;
   category: string;
   priority: Priority;
+  submittedByUserId: string;
   location?: string;
   notes?: string;
 }
@@ -409,13 +389,10 @@ export interface Message {
   subject: string;
   content: string;
   messageType: MessageType;
+  senderId: number;
+  receiverId: number;
   isRead: boolean;
   readAt?: string;
-  attachmentUrl?: string;
-  senderId: string;
-  sender?: User;
-  receiverId: string;
-  receiver?: User;
   createdAt: string;
   updatedAt: string;
 }
@@ -431,7 +408,6 @@ export interface CreateMessageDto {
   content: string;
   messageType: MessageType;
   receiverId: string;
-  attachmentUrl?: string;
 }
 
 export interface UpdateMessageDto {

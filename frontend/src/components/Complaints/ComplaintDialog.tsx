@@ -63,7 +63,7 @@ export const ComplaintDialog: React.FC<ComplaintDialogProps> = ({
         category: complaint.category,
         priority: complaint.priority,
         status: complaint.status,
-        customerName: 'customerName' in complaint ? complaint.customerName : '',
+        customerName: 'customerName' in complaint ? complaint.customerName || '' : '',
         customerEmail: 'customerEmail' in complaint ? complaint.customerEmail || '' : '',
         customerPhone: 'customerPhone' in complaint ? complaint.customerPhone || '' : '',
         roomNumber: 'roomNumber' in complaint ? complaint.roomNumber || '' : ''
@@ -177,7 +177,8 @@ export const ComplaintDialog: React.FC<ComplaintDialogProps> = ({
           title: formData.title,
           description: formData.description,
           category: formData.category,
-          priority: formData.priority
+          priority: formData.priority,
+          submittedByUserId: user?.id || ''
         };
         createMutation.mutate(createData);
       } else {

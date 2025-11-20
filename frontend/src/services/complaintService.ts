@@ -14,19 +14,18 @@ export class ComplaintService {
 
   // Worker Complaints
   async getWorkerComplaints(params?: ComplaintQueryParams): Promise<PaginatedResponse<WorkerComplaint>> {
-    if (!params) {
-      return apiClient.get<PaginatedResponse<WorkerComplaint>>(`${this.basePath}/worker`);
-    }
-    
-    const filteredParams = Object.entries(params).reduce((acc, [key, value]) => {
+    const filteredParams = Object.entries(params || {}).reduce((acc, [key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
         acc[key] = String(value);
       }
       return acc;
     }, {} as Record<string, string>);
     
+    // Add type parameter for worker complaints
+    filteredParams.type = 'worker';
+    
     const queryString = new URLSearchParams(filteredParams).toString();
-    const url = queryString ? `${this.basePath}/worker?${queryString}` : `${this.basePath}/worker`;
+    const url = queryString ? `${this.basePath}?${queryString}` : `${this.basePath}?type=worker`;
     return apiClient.get<PaginatedResponse<WorkerComplaint>>(url);
   }
 
@@ -35,11 +34,11 @@ export class ComplaintService {
   }
 
   async createWorkerComplaint(complaintDto: CreateWorkerComplaintDto): Promise<WorkerComplaint> {
-    return apiClient.post<WorkerComplaint>(`${this.basePath}/worker`, complaintDto);
+    return apiClient.post<WorkerComplaint>(`${this.basePath}`, { ...complaintDto, type: 'worker' });
   }
 
   async updateWorkerComplaint(id: string, complaintDto: UpdateComplaintDto): Promise<WorkerComplaint> {
-    return apiClient.put<WorkerComplaint>(`${this.basePath}/worker/${id}`, complaintDto);
+    return apiClient.put<WorkerComplaint>(`${this.basePath}/worker/${id}`, { ...complaintDto, type: 'worker' });
   }
 
   async deleteWorkerComplaint(id: string): Promise<void> {
@@ -52,19 +51,18 @@ export class ComplaintService {
 
   // Customer Complaints
   async getCustomerComplaints(params?: ComplaintQueryParams): Promise<PaginatedResponse<CustomerComplaint>> {
-    if (!params) {
-      return apiClient.get<PaginatedResponse<CustomerComplaint>>(`${this.basePath}/customer`);
-    }
-    
-    const filteredParams = Object.entries(params).reduce((acc, [key, value]) => {
+    const filteredParams = Object.entries(params || {}).reduce((acc, [key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
         acc[key] = String(value);
       }
       return acc;
     }, {} as Record<string, string>);
     
+    // Add type parameter for customer complaints
+    filteredParams.type = 'customer';
+    
     const queryString = new URLSearchParams(filteredParams).toString();
-    const url = queryString ? `${this.basePath}/customer?${queryString}` : `${this.basePath}/customer`;
+    const url = queryString ? `${this.basePath}?${queryString}` : `${this.basePath}?type=customer`;
     return apiClient.get<PaginatedResponse<CustomerComplaint>>(url);
   }
 
@@ -73,11 +71,11 @@ export class ComplaintService {
   }
 
   async createCustomerComplaint(complaintDto: CreateCustomerComplaintDto): Promise<CustomerComplaint> {
-    return apiClient.post<CustomerComplaint>(`${this.basePath}/customer`, complaintDto);
+    return apiClient.post<CustomerComplaint>(`${this.basePath}`, { ...complaintDto, type: 'customer' });
   }
 
   async updateCustomerComplaint(id: string, complaintDto: UpdateComplaintDto): Promise<CustomerComplaint> {
-    return apiClient.put<CustomerComplaint>(`${this.basePath}/customer/${id}`, complaintDto);
+    return apiClient.put<CustomerComplaint>(`${this.basePath}/customer/${id}`, { ...complaintDto, type: 'customer' });
   }
 
   async deleteCustomerComplaint(id: string): Promise<void> {
