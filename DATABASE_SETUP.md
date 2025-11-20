@@ -30,16 +30,12 @@
 - **Password**: `Admin@123`
 - **Email**: admin@hotel.com
 - **Role**: Admin
-- **Department**: IT
-- **Position**: System Administrator
 
 ### Manager Account
 - **Username**: `manager`
 - **Password**: `Manager@123`
 - **Email**: manager@hotel.com
 - **Role**: Manager
-- **Department**: Operations
-- **Position**: Operations Manager
 
 ### Worker Accounts
 
@@ -48,16 +44,12 @@
 - **Password**: `Worker@123`
 - **Email**: worker1@hotel.com
 - **Role**: Worker
-- **Department**: Maintenance
-- **Position**: Maintenance Technician
 
 **Worker 2:**
 - **Username**: `worker2`
 - **Password**: `Worker@123`
 - **Email**: worker2@hotel.com
 - **Role**: Worker
-- **Department**: Housekeeping
-- **Position**: Housekeeping Staff
 
 ---
 
@@ -67,24 +59,24 @@
 
 1. **HVAC System - Lobby** (HVAC-001)
    - Category: HVAC
-   - Purchase Price:GHC15,000
-   - Current Value:GHC12,000
+   - Purchase Price: 15,000
+   - Current Value: 12,000
    - Depreciation Rate: 20%
    - Location: Lobby
    - Status: Active
 
 2. **Elevator System - Main** (ELEV-001)
    - Category: Elevator
-   - Purchase Price:GHC50,000
-   - Current Value:GHC35,000
+   - Purchase Price: 50,000
+   - Current Value: 35,000
    - Depreciation Rate: 15%
    - Location: Main Building
    - Status: Active
 
 3. **Water Heater - Floor 3** (WHT-003)
    - Category: Plumbing
-   - Purchase Price:GHC2,500
-   - Current Value:GHC1,800
+   - Purchase Price: 2,500
+   - Current Value: 1,800
    - Depreciation Rate: 25%
    - Location: Floor 3 - Utility Room
    - Status: Active
@@ -95,7 +87,7 @@
    - Category: Cleaning
    - Brand: CleanPro
    - Model: CP-5000
-   - Unit Cost:GHC500
+   - Unit Cost: 500
    - Location: Housekeeping Storage
    - Status: Available
 
@@ -103,7 +95,7 @@
    - Category: Tools
    - Brand: ToolMaster
    - Model: TM-Professional
-   - Unit Cost:GHC1,200
+   - Unit Cost: 1,200
    - Location: Maintenance Room
    - Status: Available
 
@@ -152,26 +144,28 @@
 - Database seeding with users, assets, inventory, procedures
 - Authentication system with JWT tokens
 - Password hashing (PBKDF2 with 100K iterations)
-- MediatR CQRS pattern for Login and Register
+- MediatR CQRS pattern for all entities
 - All entity relationships and constraints
+- Assets CQRS handlers (GetAll, GetById, Create, Update, Delete)
+- WorkOrders CQRS handlers with business rules
+- Users CQRS handlers (Create, Update, ChangePassword, Activate/Deactivate)
+- Inventory CQRS handlers
+- Complaints CQRS handlers (unified endpoint for Worker & Customer)
+- Messages CQRS handlers with soft delete
+- Procedures CQRS handlers
+- SignalR real-time messaging hub
+- Work order creation from assets and complaints
+- Complaint assignment and resolution workflows
 
-### 🔄 Next Steps
-1. Implement Assets CQRS handlers (GetAll, GetById, Create, Update, Delete)
-2. Implement WorkOrders CQRS handlers with business rules:
-   - Manager-only assignment validation
-   - Auto-close linked complaints when work order completes
-3. Implement Users CQRS handlers
-4. Implement Inventory CQRS handlers
-5. Implement Complaints CQRS handlers (Worker & Customer)
-6. Implement Messages CQRS handlers with soft delete
-7. Implement Procedures CQRS handlers
-8. Implement Reports CQRS handlers with aggregate queries
+### 🔄 In Progress
+- Advanced reporting and analytics
+- Email notifications for critical events
+- File upload capabilities for assets and work orders
 
-### Business Rules to Implement
-- **Asset Depreciation**: Auto-calculate CurrentValue = PurchasePrice × (1 - DepreciationRate/100) × years
-- **Work Order Assignment**: Only Managers and Admins can assign work orders
-- **Complaint Auto-Close**: When work order status = Completed, set linked complaint status = Resolved
-- **Message Soft Delete**: Archive messages instead of hard delete
+### 📋 Planned
+- Barcode/QR code generation for assets
+- Enhanced audit trail
+- Third-party system integrations
 
 ---
 

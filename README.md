@@ -18,44 +18,53 @@ The system follows Clean Architecture principles with CQRS (Command Query Respon
 1. **Asset Register**
    - Complete asset lifecycle management
    - Depreciation tracking and reporting
-   - Maintenance scheduling
+   - Maintenance scheduling from assets
    - Asset search and categorization
+   - Direct work order creation from assets
 
 2. **Work Order Management**
    - Create, assign, and track work orders
    - Priority-based task management
    - Status tracking and completion monitoring
+   - Create work orders from assets or complaints
+   - Pre-populated maintenance information
    - Performance reporting
 
 3. **User Management & Team**
-   - Role-based access control (Admin, Manager, Staff, Viewer)
+   - Role-based access control (Admin, Manager, Worker)
    - User authentication with JWT
    - Profile management and password changes
    - Active/inactive user management
+   - User search and filtering
 
-4. **Inventory Inventory**
+4. **Inventory Management**
    - Inventory tracking and categorization
    - Maintenance scheduling and history
    - Utilization reporting
    - Status management (Available, In Use, Maintenance)
+   - Stock level monitoring
 
 5. **Complaint Management**
    - **Worker Complaints**: Internal HR and workplace issues
    - **Customer Complaints**: Guest feedback and service issues
    - Priority-based resolution tracking
    - Assignment and escalation workflows
+   - Direct work order creation from complaints
+   - Unified complaint API with type distinction
 
 6. **Real-time Messaging**
    - Direct messaging between users
    - Broadcast announcements
    - Real-time notifications via SignalR
    - Message history and read status
+   - Conversation threading
 
 7. **Procedure Library**
    - Standard operating procedures (SOPs)
    - Categorized procedure management
    - Version control and updates
    - Searchable knowledge base
+   - Active/inactive status management
 
 8. **Comprehensive Reporting**
    - Dashboard with key metrics
@@ -63,27 +72,29 @@ The system follows Clean Architecture principles with CQRS (Command Query Respon
    - Work order performance analytics
    - Inventory utilization reports
    - Complaint analysis and trends
-   - Financial summaries and ROI calculations
 
 ## 🛠️ Technology Stack
 
 ### Backend
 - **ASP.NET Core 9.0** - Web API framework
 - **Entity Framework Core 9.0** - ORM for data access
+- **PostgreSQL** - Primary database
 - **MediatR 13.1.0** - CQRS implementation
 - **FluentValidation 12.1.0** - Input validation
 - **JWT Authentication** - Secure API access
-- **SignalR** - Real-time communication
-- **SQL Server** - Database (configurable)
+- **SignalR 9.0** - Real-time communication
 - **Swagger/OpenAPI** - API documentation
 
-### Frontend (Planned)
-- **React 18+** - Frontend framework
-- **TypeScript** - Type-safe development
-- **Material-UI** - Component library
-- **React Router** - Navigation
+### Frontend
+- **React 19.2.0** - Frontend framework
+- **TypeScript 4.9.5** - Type-safe development
+- **Material-UI 7.3.5** - Component library
+- **TanStack Query 5.90.7** - Data fetching and caching
+- **React Router 7.9.5** - Navigation
 - **Axios** - HTTP client
-- **SignalR Client** - Real-time updates
+- **SignalR Client 9.0.6** - Real-time updates
+- **date-fns** - Date manipulation
+- **Recharts** - Data visualization
 
 ### Desktop Application
 - **Electron** - Cross-platform desktop wrapper
@@ -96,55 +107,69 @@ The system follows Clean Architecture principles with CQRS (Command Query Respon
 ```
 Assets
 ├── Id, Name, AssetType, SerialNumber
-├── PurchaseDate, PurchasePrice, CurrentValue
+├── PurchaseDate, PurchasePrice, CurrentValue (optional)
 ├── Status, Location, Description
+├── DepreciationRate (optional)
 └── Maintenance tracking fields
 
 WorkOrders
 ├── Id, Title, Description, Priority, Status
-├── AssetId (FK), AssignedToUserId (FK)
+├── AssetId (FK, optional), AssignedToUserId (FK, optional)
 ├── CreatedByUserId (FK), Dates
+├── AssignedToUserName (flattened)
+├── RequestedByUserName (flattened)
+├── AssetName (flattened)
 └── Notes and completion tracking
 
 Users
 ├── Id, Username, Email, PasswordHash
 ├── FirstName, LastName, Role, IsActive
 ├── CreatedAt, LastLoginAt
-└── PhoneNumber, Department
+└── PhoneNumber (optional)
 
 Inventory
 ├── Id, Name, Model, SerialNumber, Category
 ├── Status, Location, Purchase information
 ├── Warranty and maintenance data
+├── Description (optional)
 └── Specifications and contact info
 
 Messages
-├── Id, Content, SenderUserId (FK)
-├── RecipientUserId (FK), SentAt
+├── Id, Content, SenderId (FK)
+├── ReceiverId (FK), SentAt
 ├── IsRead, MessageType
 └── Group messaging support
 
 Procedures
 ├── Id, Title, Description, Category
-├── Steps, EstimatedDuration
-├── IsActive, Version
+├── Steps, IsActive, Version
 └── Creation and update tracking
 
-Complaints (Worker/Customer)
+WorkerComplaints
 ├── Id, Subject, Description, Priority
 ├── Status, Category, SubmittedAt
-├── AssignedToUserId (FK)
-└── Contact and resolution information
+├── SubmittedByUserId (FK, optional)
+├── Type ('worker')
+└── Resolution information
+
+CustomerComplaints
+├── Id, Subject, Description, Priority
+├── Status, Category, SubmittedAt
+├── AssignedToUserId (FK, optional)
+├── CustomerName (optional), CustomerEmail (optional)
+├── Type ('customer')
+└── Resolution information
 ```
 
 ## 🔐 Security Features
 
 - **JWT Token Authentication** with configurable expiration
-- **Role-based Authorization** (Admin, Manager, Staff, Viewer)
-- **Password Hashing** using PBKDF2 with salt
+- **Role-based Authorization** (Admin, Manager, Worker)
+- **Password Hashing** using secure algorithms
 - **CORS Configuration** for cross-origin requests
 - **Input Validation** with FluentValidation
 - **SQL Injection Protection** via Entity Framework parameterization
+- **Secure credential management** (gitignored configuration files)
 
 ## 📡 API Endpoints
 
@@ -176,9 +201,9 @@ Complaints (Worker/Customer)
 ### Users
 - `GET /api/users` - List all users (Admin/Manager only)
 - `GET /api/users/{id}` - Get user by ID
-- `POST /api/users` - Create user (Admin only)
+- `POST /api/users` - Create user (Admin only, requires username)
 - `PUT /api/users/{id}` - Update user
-- `PUT /api/users/{id}/change-password` - Change password
+- `PUT /api/users/{id}/change-password` - Change password (requires confirmPassword)
 - `PUT /api/users/{id}/activate` - Activate user (Admin only)
 - `PUT /api/users/{id}/deactivate` - Deactivate user (Admin only)
 
@@ -192,12 +217,11 @@ Complaints (Worker/Customer)
 - `POST /api/inventory/{id}/maintenance` - Record maintenance
 
 ### Complaints
-- `GET /api/complaints/worker` - Worker complaints
-- `GET /api/complaints/customer` - Customer complaints
-- `POST /api/complaints/worker` - Submit worker complaint
-- `POST /api/complaints/customer` - Submit customer complaint
-- `PUT /api/complaints/worker/{id}/status` - Update status
-- `PUT /api/complaints/customer/{id}/status` - Update status
+- `GET /api/complaints` - List all complaints (unified endpoint)
+- `GET /api/complaints/{id}` - Get complaint by ID
+- `POST /api/complaints` - Submit complaint (type: 'worker' or 'customer' in request body)
+- `PUT /api/complaints/{id}/status` - Update complaint status
+- `PUT /api/complaints/{id}/assign` - Assign complaint
 - `GET /api/complaints/reports/summary` - Analytics summary
 
 ### Messages
@@ -221,13 +245,12 @@ Complaints (Worker/Customer)
 - `GET /api/reports/workorders/performance` - Work order analytics
 - `GET /api/reports/inventory/utilization` - Inventory utilization
 - `GET /api/reports/complaints/analysis` - Complaint analysis
-- `GET /api/reports/financial/summary` - Financial overview (Admin only)
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 - **.NET 9.0 SDK** or later
-- **SQL Server** (LocalDB for development)
+- **PostgreSQL** (version 12+ recommended)
 - **Visual Studio 2022** or **VS Code**
 - **Node.js 18+** (for frontend development)
 
@@ -239,11 +262,11 @@ Complaints (Worker/Customer)
    cd HotelMiniERP/backend
    ```
 
-2. **Update connection string** in `appsettings.json`:
+2. **Update connection string** in `appsettings.Development.json`:
    ```json
    {
      "ConnectionStrings": {
-       "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=HotelMiniERP;Trusted_Connection=true;MultipleActiveResultSets=true"
+       "DefaultConnection": "Host=localhost;Database=HotelMiniERP_Dev;Username=postgres;Password=postgres"
      }
    }
    ```
@@ -251,7 +274,7 @@ Complaints (Worker/Customer)
 3. **Run database migrations**:
    ```bash
    cd HotelMiniERP.Infrastructure
-   dotnet ef database update
+   dotnet ef database update --startup-project ../HotelMiniERP.API
    ```
 
 4. **Build and run the API**:
@@ -260,31 +283,38 @@ Complaints (Worker/Customer)
    dotnet run
    ```
 
-5. **Access Swagger documentation**: Navigate to `https://localhost:5253/swagger`
+5. **Access Swagger documentation**: Navigate to `http://localhost:5000/swagger`
 
-### Configuration
+### Frontend Setup
 
-#### JWT Settings (appsettings.json)
-```json
-{
-  "JwtSettings": {
-    "SecretKey": "your-super-secret-jwt-signing-key-here-minimum-32-characters-long",
-    "Issuer": "HotelMiniERP",
-    "Audience": "HotelMiniERPUsers",
-    "ExpirationInDays": 7
-  }
-}
-```
+1. **Navigate to frontend directory**
+   ```bash
+   cd frontend
+   ```
 
-#### CORS Policy
-```json
-{
-  "AllowedOrigins": [
-    "http://localhost:3000",
-    "https://localhost:3001"
-  ]
-}
-```
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Update API URL** in `src/config/index.ts` if needed (default: http://localhost:5000/api)
+
+4. **Start development server**
+   ```bash
+   npm start
+   ```
+
+5. **Access application**: Navigate to `http://localhost:3000`
+
+### Default User Accounts
+
+After database seeding:
+
+- **Admin**: username: `admin`, password: `Admin@123`
+- **Manager**: username: `manager`, password: `Manager@123`
+- **Workers**: username: `worker1`/`worker2`, password: `Worker@123`
+
+⚠️ **Change all default passwords in production!**
 
 ## 🔧 Development
 
@@ -295,6 +325,27 @@ Complaints (Worker/Customer)
 3. **Infrastructure**: Add repository implementations and configurations
 4. **API**: Create controllers with proper authorization
 
+### Important DTO Pattern
+
+The backend uses **flattened DTOs** instead of nested objects:
+
+```typescript
+// ✅ Correct: Flattened properties
+interface WorkOrder {
+  assignedToUserName: string;  // NOT assignedToUser: User
+  requestedByUserName: string; // NOT requestedByUser: User
+  assetName: string;           // NOT asset: Asset
+}
+```
+
+Frontend types must match this pattern to avoid compilation errors.
+
+### ID Type Conversions
+
+- Frontend uses **string IDs** (e.g., `user.id` is string)
+- Backend expects **integer IDs** in DTOs
+- Always convert when sending to backend: `Number(user.id)` or `parseInt(userId)`
+
 ### Database Migrations
 
 ```bash
@@ -303,6 +354,9 @@ dotnet ef migrations add MigrationName --project HotelMiniERP.Infrastructure --s
 
 # Update database
 dotnet ef database update --project HotelMiniERP.Infrastructure --startup-project HotelMiniERP.API
+
+# Remove last migration (if not applied)
+dotnet ef migrations remove --project HotelMiniERP.Infrastructure --startup-project HotelMiniERP.API
 ```
 
 ### Running Tests
@@ -310,62 +364,30 @@ dotnet ef database update --project HotelMiniERP.Infrastructure --startup-projec
 dotnet test
 ```
 
-## 📝 Next Steps
+## 📝 Current Implementation Status
 
-### Immediate Implementation Tasks
+### ✅ Fully Implemented
+- User authentication and authorization
+- Asset management with depreciation
+- Work order creation and assignment
+- Complaint submission and tracking (both worker and customer)
+- Real-time messaging with SignalR
+- Inventory tracking
+- Procedure library
+- Role-based access control
+- Work order creation from assets and complaints
+- Frontend/backend type alignment
 
-1. **Complete CQRS Handlers**
-   - Implement all MediatR commands and queries
-   - Add proper validation and business logic
-   - Create comprehensive unit tests
+### 🔄 In Progress
+- Advanced reporting and analytics
+- Email notifications
+- File upload capabilities
 
-2. **Database Integration**
-   - Set up Entity Framework migrations
-   - Seed initial data (admin user, default categories)
-   - Configure production database settings
-
-3. **Authentication Enhancement**
-   - Implement user registration workflow
-   - Add password reset functionality
-   - Set up refresh token mechanism
-
-4. **Frontend Development**
-   - Initialize React + TypeScript project
-   - Set up Material-UI theme and components
-   - Implement authentication context
-   - Create responsive dashboard layout
-   - Build CRUD interfaces for all modules
-
-5. **Real-time Features**
-   - Enhance SignalR hub with user groups
-   - Add notification system
-   - Implement live dashboard updates
-
-### Future Enhancements
-
-1. **Advanced Features**
-   - File upload for asset images/documents
-   - Barcode/QR code generation for assets
-   - Advanced reporting with charts and graphs
-   - Email notifications for critical events
-   - Audit trail and activity logging
-
-2. **Mobile Responsiveness**
-   - Progressive Web App (PWA) features
-   - Mobile-optimized interfaces
-   - Offline capability for critical functions
-
-3. **Integration Capabilities**
-   - REST API for third-party integrations
-   - Export capabilities (PDF, Excel, CSV)
-   - Integration with external maintenance systems
-   - Calendar integration for scheduling
-
-4. **Performance Optimization**
-   - Implement caching strategies
-   - Add API rate limiting
-   - Optimize database queries
-   - Implement background job processing
+### 📋 Planned
+- Barcode/QR code generation
+- Mobile app development
+- Advanced audit trail
+- Third-party integrations
 
 ## 📄 License
 
@@ -381,4 +403,30 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 📞 Support
 
-For support, email support@hotelmini-erp.com or create an issue in this repository.
+For support, create an issue in this repository.
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+1. **Database connection errors**
+   - Verify PostgreSQL is running
+   - Check connection string in `appsettings.Development.json`
+   - Ensure database exists: `psql -U postgres -l`
+
+2. **Frontend compilation errors**
+   - Ensure types match backend DTOs (flattened properties)
+   - Convert IDs to numbers when sending to backend
+   - Check that optional fields are handled correctly
+
+3. **SignalR connection issues**
+   - Verify backend is running on expected port
+   - Check CORS configuration
+   - Ensure SignalR hub is registered in backend
+
+4. **JWT token errors**
+   - Clear localStorage and login again
+   - Verify JWT secret key is at least 256 bits
+   - Check token expiration settings
+
+See CONFIGURATION.md for detailed setup and troubleshooting guide.
