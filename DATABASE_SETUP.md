@@ -67,24 +67,24 @@
 
 1. **HVAC System - Lobby** (HVAC-001)
    - Category: HVAC
-   - Purchase Price: $15,000
-   - Current Value: $12,000
+   - Purchase Price:GHC15,000
+   - Current Value:GHC12,000
    - Depreciation Rate: 20%
    - Location: Lobby
    - Status: Active
 
 2. **Elevator System - Main** (ELEV-001)
    - Category: Elevator
-   - Purchase Price: $50,000
-   - Current Value: $35,000
+   - Purchase Price:GHC50,000
+   - Current Value:GHC35,000
    - Depreciation Rate: 15%
    - Location: Main Building
    - Status: Active
 
 3. **Water Heater - Floor 3** (WHT-003)
    - Category: Plumbing
-   - Purchase Price: $2,500
-   - Current Value: $1,800
+   - Purchase Price:GHC2,500
+   - Current Value:GHC1,800
    - Depreciation Rate: 25%
    - Location: Floor 3 - Utility Room
    - Status: Active
@@ -95,7 +95,7 @@
    - Category: Cleaning
    - Brand: CleanPro
    - Model: CP-5000
-   - Unit Cost: $500
+   - Unit Cost:GHC500
    - Location: Housekeeping Storage
    - Status: Available
 
@@ -103,7 +103,7 @@
    - Category: Tools
    - Brand: ToolMaster
    - Model: TM-Professional
-   - Unit Cost: $1,200
+   - Unit Cost:GHC1,200
    - Location: Maintenance Room
    - Status: Available
 

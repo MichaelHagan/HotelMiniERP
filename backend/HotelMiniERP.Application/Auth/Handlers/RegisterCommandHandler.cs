@@ -1,11 +1,11 @@
-using HotelMiniERP.Application.Commands.Auth;
+using HotelMiniERP.Application.Auth.Commands;
 using HotelMiniERP.Application.Interfaces;
 using HotelMiniERP.Application.DTOs;
 using HotelMiniERP.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HotelMiniERP.Application.Handlers.Auth;
+namespace HotelMiniERP.Application.Auth.Handlers;
 
 public class RegisterCommandHandler : IRequestHandler<RegisterCommand, UserDto>
 {

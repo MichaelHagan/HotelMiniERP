@@ -399,7 +399,7 @@ export const DashboardPage: React.FC = () => {
               Dashboard automatically refreshes every minute to show the latest data from all modules.
             </Typography>
             <Typography variant="caption" color="textSecondary">
-              Total Asset Value: ${assets?.totalValue?.toLocaleString() || '0'}
+              Total Asset Value: GHC{assets?.totalValue?.toLocaleString() || '0'}
             </Typography>
           </Box>
         </CardContent>

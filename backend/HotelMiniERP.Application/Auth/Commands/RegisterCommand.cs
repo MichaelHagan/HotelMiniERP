@@ -2,7 +2,7 @@ using HotelMiniERP.Application.DTOs;
 using HotelMiniERP.Domain.Enums;
 using MediatR;
 
-namespace HotelMiniERP.Application.Commands.Auth;
+namespace HotelMiniERP.Application.Auth.Commands;
 
 public class RegisterCommand : IRequest<UserDto>
 {

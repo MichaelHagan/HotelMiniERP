@@ -1,7 +1,7 @@
 using HotelMiniERP.Application.DTOs;
 using MediatR;
 
-namespace HotelMiniERP.Application.Commands.Auth;
+namespace HotelMiniERP.Application.Auth.Commands;
 
 public class LoginCommand : IRequest<LoginResponseDto>
 {

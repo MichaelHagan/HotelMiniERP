@@ -30,7 +30,7 @@ import {
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { messageService } from '../../services/messageService';
-import { Message, MessageType, User, UserRole } from '../../types';
+import { Message, MessageType, UserRole } from '../../types';
 import { MessageDialog } from './MessageDialog';
 import { ConversationView } from './ConversationView';
 import { useAuth } from '../../context/AuthContext';

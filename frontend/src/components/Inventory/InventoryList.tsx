@@ -4,14 +4,9 @@ import {
   Button,
   Card,
   CardContent,
-  Chip,
-  FormControl,
   IconButton,
   InputAdornment,
-  InputLabel,
-  MenuItem,
   Paper,
-  Select,
   Table,
   TableBody,
   TableCell,
@@ -29,15 +24,14 @@ import {
   Delete as DeleteIcon,
   Visibility as ViewIcon,
   Search as SearchIcon,
-  Build as MaintenanceIcon,
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { inventoryService } from '../../services/inventoryService';
 import { Inventory, InventoryQueryParams, UserRole } from '../../types';
 import InventoryDialog from './InventoryDialog';
 import InventoryDetailDialog from './InventoryDetailDialog';
-import { formatDateTime } from '../../utils/dateUtils';
 import { useAuth } from '../../context/AuthContext';
+import { formatCurrency } from '../../utils/formatUtils';
 
 const InventoryList: React.FC = () => {
   const queryClient = useQueryClient();
@@ -196,7 +190,7 @@ const InventoryList: React.FC = () => {
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2">
-                      {item.unitCost ? `$${item.unitCost.toFixed(2)}` : '-'}
+                      {item.unitCost ? `${formatCurrency(item.unitCost)}` : '-'}
                     </Typography>
                   </TableCell>
                   <TableCell>

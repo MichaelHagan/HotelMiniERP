@@ -1,5 +1,5 @@
 using FluentValidation;
-using HotelMiniERP.Application.Commands.Auth;
+using HotelMiniERP.Application.Auth.Commands;
 using System.Text.RegularExpressions;
 
 namespace HotelMiniERP.Application.Validators.Auth;

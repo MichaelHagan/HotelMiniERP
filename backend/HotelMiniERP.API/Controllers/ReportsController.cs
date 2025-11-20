@@ -425,7 +425,7 @@ public class ReportsController : ControllerBase
                 },
                 ROI = new
                 {
-                    MaintenanceROI = 3.2, // Every $1 spent on maintenance saves $3.20 in emergency repairs
+                    MaintenanceROI = 3.2, // Every GHC1 spent on maintenance saves GHC3.20 in emergency repairs
                     AssetUtilizationValue = 67500.00m,
                     CostSavings = 15200.00m
                 }

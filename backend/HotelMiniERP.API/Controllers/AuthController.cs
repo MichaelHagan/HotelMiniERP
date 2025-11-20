@@ -1,4 +1,4 @@
-using HotelMiniERP.Application.Commands.Auth;
+using HotelMiniERP.Application.Auth.Commands;
 using HotelMiniERP.Application.DTOs;
 using HotelMiniERP.Application.Users.Queries;
 using MediatR;

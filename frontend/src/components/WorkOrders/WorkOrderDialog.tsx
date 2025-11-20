@@ -24,9 +24,7 @@ import {
   CreateWorkOrderDto,
   UpdateWorkOrderDto,
   Priority,
-  WorkOrderStatus,
-  WorkerComplaint,
-  CustomerComplaint,
+  WorkOrderStatus
 } from '../../types';
 
 interface WorkOrderDialogProps {
