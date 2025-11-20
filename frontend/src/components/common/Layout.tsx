@@ -101,7 +101,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     <div>
       <Toolbar>
         <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 600 }}>
-          Hotel Mini ERP
+          BGH OpCenter
         </Typography>
       </Toolbar>
       <Divider />

@@ -16,5 +16,5 @@ namespace HotelMiniERP.Domain.Entities;
 
         // Navigation properties
         public virtual ICollection<WorkOrder> WorkOrders { get; set; } = new List<WorkOrder>();
-        public virtual ICollection<Inventory> InventoryItems { get; set; } = new List<Inventory>();
+        public virtual ICollection<StockTransaction> StockTransactions { get; set; } = new List<StockTransaction>();
     }

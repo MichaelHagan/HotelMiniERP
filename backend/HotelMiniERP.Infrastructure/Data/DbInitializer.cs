@@ -147,34 +147,26 @@ public static class DbInitializer
         var inventory1 = new Inventory
         {
             Name = "Vacuum Cleaner - Industrial",
-            Code = "VAC-001",
             Description = "Heavy-duty vacuum cleaner for carpets",
             Category = "Cleaning",
-            Brand = "CleanPro",
-            Model = "CP-5000",
             UnitCost = 500.00m,
             Location = "Housekeeping Storage",
-            Quantity = 5,
+            Quantity = 0, // Will be updated via stock transactions
             MinimumStock = 2,
-            VendorId = null, // Will be linked to vendor later
-            LastRestockedDate = DateTime.UtcNow.AddMonths(-1),
+            LastRestockedDate = null,
             CreatedAt = DateTime.UtcNow
         };
 
         var inventory2 = new Inventory
         {
             Name = "Toolset - Maintenance",
-            Code = "TOOL-001",
             Description = "Complete toolset for general maintenance",
             Category = "Tools",
-            Brand = "ToolMaster",
-            Model = "TM-Professional",
             UnitCost = 1200.00m,
             Location = "Maintenance Room",
-            Quantity = 3,
+            Quantity = 0, // Will be updated via stock transactions
             MinimumStock = 1,
-            VendorId = null, // Will be linked to vendor later
-            LastRestockedDate = DateTime.UtcNow.AddMonths(-2),
+            LastRestockedDate = null,
             CreatedAt = DateTime.UtcNow
         };
 

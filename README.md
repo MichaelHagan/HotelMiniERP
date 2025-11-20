@@ -1,6 +1,6 @@
-# Hotel Mini ERP System
+# BGH Operations Hub
 
-A comprehensive Hotel Management ERP system built with ASP.NET Core Clean Architecture, featuring asset management, work orders, user management, inventory tracking, complaint handling, messaging, and comprehensive reporting capabilities.
+A comprehensive operations management system built with ASP.NET Core Clean Architecture, featuring asset management, inventory control with full stock transaction tracking, work orders, user management, vendor management, complaint handling, real-time messaging, and comprehensive reporting capabilities.
 
 ## 🏗️ Architecture
 
@@ -37,12 +37,16 @@ The system follows Clean Architecture principles with CQRS (Command Query Respon
    - Active/inactive user management
    - User search and filtering
 
-4. **Inventory Management**
-   - Inventory tracking and categorization
-   - Maintenance scheduling and history
-   - Utilization reporting
-   - Status management (Available, In Use, Maintenance)
-   - Stock level monitoring
+4. **Inventory & Stock Management**
+   - Inventory item tracking and categorization
+   - **Stock Transaction System**: Full audit trail of all stock movements
+   - **Restock Operations**: Track vendor, cost, and date per transaction
+   - **Stock Reductions**: Categorized reasons (Spoilage, Used, Damaged, Lost, Expired, Other)
+   - Real-time stock quantity updates
+   - Low stock alerts and minimum stock thresholds
+   - Stock history viewing with transaction details
+   - Separation of inventory metadata from stock movements
+   - Unit cost tracking per transaction
 
 5. **Complaint Management**
    - **Worker Complaints**: Internal HR and workplace issues
@@ -66,7 +70,14 @@ The system follows Clean Architecture principles with CQRS (Command Query Respon
    - Searchable knowledge base
    - Active/inactive status management
 
-8. **Comprehensive Reporting**
+8. **Vendor Management**
+   - Vendor database with contact information
+   - Service/product categorization
+   - Active/inactive vendor tracking
+   - Integration with inventory restock transactions
+   - Vendor performance tracking via stock history
+
+9. **Comprehensive Reporting**
    - Dashboard with key metrics
    - Asset depreciation reports
    - Work order performance analytics
@@ -128,11 +139,26 @@ Users
 └── PhoneNumber (optional)
 
 Inventory
-├── Id, Name, Model, SerialNumber, Category
-├── Status, Location, Purchase information
-├── Warranty and maintenance data
-├── Description (optional)
-└── Specifications and contact info
+├── Id, Name, Description, Category
+├── Location, Quantity, MinimumStock
+├── UnitCost (current catalog price)
+├── LastRestockedDate
+└── Notes
+
+StockTransactions
+├── Id, InventoryId (FK), TransactionType
+├── Quantity, VendorId (FK, optional)
+├── TransactionDate, ReductionReason (optional)
+├── Notes, UnitCost (transaction-specific)
+├── CreatedByUserId (FK, optional)
+└── Audit fields (CreatedAt, UpdatedAt)
+
+Vendors
+├── Id, Name, ContactPerson
+├── Email, Phone, Address
+├── Services (description of what they provide)
+├── IsActive
+└── Audit fields
 
 Messages
 ├── Id, Content, SenderId (FK)
@@ -207,14 +233,20 @@ CustomerComplaints
 - `PUT /api/users/{id}/activate` - Activate user (Admin only)
 - `PUT /api/users/{id}/deactivate` - Deactivate user (Admin only)
 
-### Inventory
+### Inventory & Stock Transactions
 - `GET /api/inventory` - List inventory with pagination
 - `GET /api/inventory/{id}` - Get inventory by ID
-- `POST /api/inventory` - Create inventory entry
-- `PUT /api/inventory/{id}` - Update inventory
-- `PUT /api/inventory/{id}/status` - Update status
-- `GET /api/inventory/maintenance-schedule` - Maintenance schedule
-- `POST /api/inventory/{id}/maintenance` - Record maintenance
+- `POST /api/inventory` - Create inventory entry (metadata only, quantity starts at 0)
+- `PUT /api/inventory/{id}` - Update inventory metadata
+- `POST /api/stocktransactions` - Create stock transaction (restock or reduction)
+- `GET /api/stocktransactions/inventory/{inventoryId}` - Get transaction history
+
+### Vendors
+- `GET /api/vendors` - List all vendors
+- `GET /api/vendors/{id}` - Get vendor by ID
+- `POST /api/vendors` - Create vendor
+- `PUT /api/vendors/{id}` - Update vendor
+- `DELETE /api/vendors/{id}` - Delete vendor
 
 ### Complaints
 - `GET /api/complaints` - List all complaints (unified endpoint)
@@ -372,7 +404,10 @@ dotnet test
 - Work order creation and assignment
 - Complaint submission and tracking (both worker and customer)
 - Real-time messaging with SignalR
-- Inventory tracking
+- **Inventory tracking with full stock transaction system**
+- **Stock restock and reduction operations**
+- **Vendor management and tracking**
+- **Stock history audit trail**
 - Procedure library
 - Role-based access control
 - Work order creation from assets and complaints

@@ -19,6 +19,7 @@ namespace HotelMiniERP.Infrastructure.Data
         public DbSet<Procedure> Procedures { get; set; } = null!;
         public DbSet<Inventory> Inventory { get; set; } = null!;
         public DbSet<Vendor> Vendors { get; set; } = null!;
+        public DbSet<StockTransaction> StockTransactions { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -175,17 +176,36 @@ namespace HotelMiniERP.Infrastructure.Data
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
-                entity.Property(e => e.Code).IsRequired().HasMaxLength(50);
-                entity.HasIndex(e => e.Code).IsUnique();
-                entity.Property(e => e.Description).IsRequired().HasMaxLength(1000);
+                entity.Property(e => e.Description).HasMaxLength(1000);
                 entity.Property(e => e.Category).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.Location).IsRequired().HasMaxLength(200);
                 entity.Property(e => e.UnitCost).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.Notes).HasMaxLength(1000);
+            });
+
+            // StockTransaction Configuration
+            modelBuilder.Entity<StockTransaction>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Quantity).IsRequired();
+                entity.Property(e => e.TransactionDate).IsRequired();
+                entity.Property(e => e.UnitCost).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.Notes).HasMaxLength(1000);
 
                 // Relationships
-                entity.HasOne(i => i.Vendor)
-                    .WithMany(v => v.InventoryItems)
-                    .HasForeignKey(i => i.VendorId)
+                entity.HasOne(st => st.Inventory)
+                    .WithMany(i => i.StockTransactions)
+                    .HasForeignKey(st => st.InventoryId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(st => st.Vendor)
+                    .WithMany()
+                    .HasForeignKey(st => st.VendorId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(st => st.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(st => st.CreatedByUserId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 

@@ -12,11 +12,9 @@ import {
   Select,
   MenuItem,
   CircularProgress,
-  Autocomplete,
 } from '@mui/material';
-import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { inventoryService } from '../../services/inventoryService';
-import { vendorService } from '../../services/vendorService';
 import {
   Inventory,
   CreateInventoryDto,
@@ -51,23 +49,13 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({ open, onClose, invent
   const queryClient = useQueryClient();
   const isEditMode = Boolean(inventory);
 
-  // Fetch vendors for dropdown
-  const { data: vendorsData } = useQuery({
-    queryKey: ['vendors', { isActive: true }],
-    queryFn: () => vendorService.getVendors(true),
-  });
-
   const [formData, setFormData] = useState<CreateInventoryDto | UpdateInventoryDto>({
     name: '',
     description: '',
-    model: '',
     location: '',
     category: '',
-    quantity: 0,
     minimumStock: 0,
     unitCost: 0,
-    vendorId: undefined,
-    lastRestockedDate: '',
   });
 
   const createMutation = useMutation({
@@ -94,26 +82,17 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({ open, onClose, invent
         description: inventory.description,
         location: inventory.location,
         category: inventory.category,
-        quantity: inventory.quantity,
         minimumStock: inventory.minimumStock,
         unitCost: inventory.unitCost,
-        vendorId: inventory.vendorId,
-        lastRestockedDate: inventory.lastRestockedDate
-          ? new Date(inventory.lastRestockedDate).toISOString().slice(0, 10)
-          : undefined,
       });
     } else {
       setFormData({
         name: '',
         description: '',
-        model: '',
         location: '',
         category: '',
-        quantity: 0,
         minimumStock: 0,
         unitCost: 0,
-        vendorId: undefined,
-        lastRestockedDate: '',
       });
     }
   }, [inventory, open]);
@@ -122,14 +101,10 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({ open, onClose, invent
     setFormData({
       name: '',
       description: '',
-      model: '',
       location: '',
       category: '',
-      quantity: 0,
       minimumStock: 0,
       unitCost: 0,
-      vendorId: undefined,
-      lastRestockedDate: '',
     });
     onClose();
   };
@@ -137,18 +112,10 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({ open, onClose, invent
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Convert lastRestockedDate to ISO 8601 format if provided
-    const preparedData = {
-      ...formData,
-      lastRestockedDate: formData.lastRestockedDate 
-        ? new Date(formData.lastRestockedDate).toISOString() 
-        : undefined
-    };
-    
     if (isEditMode && inventory) {
-      updateMutation.mutate({ id: inventory.id, data: preparedData as UpdateInventoryDto });
+      updateMutation.mutate({ id: inventory.id, data: formData as UpdateInventoryDto });
     } else {
-      createMutation.mutate(preparedData as CreateInventoryDto);
+      createMutation.mutate(formData as CreateInventoryDto);
     }
   };
 
@@ -184,15 +151,6 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({ open, onClose, invent
                 />
               </Box>
 
-              <TextField
-                required
-                fullWidth
-                label="Model"
-                value={(formData as CreateInventoryDto).model || (formData as UpdateInventoryDto).name || ''}
-                onChange={(e) => handleChange('model', e.target.value)}
-                disabled={isEditMode}
-              />
-
               <FormControl fullWidth required>
                 <InputLabel>Category</InputLabel>
                 <Select
@@ -215,33 +173,6 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({ open, onClose, invent
                 placeholder="e.g., Basement, Kitchen, Lobby"
               />
 
-              <Autocomplete
-                fullWidth
-                options={vendorsData || []}
-                getOptionLabel={(option) => option.name}
-                value={vendorsData?.find((v) => v.id === formData.vendorId) || null}
-                onChange={(_, newValue) => {
-                  handleChange('vendorId', newValue?.id);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Vendor"
-                    placeholder="Select a vendor"
-                  />
-                )}
-              />
-
-              <TextField
-                required
-                fullWidth
-                type="number"
-                label="Quantity"
-                value={formData.quantity || ''}
-                onChange={(e) => handleChange('quantity', e.target.value ? Number(e.target.value) : 0)}
-                inputProps={{ min: 0 }}
-              />
-
               <TextField
                 fullWidth
                 type="number"
@@ -261,17 +192,6 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({ open, onClose, invent
                 inputProps={{ min: 0, step: 0.01 }}
                 placeholder="Cost per unit"
               />
-
-              {isEditMode && (
-                <TextField
-                  fullWidth
-                  type="date"
-                  label="Last Restocked Date"
-                  value={(formData as UpdateInventoryDto).lastRestockedDate || ''}
-                  onChange={(e) => handleChange('lastRestockedDate', e.target.value)}
-                  InputLabelProps={{ shrink: true }}
-                />
-              )}
 
             </Box>
           </Box>

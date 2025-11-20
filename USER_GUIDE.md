@@ -1,4 +1,4 @@
-# Hotel Mini ERP - Complete User Guide
+# BGH Operations Hub - Complete User Guide
 
 ## 📋 Table of Contents
 1. [Application Overview](#application-overview)
@@ -13,12 +13,14 @@
 
 ## 🎯 Application Overview
 
-**Hotel Mini ERP** is a comprehensive Enterprise Resource Planning system designed specifically for hotel operations management. It provides a centralized platform to manage assets, work orders, inventory, team members, complaints, messaging, procedures, and generate detailed reports.
+**BGH Operations Hub** is a comprehensive Enterprise Resource Planning system designed specifically for hotel operations management. It provides a centralized platform to manage assets, work orders, inventory, team members, complaints, messaging, procedures, and generate detailed reports.
 
 ### Core Capabilities
 - **Asset Management**: Track hotel assets with depreciation, maintenance, and lifecycle management
 - **Work Order System**: Create, assign, and track maintenance and operational tasks
-- **Inventory Inventory**: Manage inventory stock, availability, and maintenance schedules
+- **Inventory Control**: Manage inventory stock with full transaction audit trail, restock operations, and stock reduction tracking
+- **Stock Transaction System**: Complete tracking of all inventory movements (restocks, reductions) with vendor integration and audit history
+- **Vendor Management**: Maintain vendor database with contact information and service tracking
 - **Team Management**: User administration with role-based access control
 - **Complaint Handling**: Process both customer and worker complaints with resolution tracking
 - **Real-time Messaging**: Internal communication system with SignalR
@@ -94,12 +96,13 @@ The application uses a **responsive sidebar navigation** with the following stru
 1. **📊 Dashboard** - Overview of all modules
 2. **📦 Assets** - Asset register and management
 3. **📋 Work Orders** - Task management
-4. **🔧 Inventory** - Inventory inventory
-5. **👥 Users** - Team management (Admin/Manager only)
-6. **📢 Complaints** - Customer and worker complaints
-7. **💬 Messaging** - Internal messaging system
-8. **📚 Procedures** - Procedure library
-9. **📈 Reports** - Analytics and reports
+4. **🔧 Inventory** - Inventory control with stock transactions
+5. **🏢 Vendors** - Vendor management and tracking
+6. **👥 Users** - Team management (Admin/Manager only)
+7. **📢 Complaints** - Customer and worker complaints
+8. **💬 Messaging** - Internal messaging system
+9. **📚 Procedures** - Procedure library
+10. **📈 Reports** - Analytics and reports
 
 ### Navigation Features
 
@@ -272,31 +275,60 @@ The application uses a **responsive sidebar navigation** with the following stru
 
 ---
 
-### 4. Inventory Inventory (`/inventory`)
+### 4. Inventory Control (`/inventory`)
 
-**Purpose**: Track maintenance inventory, tools, and supplies
+**Purpose**: Track maintenance inventory, tools, and supplies with complete stock transaction audit trail
 
 **Features**:
-- **Inventory List**: Searchable, filterable table
-- **Create Inventory**: Add new inventory items
-- **Update Inventory**: Modify details and status
+- **Inventory List**: Searchable, filterable table with current stock levels
+- **Create Inventory**: Add new inventory items (metadata only, quantity starts at 0)
+- **Update Inventory**: Modify metadata (name, category, location, etc.)
+- **Stock Transaction System**: All stock movements tracked via transactions
+- **Restock Operations**: Add stock with vendor tracking and cost recording
+- **Stock Reductions**: Remove stock with categorized reasons (damaged, lost, used, etc.)
+- **Stock History**: Complete audit trail of all stock movements
 - **Status Management**: Available, In Use, Under Maintenance, Out of Order
 - **Maintenance Tracking**: Schedule and track maintenance
 - **Filters**: By category, status, location
 
-**Inventory Information**:
+**Inventory Information** (Metadata):
 - Name & Code (unique)
 - Description & Category
 - Brand, Model, Serial Number
-- Unit Cost & Quantity
+- Unit Cost (reference price)
+- **Quantity** (READ-ONLY, updated only via stock transactions)
 - Location
 - Status
 - Purchase Date
 - Warranty Expiry
 - Last Maintenance Date
 - Next Maintenance Date
+- Last Restocked Date (auto-updated on restock)
 - Maintenance Notes
 - Minimum Stock Level
+
+**Stock Transaction Types**:
+
+1. **Restock (Add Stock)**:
+   - Transaction Type: Restock
+   - Requires: Vendor selection
+   - Records: Quantity added, unit cost, vendor, date
+   - Updates: Inventory quantity (increases), LastRestockedDate
+
+2. **Reduction (Remove Stock)**:
+   - Transaction Type: Reduction
+   - Requires: Reduction reason
+   - Records: Quantity removed, reason, date
+   - Updates: Inventory quantity (decreases)
+   - Prevents negative stock
+
+**Stock Reduction Reasons**:
+- **Damaged**: Item damaged and unusable
+- **Expired**: Item past expiration date
+- **Lost**: Item lost or missing
+- **Stolen**: Item stolen
+- **Used**: Item consumed/used in operations
+- **Other**: Other reasons (specify in notes)
 
 **How to Create Inventory**:
 1. Click **"+ Add Inventory"**
@@ -304,29 +336,145 @@ The application uses a **responsive sidebar navigation** with the following stru
    - Name
    - Code (unique)
    - Category
-   - Unit Cost
-   - Quantity
+   - Unit Cost (reference price)
 3. Optionally add:
    - Brand, Model, Serial Number
    - Location
    - Purchase Date
    - Warranty Information
    - Maintenance Schedule
+   - Minimum Stock Level
 4. Click **"Save"**
+5. **Note**: Quantity starts at 0. Use "Update Stock" to add initial inventory.
 
-**How to Update Inventory Status**:
+**How to Restock Inventory (Add Stock)**:
+1. Open inventory item from list
+2. Click **"Update Stock"** button
+3. In Update Stock dialog:
+   - Select **Transaction Type**: "Restock"
+   - Enter **Quantity** to add (must be positive)
+   - Select **Vendor** (required for restock)
+   - Enter **Unit Cost** (actual cost from this vendor)
+   - Add **Notes** (optional, e.g., "Purchase order #12345")
+4. Click **"Save"**
+5. **Result**:
+   - Inventory quantity increases
+   - LastRestockedDate updated
+   - Transaction recorded in history
+
+**How to Reduce Stock**:
+1. Open inventory item from list
+2. Click **"Update Stock"** button
+3. In Update Stock dialog:
+   - Select **Transaction Type**: "Reduction"
+   - Enter **Quantity** to remove (must not exceed current stock)
+   - Select **Reduction Reason** (required)
+   - Add **Notes** (optional, e.g., "Broken during cleaning")
+4. Click **"Save"**
+5. **Result**:
+   - Inventory quantity decreases
+   - Transaction recorded in history
+   - System prevents negative stock
+
+**How to View Stock History**:
+1. Open inventory item from list
+2. Click **"View History"** button
+3. See complete audit trail:
+   - Transaction date and time
+   - Transaction type (Restock/Reduction)
+   - Quantity added or removed
+   - Vendor (for restocks)
+   - Reduction reason (for reductions)
+   - Unit cost (for restocks)
+   - Notes
+   - Created by (user who performed transaction)
+4. History is sorted by date (newest first)
+
+**How to Update Inventory Metadata**:
 1. Open inventory item
-2. Change **Status**:
-   - **Available**: Ready to use
-   - **In Use**: Currently being used
-   - **Under Maintenance**: Being serviced
-   - **Out of Order**: Not functional
-3. Update maintenance dates if needed
+2. Click **"Edit"** (pencil icon)
+3. Modify metadata fields:
+   - Name, category, location
+   - Brand, model, serial number
+   - Status, maintenance dates
+   - **Note**: Quantity cannot be edited directly
 4. Save
+
+**Business Rules**:
+- **Quantity is READ-ONLY**: Can only be changed via stock transactions
+- **Initial Quantity**: New inventory items start with quantity = 0
+- **Restock Requires Vendor**: Must select a vendor when adding stock
+- **Reduction Requires Reason**: Must select a reason when removing stock
+- **No Negative Stock**: System prevents reductions that would result in negative quantity
+- **Audit Trail**: All stock movements are permanently recorded
+- **Unit Cost**: Each restock can have different unit cost (vendor pricing may vary)
+- **LastRestockedDate**: Automatically updated on every restock transaction
 
 ---
 
-### 5. Users/Team Management (`/users`)
+### 5. Vendor Management (`/vendors`)
+
+**Purpose**: Maintain vendor database with contact information and service tracking
+
+**Features**:
+- **Vendor List**: Searchable, filterable table of all vendors
+- **Create Vendor**: Add new vendors with contact details
+- **Edit Vendor**: Update vendor information
+- **Activate/Deactivate**: Control vendor status
+- **Service Tracking**: Track what services each vendor provides
+- **Integration**: Vendors used in inventory restock operations
+- **Filters**: By active status, services
+
+**Vendor Information**:
+- Name (required)
+- Contact Person
+- Email
+- Phone
+- Address
+- Services (e.g., "Office Supplies, Cleaning Products")
+- Is Active status
+- Created/Updated audit fields
+
+**How to Create a Vendor**:
+1. Click **"+ Add Vendor"**
+2. Fill required fields:
+   - Vendor Name
+3. Optionally add:
+   - Contact Person
+   - Email
+   - Phone
+   - Address
+   - Services (comma-separated list)
+4. Set **Is Active** (defaults to true)
+5. Click **"Save"**
+
+**How to Edit a Vendor**:
+1. Find vendor in list
+2. Click **Edit** icon (pencil)
+3. Modify fields as needed
+4. Click **"Save"**
+
+**How to Deactivate a Vendor**:
+1. Open vendor for editing
+2. Uncheck **"Is Active"**
+3. Save
+4. **Note**: Inactive vendors still appear in historical stock transactions
+
+**Using Vendors in Stock Transactions**:
+1. When restocking inventory, select vendor from dropdown
+2. Only **active** vendors appear in selection list
+3. Vendor selection is **required** for all restock operations
+4. Historical transactions retain vendor information even if vendor is deactivated
+
+**Business Rules**:
+- Vendor name is required
+- Vendors can be deactivated but not deleted (to preserve transaction history)
+- Only active vendors can be selected for new restock transactions
+- Services field is free-text (comma-separated for multiple services)
+
+---
+
+### 6. Users/Team Management (`/users`)
 
 **Purpose**: Manage team members and user accounts (Admin/Manager only)
 
@@ -376,7 +524,7 @@ The application uses a **responsive sidebar navigation** with the following stru
 
 ---
 
-### 6. Complaints (`/complaints`)
+### 7. Complaints (`/complaints`)
 
 **Purpose**: Handle customer and worker complaints with resolution tracking
 
@@ -456,7 +604,7 @@ The application uses a **responsive sidebar navigation** with the following stru
 
 ---
 
-### 7. Messaging (`/messaging`)
+### 8. Messaging (`/messaging`)
 
 **Purpose**: Internal communication system with real-time updates
 
@@ -497,7 +645,7 @@ The application uses a **responsive sidebar navigation** with the following stru
 
 ---
 
-### 8. Procedures (`/procedures`)
+### 9. Procedures (`/procedures`)
 
 **Purpose**: Document and manage standard operating procedures (SOPs)
 
@@ -548,7 +696,7 @@ The application uses a **responsive sidebar navigation** with the following stru
 
 ---
 
-### 9. Reports (`/reports`)
+### 10. Reports (`/reports`)
 
 **Purpose**: Generate analytics and insights for decision-making
 
@@ -652,7 +800,59 @@ The application uses a **responsive sidebar navigation** with the following stru
 
 ## 🔧 Common Tasks
 
-### Task 1: Create a Work Order from a Customer Complaint
+### Task 1: Restock Inventory from a Vendor
+
+1. Ensure vendor exists:
+   - Navigate to **Vendors**
+   - If vendor doesn't exist, click **"+ Add Vendor"**
+   - Enter vendor details and save
+2. Navigate to **Inventory**
+3. Find the inventory item to restock
+4. Click **"Update Stock"** button
+5. In the dialog:
+   - Transaction Type: **"Restock"**
+   - Quantity: Enter amount to add (e.g., 50)
+   - Vendor: Select the vendor
+   - Unit Cost: Enter actual cost per unit from this vendor
+   - Notes: Add purchase order or delivery info (optional)
+6. Click **"Save"**
+7. Verify:
+   - Quantity increased in inventory list
+   - LastRestockedDate updated
+   - Transaction appears in stock history
+
+### Task 2: Record Damaged Inventory
+
+1. Navigate to **Inventory**
+2. Find the damaged inventory item
+3. Click **"Update Stock"** button
+4. In the dialog:
+   - Transaction Type: **"Reduction"**
+   - Quantity: Enter amount damaged (e.g., 5)
+   - Reduction Reason: **"Damaged"**
+   - Notes: Describe the damage (e.g., "Water damage in storage room")
+5. Click **"Save"**
+6. Verify:
+   - Quantity decreased in inventory list
+   - Transaction recorded in stock history
+
+### Task 3: Audit Stock Transaction History
+
+1. Navigate to **Inventory**
+2. Find the inventory item to audit
+3. Click **"View History"** button
+4. Review complete audit trail:
+   - All restocks with vendor and cost information
+   - All reductions with reasons
+   - Dates and times of all transactions
+   - User who performed each transaction
+5. Use this information for:
+   - Vendor analysis
+   - Loss/damage tracking
+   - Cost analysis
+   - Compliance audits
+
+### Task 4: Create a Work Order from a Customer Complaint
 
 1. Navigate to **Complaints**
 2. Open the customer complaint
@@ -664,7 +864,7 @@ The application uses a **responsive sidebar navigation** with the following stru
    - Assign to a worker
    - Save
 
-### Task 2: Track Asset Depreciation
+### Task 5: Track Asset Depreciation
 
 1. Navigate to **Assets**
 2. Create or edit an asset
@@ -672,7 +872,7 @@ The application uses a **responsive sidebar navigation** with the following stru
 4. **Current Value** is auto-calculated
 5. View depreciation in **Reports → Asset Depreciation**
 
-### Task 3: Schedule Inventory Maintenance
+### Task 6: Schedule Inventory Maintenance
 
 1. Navigate to **Inventory**
 2. Open inventory item
@@ -681,7 +881,7 @@ The application uses a **responsive sidebar navigation** with the following stru
 5. Update **Status** to "Under Maintenance" when servicing
 6. Update **Last Maintenance Date** after completion
 
-### Task 4: Resolve a Complaint
+### Task 7: Resolve a Complaint
 
 1. Navigate to **Complaints**
 2. Open the complaint
@@ -691,7 +891,7 @@ The application uses a **responsive sidebar navigation** with the following stru
 6. Complaint auto-resolves when work order completes
 7. Or manually set status to "Resolved" and add resolution notes
 
-### Task 5: Assign Work Order to Team Member
+### Task 8: Assign Work Order to Team Member
 
 1. Navigate to **Work Orders**
 2. Open the work order
@@ -699,14 +899,14 @@ The application uses a **responsive sidebar navigation** with the following stru
 4. Set **Scheduled Date**
 5. Save
 
-### Task 6: View My Assigned Work Orders
+### Task 9: View My Assigned Work Orders
 
 1. Navigate to **Work Orders**
 2. Click **"My Assignments"** or filter by your user
 3. View all work orders assigned to you
 4. Update status as you progress
 
-### Task 7: Send Announcement to All Users
+### Task 10: Send Announcement to All Users
 
 1. Navigate to **Messaging**
 2. Click **"+ New Message"**
@@ -715,7 +915,7 @@ The application uses a **responsive sidebar navigation** with the following stru
 5. Leave recipient empty (broadcasts to all)
 6. Click **"Send"**
 
-### Task 8: Search for Assets
+### Task 11: Search for Assets
 
 1. Navigate to **Assets**
 2. Use **Search** box (top-right)
@@ -788,13 +988,22 @@ The application uses a **responsive sidebar navigation** with the following stru
    - Search and filter capabilities
    - Detail view with related information
 
-3. **Work Orders**:
+3. **Inventory & Stock Transactions**:
+   - Complete stock transaction audit trail
+   - Restock operations with vendor integration
+   - Stock reduction tracking with categorized reasons
+   - Stock history dialog with detailed transaction view
+   - Real-time quantity updates
+   - Prevention of negative stock
+   - Vendor selection and management
+
+4. **Work Orders**:
    - Status workflow clearly visible
    - Priority indicators
    - Assignment functionality
    - Completion tracking
 
-4. **Layout**:
+5. **Layout**:
    - Professional sidebar navigation
    - User menu with avatar
    - Notification badge (ready for implementation)
@@ -826,7 +1035,8 @@ The application uses a **responsive sidebar navigation** with the following stru
 ### Common Icons
 - 📦 Assets: Inventory icon
 - 📋 Work Orders: Assignment icon
-- 🔧 Inventory: Build icon
+- 🔧 Inventory: Build icon (with stock transaction tracking)
+- 🏢 Vendors: Business/Store icon
 - 👥 Users: People icon
 - 📢 Complaints: Report icon
 - 💬 Messaging: Message icon

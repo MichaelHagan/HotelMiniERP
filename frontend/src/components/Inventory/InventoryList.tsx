@@ -24,12 +24,14 @@ import {
   Delete as DeleteIcon,
   Visibility as ViewIcon,
   Search as SearchIcon,
+  Inventory2 as StockIcon,
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { inventoryService } from '../../services/inventoryService';
 import { Inventory, InventoryQueryParams, UserRole } from '../../types';
 import InventoryDialog from './InventoryDialog';
 import InventoryDetailDialog from './InventoryDetailDialog';
+import UpdateStockDialog from './UpdateStockDialog';
 import { useAuth } from '../../context/AuthContext';
 import { formatCurrency } from '../../utils/formatUtils';
 
@@ -42,6 +44,7 @@ const InventoryList: React.FC = () => {
   const [categoryFilter, setCategoryFilter] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+  const [stockDialogOpen, setStockDialogOpen] = useState(false);
   const [selectedInventory, setSelectedInventory] = useState<Inventory | null>(null);
 
   const queryParams: InventoryQueryParams = {
@@ -76,6 +79,11 @@ const InventoryList: React.FC = () => {
   const handleView = (inventory?: Inventory) => {
     setSelectedInventory(inventory || null);
     setDetailDialogOpen(true);
+  };
+
+  const handleUpdateStock = (inventory: Inventory) => {
+    setSelectedInventory(inventory);
+    setStockDialogOpen(true);
   };
 
   const handleDelete = (id: string) => {
@@ -147,20 +155,19 @@ const InventoryList: React.FC = () => {
               <TableCell>Quantity</TableCell>
               <TableCell>Min Stock</TableCell>
               <TableCell>Unit Cost</TableCell>
-              <TableCell>Vendor</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={8} align="center">
+                <TableCell colSpan={7} align="center">
                   Loading...
                 </TableCell>
               </TableRow>
             ) : inventory.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} align="center">
+                <TableCell colSpan={7} align="center">
                   No inventory items found
                 </TableCell>
               </TableRow>
@@ -193,12 +200,14 @@ const InventoryList: React.FC = () => {
                       {item.unitCost ? `${formatCurrency(item.unitCost)}` : '-'}
                     </Typography>
                   </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" color="textSecondary">
-                      {item.vendorName || '-'}
-                    </Typography>
-                  </TableCell>
                   <TableCell align="right">
+                    {canEdit && (
+                      <Tooltip title="Update Stock">
+                        <IconButton size="small" onClick={() => handleUpdateStock(item)} color="primary">
+                          <StockIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    )}
                     <Tooltip title="View Details">
                       <IconButton size="small" onClick={() => handleView(item)}>
                         <ViewIcon fontSize="small" />
@@ -250,6 +259,14 @@ const InventoryList: React.FC = () => {
         onClose={() => setDetailDialogOpen(false)}
         inventory={selectedInventory}
       />
+
+      {selectedInventory && (
+        <UpdateStockDialog
+          open={stockDialogOpen}
+          onClose={() => setStockDialogOpen(false)}
+          inventory={selectedInventory}
+        />
+      )}
     </Box>
   );
 };

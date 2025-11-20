@@ -247,17 +247,12 @@ export interface UpdateVendorDto {
 export interface Inventory {
   id: string;
   name: string;
-  code: string;
   description?: string;
   category: string;
-  brand?: string;
-  model?: string;
   location: string;
   quantity: number;
   minimumStock?: number;
   unitCost?: number;
-  vendorId?: string;
-  vendorName?: string;
   lastRestockedDate?: string;
   notes?: string;
   createdAt: string;
@@ -266,34 +261,65 @@ export interface Inventory {
 
 export interface CreateInventoryDto {
   name: string;
-  code: string;
   description?: string;
   category: string;
-  brand?: string;
-  model?: string;
   location: string;
-  quantity: number;
   minimumStock?: number;
   unitCost?: number;
-  vendorId?: string;
-  lastRestockedDate?: string;
   notes?: string;
 }
 
 export interface UpdateInventoryDto {
   name?: string;
-  code?: string;
   description?: string;
   category?: string;
-  brand?: string;
-  model?: string;
   location?: string;
-  quantity?: number;
   minimumStock?: number;
   unitCost?: number;
-  vendorId?: string;
-  lastRestockedDate?: string;
   notes?: string;
+}
+
+// Stock Transaction Types
+export enum StockTransactionType {
+  Restock = 1,
+  Reduction = 2
+}
+
+export enum StockReductionReason {
+  Spoilage = 1,
+  Used = 2,
+  Damaged = 3,
+  Lost = 4,
+  Expired = 5,
+  Other = 6
+}
+
+export interface StockTransaction {
+  id: string;
+  inventoryId: string;
+  inventoryName: string;
+  transactionType: StockTransactionType;
+  quantity: number;
+  vendorId?: string;
+  vendorName?: string;
+  transactionDate: string;
+  reductionReason?: StockReductionReason;
+  notes?: string;
+  unitCost?: number;
+  createdByUserId?: string;
+  createdByUserName?: string;
+  createdAt: string;
+}
+
+export interface CreateStockTransactionDto {
+  inventoryId: number;
+  transactionType: StockTransactionType;
+  quantity: number;
+  vendorId?: number;
+  transactionDate: string;
+  reductionReason?: StockReductionReason;
+  notes?: string;
+  unitCost?: number;
 }
 
 // Procedure Types

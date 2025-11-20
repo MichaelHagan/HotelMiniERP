@@ -24,57 +24,28 @@ public class UpdateInventoryCommandHandler : IRequestHandler<UpdateInventoryComm
             throw new InvalidOperationException($"Inventory with ID {request.Id} not found.");
         }
 
-        // Check for duplicate code (excluding current inventory item)
-        var existingCode = await _context.Inventory
-            .AnyAsync(e => e.Id != request.Id && e.Code.ToLower() == request.Code.ToLower(), cancellationToken);
-
-        if (existingCode)
-        {
-            throw new InvalidOperationException($"Inventory code '{request.Code}' already exists.");
-        }
-
+        // Only update metadata fields, not stock quantity
         inventory.Name = request.Name;
-        inventory.Code = request.Code;
         inventory.Description = request.Description;
         inventory.Category = request.Category;
-        inventory.Brand = request.Brand;
-        inventory.Model = request.Model;
         inventory.Location = request.Location ?? string.Empty;
-        inventory.Quantity = request.Quantity;
         inventory.MinimumStock = request.MinimumStock;
         inventory.UnitCost = request.UnitCost;
-        inventory.VendorId = request.VendorId;
-        inventory.LastRestockedDate = request.LastRestockedDate.HasValue 
-            ? DateTime.SpecifyKind(request.LastRestockedDate.Value, DateTimeKind.Utc) 
-            : null;
         inventory.Notes = request.Notes;
         inventory.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        // Load vendor name if VendorId is set
-        string? vendorName = null;
-        if (inventory.VendorId.HasValue)
-        {
-            var vendor = await _context.Vendors.FindAsync(new object[] { inventory.VendorId.Value }, cancellationToken);
-            vendorName = vendor?.Name;
-        }
-
         return new InventoryDto
         {
             Id = inventory.Id,
             Name = inventory.Name,
-            Code = inventory.Code,
             Description = inventory.Description,
             Category = inventory.Category,
-            Brand = inventory.Brand,
-            Model = inventory.Model,
             Location = inventory.Location,
             Quantity = inventory.Quantity,
             MinimumStock = inventory.MinimumStock,
             UnitCost = inventory.UnitCost,
-            VendorId = inventory.VendorId,
-            VendorName = vendorName,
             LastRestockedDate = inventory.LastRestockedDate,
             Notes = inventory.Notes,
             CreatedAt = inventory.CreatedAt,

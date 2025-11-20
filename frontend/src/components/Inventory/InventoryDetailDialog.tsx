@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import { Inventory } from '../../types';
 import { formatDate, formatCurrency } from '../../utils';
+import StockHistoryDialog from './StockHistoryDialog';
 
 interface InventoryDetailDialogProps {
   open: boolean;
@@ -24,6 +25,8 @@ const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({
   onClose,
   inventory,
 }) => {
+  const [stockHistoryOpen, setStockHistoryOpen] = useState(false);
+  
   if (!inventory) return null;
 
   const isLowStock = inventory.minimumStock && inventory.quantity <= inventory.minimumStock;
@@ -59,11 +62,8 @@ const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({
               </Typography>
               <Divider sx={{ mb: 2 }} />
               
-              <DetailRow label="Code" value={inventory.code} />
               <DetailRow label="Category" value={inventory.category} />
               <DetailRow label="Location" value={inventory.location} />
-              <DetailRow label="Vendor" value={inventory.vendorName || 'Not specified'} />
-              <DetailRow label="Brand" value={inventory.brand || 'Not specified'} />
 
               {inventory.description && (
                 <>
@@ -112,8 +112,18 @@ const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({
       </DialogContent>
 
       <DialogActions>
+        <Button onClick={() => setStockHistoryOpen(true)} variant="outlined">
+          View Stock History
+        </Button>
+        <Box sx={{ flex: 1 }} />
         <Button onClick={onClose}>Close</Button>
       </DialogActions>
+
+      <StockHistoryDialog
+        open={stockHistoryOpen}
+        onClose={() => setStockHistoryOpen(false)}
+        inventory={inventory}
+      />
     </Dialog>
   );
 };
