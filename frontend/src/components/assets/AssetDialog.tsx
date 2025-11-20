@@ -35,18 +35,22 @@ export const AssetDialog: React.FC<AssetDialogProps> = ({
   onSuccess,
 }) => {
   const [formData, setFormData] = useState({
-    name: '',
+    assetName: '',
     description: '',
-    assetTag: '',
+    assetCode: '',
     category: '',
     location: '',
     purchaseDate: new Date(),
     purchasePrice: '',
     currentValue: '',
     depreciationRate: '',
-    vendor: '',
-    warrantyExpiryDate: null as Date | null,
-    assignedUserId: '',
+    supplier: '',
+    warrantyExpiry: null as Date | null,
+    serialNumber: '',
+    model: '',
+    brand: '',
+    notes: '',
+    status: 'Active' as 'Active' | 'InMaintenance' | 'Retired' | 'Disposed',
   });
 
   const [users, setUsers] = useState<User[]>([]);
@@ -56,34 +60,42 @@ export const AssetDialog: React.FC<AssetDialogProps> = ({
   useEffect(() => {
     if (asset && mode === 'edit') {
       setFormData({
-        name: asset.name,
+        assetName: asset.assetName,
         description: asset.description || '',
-        assetTag: asset.assetTag,
+        assetCode: asset.assetCode,
         category: asset.category,
         location: asset.location,
         purchaseDate: new Date(asset.purchaseDate),
         purchasePrice: asset.purchasePrice.toString(),
-        currentValue: asset.currentValue.toString(),
-        depreciationRate: asset.depreciationRate.toString(),
-        vendor: asset.vendor,
-        warrantyExpiryDate: asset.warrantyExpiryDate ? new Date(asset.warrantyExpiryDate) : null,
-        assignedUserId: asset.assignedUserId || '',
+        currentValue: (asset.currentValue || 0).toString(),
+        depreciationRate: (asset.depreciationRate || 0).toString(),
+        supplier: asset.supplier,
+        warrantyExpiry: asset.warrantyExpiry ? new Date(asset.warrantyExpiry) : null,
+        serialNumber: asset.serialNumber || '',
+        model: asset.model || '',
+        brand: asset.brand || '',
+        notes: asset.notes || '',
+        status: asset.status,
       });
     } else {
       // Reset form for create mode
       setFormData({
-        name: '',
+        assetName: '',
         description: '',
-        assetTag: '',
+        assetCode: '',
         category: '',
         location: '',
         purchaseDate: new Date(),
         purchasePrice: '',
         currentValue: '',
         depreciationRate: '0',
-        vendor: '',
-        warrantyExpiryDate: null,
-        assignedUserId: '',
+        supplier: '',
+        warrantyExpiry: null,
+        serialNumber: '',
+        model: '',
+        brand: '',
+        notes: '',
+        status: 'Active',
       });
     }
     setErrors({});
@@ -117,11 +129,11 @@ export const AssetDialog: React.FC<AssetDialogProps> = ({
     const newErrors: Record<string, string> = {};
 
     // Required fields validation
-    const requiredError = validateRequired(formData.name, 'Name');
-    if (requiredError) newErrors.name = requiredError;
+    const requiredError = validateRequired(formData.assetName, 'Asset Name');
+    if (requiredError) newErrors.assetName = requiredError;
 
-    const assetTagError = validateRequired(formData.assetTag, 'Asset Tag');
-    if (assetTagError) newErrors.assetTag = assetTagError;
+    const assetCodeError = validateRequired(formData.assetCode, 'Asset Code');
+    if (assetCodeError) newErrors.assetCode = assetCodeError;
 
     const categoryError = validateRequired(formData.category, 'Category');
     if (categoryError) newErrors.category = categoryError;
@@ -129,8 +141,8 @@ export const AssetDialog: React.FC<AssetDialogProps> = ({
     const locationError = validateRequired(formData.location, 'Location');
     if (locationError) newErrors.location = locationError;
 
-    const vendorError = validateRequired(formData.vendor, 'Vendor');
-    if (vendorError) newErrors.vendor = vendorError;
+    const supplierError = validateRequired(formData.supplier, 'Supplier');
+    if (supplierError) newErrors.supplier = supplierError;
 
     // Number validation
     const purchasePriceError = validateNumber(formData.purchasePrice, 'Purchase Price', 0);
@@ -153,28 +165,42 @@ export const AssetDialog: React.FC<AssetDialogProps> = ({
     try {
       if (mode === 'create') {
         const createDto: CreateAssetDto = {
-          name: formData.name,
+          assetName: formData.assetName,
+          assetCode: formData.assetCode,
           description: formData.description || undefined,
-          assetTag: formData.assetTag,
           category: formData.category,
           location: formData.location,
           purchaseDate: formData.purchaseDate.toISOString(),
           purchasePrice: parseFloat(formData.purchasePrice),
-          currentValue: parseFloat(formData.currentValue),
-          depreciationRate: parseFloat(formData.depreciationRate),
-          vendor: formData.vendor,
-          warrantyExpiryDate: formData.warrantyExpiryDate?.toISOString(),
-          assignedUserId: formData.assignedUserId || undefined,
+          supplier: formData.supplier,
+          status: formData.status as any,
+          warrantyExpiry: formData.warrantyExpiry?.toISOString(),
+          serialNumber: formData.serialNumber || undefined,
+          model: formData.model || undefined,
+          brand: formData.brand || undefined,
+          depreciationRate: formData.depreciationRate ? parseFloat(formData.depreciationRate) : undefined,
+          notes: formData.notes || undefined,
         };
         await assetService.createAsset(createDto);
       } else if (asset) {
         const updateDto: UpdateAssetDto = {
-          name: formData.name,
+          id: parseInt(asset.id),
+          assetName: formData.assetName,
+          assetCode: formData.assetCode,
           description: formData.description || undefined,
           category: formData.category,
           location: formData.location,
-          currentValue: parseFloat(formData.currentValue),
-          assignedUserId: formData.assignedUserId || undefined,
+          purchaseDate: formData.purchaseDate.toISOString(),
+          purchasePrice: parseFloat(formData.purchasePrice),
+          supplier: formData.supplier,
+          status: formData.status as any,
+          warrantyExpiry: formData.warrantyExpiry?.toISOString(),
+          serialNumber: formData.serialNumber || undefined,
+          model: formData.model || undefined,
+          brand: formData.brand || undefined,
+          depreciationRate: formData.depreciationRate ? parseFloat(formData.depreciationRate) : undefined,
+          currentValue: formData.currentValue ? parseFloat(formData.currentValue) : undefined,
+          notes: formData.notes || undefined,
         };
         await assetService.updateAsset(asset.id, updateDto);
       }
@@ -204,20 +230,20 @@ export const AssetDialog: React.FC<AssetDialogProps> = ({
               <TextField
                 fullWidth
                 label="Asset Name"
-                value={formData.name}
-                onChange={(e) => handleInputChange('name', e.target.value)}
-                error={!!errors.name}
-                helperText={errors.name}
+                value={formData.assetName}
+                onChange={(e) => handleInputChange('assetName', e.target.value)}
+                error={!!errors.assetName}
+                helperText={errors.assetName}
                 required
               />
               
               <TextField
                 fullWidth
-                label="Asset Tag"
-                value={formData.assetTag}
-                onChange={(e) => handleInputChange('assetTag', e.target.value)}
-                error={!!errors.assetTag}
-                helperText={errors.assetTag}
+                label="Asset Code"
+                value={formData.assetCode}
+                onChange={(e) => handleInputChange('assetCode', e.target.value)}
+                error={!!errors.assetCode}
+                helperText={errors.assetCode}
                 required
               />
 
@@ -266,11 +292,11 @@ export const AssetDialog: React.FC<AssetDialogProps> = ({
 
               <TextField
                 fullWidth
-                label="Vendor"
-                value={formData.vendor}
-                onChange={(e) => handleInputChange('vendor', e.target.value)}
-                error={!!errors.vendor}
-                helperText={errors.vendor}
+                label="Supplier"
+                value={formData.supplier}
+                onChange={(e) => handleInputChange('supplier', e.target.value)}
+                error={!!errors.supplier}
+                helperText={errors.supplier}
                 required
               />
 
@@ -318,8 +344,8 @@ export const AssetDialog: React.FC<AssetDialogProps> = ({
 
               <DatePicker
                 label="Warranty Expiry Date"
-                value={formData.warrantyExpiryDate}
-                onChange={(date) => handleInputChange('warrantyExpiryDate', date)}
+                value={formData.warrantyExpiry}
+                onChange={(date) => handleInputChange('warrantyExpiry', date)}
                 slotProps={{
                   textField: {
                     fullWidth: true,
@@ -328,22 +354,51 @@ export const AssetDialog: React.FC<AssetDialogProps> = ({
               />
 
               <FormControl fullWidth>
-                <InputLabel>Assigned User</InputLabel>
+                <InputLabel>Status</InputLabel>
                 <Select
-                  value={formData.assignedUserId}
-                  label="Assigned User"
-                  onChange={(e) => handleInputChange('assignedUserId', e.target.value)}
+                  value={formData.status}
+                  label="Status"
+                  onChange={(e) => handleInputChange('status', e.target.value)}
+                  required
                 >
-                  <MenuItem value="">
-                    <em>Unassigned</em>
-                  </MenuItem>
-                  {users.map((user) => (
-                    <MenuItem key={user.id} value={user.id}>
-                      {user.firstName} {user.lastName} ({user.department})
-                    </MenuItem>
-                  ))}
+                  <MenuItem value="Active">Active</MenuItem>
+                  <MenuItem value="InMaintenance">In Maintenance</MenuItem>
+                  <MenuItem value="Retired">Retired</MenuItem>
+                  <MenuItem value="Disposed">Disposed</MenuItem>
                 </Select>
               </FormControl>
+
+              <TextField
+                fullWidth
+                label="Serial Number"
+                value={formData.serialNumber}
+                onChange={(e) => handleInputChange('serialNumber', e.target.value)}
+              />
+
+              <TextField
+                fullWidth
+                label="Model"
+                value={formData.model}
+                onChange={(e) => handleInputChange('model', e.target.value)}
+              />
+
+              <TextField
+                fullWidth
+                label="Brand"
+                value={formData.brand}
+                onChange={(e) => handleInputChange('brand', e.target.value)}
+              />
+
+              <Box sx={{ gridColumn: { xs: '1', sm: '1 / -1' } }}>
+                <TextField
+                  fullWidth
+                  label="Notes"
+                  multiline
+                  rows={2}
+                  value={formData.notes}
+                  onChange={(e) => handleInputChange('notes', e.target.value)}
+                />
+              </Box>
             </Box>
           </Box>
         </DialogContent>

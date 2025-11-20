@@ -1,16 +1,18 @@
 // User Types
 export interface User {
   id: string;
-  username?: string;
-  email: string;
   firstName: string;
   lastName: string;
+  email: string;
+  phoneNumber: string;
+  username: string;
   role: UserRole;
   department?: string;
-  phoneNumber?: string;
-  address?: string;
+  position?: string;
+  hireDate?: string;
   isActive: boolean;
-  profilePictureUrl?: string;
+  profilePicture?: string;
+  address?: string;
   lastLogin?: string;
   createdAt: string;
   updatedAt: string;
@@ -62,22 +64,22 @@ export interface ChangePasswordDto {
 // Asset Types
 export interface Asset {
   id: string;
-  name: string;
+  assetName: string;
+  assetCode: string;
   description?: string;
-  assetTag: string;
   category: string;
   location: string;
   purchaseDate: string;
   purchasePrice: number;
   currentValue: number;
   depreciationRate: number;
-  vendor: string;
-  warrantyExpiryDate?: string;
+  supplier: string;
+  warrantyExpiry?: string;
   status: AssetStatus;
-  lastMaintenanceDate?: string;
-  nextMaintenanceDate?: string;
-  assignedUserId?: string;
-  assignedUser?: User;
+  serialNumber?: string;
+  model?: string;
+  brand?: string;
+  notes?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -90,51 +92,69 @@ export enum AssetStatus {
 }
 
 export interface CreateAssetDto {
-  name: string;
+  assetName: string;
+  assetCode: string;
   description?: string;
-  assetTag: string;
   category: string;
   location: string;
   purchaseDate: string;
   purchasePrice: number;
-  currentValue: number;
-  depreciationRate: number;
-  vendor: string;
-  warrantyExpiryDate?: string;
-  assignedUserId?: string;
+  supplier: string;
+  status: AssetStatus;
+  warrantyExpiry?: string;
+  serialNumber?: string;
+  model?: string;
+  brand?: string;
+  depreciationRate?: number;
+  notes?: string;
 }
 
 export interface UpdateAssetDto {
-  name?: string;
+  id: number;
+  assetName: string;
+  assetCode: string;
   description?: string;
-  category?: string;
-  location?: string;
+  category: string;
+  location: string;
+  purchaseDate: string;
+  purchasePrice: number;
+  supplier: string;
+  status: AssetStatus;
+  warrantyExpiry?: string;
+  serialNumber?: string;
+  model?: string;
+  brand?: string;
+  depreciationRate?: number;
   currentValue?: number;
-  status?: AssetStatus;
-  assignedUserId?: string;
-  nextMaintenanceDate?: string;
+  notes?: string;
 }
 
 // Work Order Types
 export interface WorkOrder {
   id: string;
+  workOrderNumber: string;
   title: string;
   description: string;
   priority: Priority;
   status: WorkOrderStatus;
-  assetId?: string;
-  asset?: Asset;
-  assignedUserId?: string;
-  assignedUser?: User;
-  requesterId: string;
-  requester?: User;
-  workerComplaintId?: string;
-  customerComplaintId?: string;
-  estimatedHours?: number;
-  actualHours?: number;
+  requestedDate: string;
   scheduledDate?: string;
   completedDate?: string;
+  estimatedCost?: number;
+  actualCost?: number;
+  workType?: string;
+  location?: string;
   notes?: string;
+  assetId?: string;
+  asset?: Asset;
+  assignedToUserId?: string;
+  assignedToUser?: User;
+  requestedByUserId?: string;
+  requestedByUser?: User;
+  workerComplaintId?: string;
+  workerComplaint?: WorkerComplaint;
+  customerComplaintId?: string;
+  customerComplaint?: CustomerComplaint;
   createdAt: string;
   updatedAt: string;
 }
@@ -157,12 +177,16 @@ export interface CreateWorkOrderDto {
   title: string;
   description: string;
   priority: Priority;
+  workType?: string;
+  location?: string;
   assetId?: string;
-  assignedUserId?: string;
+  assignedToUserId?: string;
+  requestedByUserId?: string;
   workerComplaintId?: string;
   customerComplaintId?: string;
-  estimatedHours?: number;
+  estimatedCost?: number;
   scheduledDate?: string;
+  notes?: string;
 }
 
 export interface UpdateWorkOrderDto {
@@ -170,9 +194,11 @@ export interface UpdateWorkOrderDto {
   description?: string;
   priority?: Priority;
   status?: WorkOrderStatus;
-  assignedUserId?: string;
-  estimatedHours?: number;
-  actualHours?: number;
+  workType?: string;
+  location?: string;
+  assignedToUserId?: string;
+  estimatedCost?: number;
+  actualCost?: number;
   scheduledDate?: string;
   completedDate?: string;
   notes?: string;
@@ -182,53 +208,60 @@ export interface UpdateWorkOrderDto {
 export interface Inventory {
   id: string;
   name: string;
-  description?: string;
-  model: string;
-  manufacturer: string;
-  serialNumber: string;
-  location: string;
+  code: string;
+  description: string;
   category: string;
+  brand?: string;
+  model?: string;
+  serialNumber?: string;
+  location: string;
   quantity: number;
   minimumStock?: number;
   unitCost?: number;
   supplier?: string;
-  purchaseDate: string;
-  warrantyExpiryDate?: string;
+  purchaseDate?: string;
+  warrantyExpiry?: string;
   lastRestockedDate?: string;
-  specifications?: Record<string, any>;
+  notes?: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface CreateInventoryDto {
   name: string;
-  description?: string;
-  model: string;
-  manufacturer: string;
-  serialNumber: string;
-  location: string;
+  code: string;
+  description: string;
   category: string;
+  brand?: string;
+  model?: string;
+  serialNumber?: string;
+  location: string;
   quantity: number;
   minimumStock?: number;
   unitCost?: number;
   supplier?: string;
-  purchaseDate: string;
-  warrantyExpiryDate?: string;
-  lastRestockedDate?: string;
-  specifications?: Record<string, any>;
+  purchaseDate?: string;
+  warrantyExpiry?: string;
+  notes?: string;
 }
 
 export interface UpdateInventoryDto {
   name?: string;
+  code?: string;
   description?: string;
-  location?: string;
   category?: string;
+  brand?: string;
+  model?: string;
+  serialNumber?: string;
+  location?: string;
   quantity?: number;
   minimumStock?: number;
   unitCost?: number;
   supplier?: string;
+  purchaseDate?: string;
+  warrantyExpiry?: string;
   lastRestockedDate?: string;
-  specifications?: Record<string, any>;
+  notes?: string;
 }
 
 // Procedure Types
@@ -238,11 +271,16 @@ export interface Procedure {
   description: string;
   category: string;
   content: string;
-  isActive: boolean;
+  tags?: string;
   version: string;
+  isActive: boolean;
   reviewDate?: string;
   approvedBy?: string;
   approvalDate?: string;
+  documentUrl?: string;
+  estimatedDurationMinutes?: number;
+  requiredInventory?: string;
+  safetyNotes?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -252,10 +290,15 @@ export interface CreateProcedureDto {
   description: string;
   category: string;
   content: string;
+  tags?: string;
   version?: string;
   reviewDate?: string;
   approvedBy?: string;
   approvalDate?: string;
+  documentUrl?: string;
+  estimatedDurationMinutes?: number;
+  requiredInventory?: string;
+  safetyNotes?: string;
 }
 
 export interface UpdateProcedureDto {
@@ -263,57 +306,59 @@ export interface UpdateProcedureDto {
   description?: string;
   category?: string;
   content?: string;
+  tags?: string;
   isActive?: boolean;
   version?: string;
   reviewDate?: string;
   approvedBy?: string;
   approvalDate?: string;
+  documentUrl?: string;
+  estimatedDurationMinutes?: number;
+  requiredInventory?: string;
+  safetyNotes?: string;
 }
 
 // Complaint Types
 export interface WorkerComplaint {
   id: string;
+  complaintNumber: string;
   title: string;
   description: string;
-  category: ComplaintCategory;
+  category: string;
   priority: Priority;
   status: ComplaintStatus;
-  complainantId: string;
-  complainant?: User;
-  assignedUserId?: string;
-  assignedUser?: User;
-  resolutionNotes?: string;
-  resolutionDate?: string;
+  location?: string;
+  submittedByUserId: string;
+  submittedByUser?: User;
+  assignedToUserId?: string;
+  assignedToUser?: User;
+  resolvedDate?: string;
+  resolution?: string;
+  notes?: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface CustomerComplaint {
   id: string;
+  complaintNumber: string;
   title: string;
   description: string;
-  category: ComplaintCategory;
+  category: string;
   priority: Priority;
   status: ComplaintStatus;
+  location?: string;
   customerName: string;
-  customerEmail?: string;
+  customerEmail: string;
   customerPhone?: string;
   roomNumber?: string;
-  assignedUserId?: string;
-  assignedUser?: User;
-  resolutionNotes?: string;
-  resolutionDate?: string;
+  assignedToUserId?: string;
+  assignedToUser?: User;
+  resolvedDate?: string;
+  resolution?: string;
+  notes?: string;
   createdAt: string;
   updatedAt: string;
-}
-
-export enum ComplaintCategory {
-  Service = 'Service',
-  Maintenance = 'Maintenance',
-  Cleanliness = 'Cleanliness',
-  Noise = 'Noise',
-  Safety = 'Safety',
-  Other = 'Other'
 }
 
 export enum ComplaintStatus {
@@ -326,45 +371,53 @@ export enum ComplaintStatus {
 export interface CreateWorkerComplaintDto {
   title: string;
   description: string;
-  category: ComplaintCategory;
+  category: string;
   priority: Priority;
+  location?: string;
+  notes?: string;
 }
 
 export interface CreateCustomerComplaintDto {
   title: string;
   description: string;
-  category: ComplaintCategory;
+  category: string;
   priority: Priority;
+  location?: string;
   customerName: string;
-  customerEmail?: string;
+  customerEmail: string;
   customerPhone?: string;
   roomNumber?: string;
+  notes?: string;
 }
 
 export interface UpdateComplaintDto {
   title?: string;
   description?: string;
-  category?: ComplaintCategory;
+  category?: string;
   priority?: Priority;
   status?: ComplaintStatus;
-  assignedUserId?: string;
-  resolutionNotes?: string;
-  resolutionDate?: string;
+  location?: string;
+  assignedToUserId?: string;
+  resolution?: string;
+  resolvedDate?: string;
+  notes?: string;
 }
 
 // Message Types
 export interface Message {
   id: string;
-  subject?: string;
+  subject: string;
   content: string;
   messageType: MessageType;
+  isRead: boolean;
+  readAt?: string;
+  attachmentUrl?: string;
   senderId: string;
   sender?: User;
-  recipientId?: string;
-  recipient?: User;
-  isRead: boolean;
-  readDate?: string;
+  receiverId: string;
+  receiver?: User;
   createdAt: string;
+  updatedAt: string;
 }
 
 export enum MessageType {
@@ -374,15 +427,16 @@ export enum MessageType {
 }
 
 export interface CreateMessageDto {
-  subject?: string;
+  subject: string;
   content: string;
   messageType: MessageType;
-  recipientId?: string;
+  receiverId: string;
+  attachmentUrl?: string;
 }
 
 export interface UpdateMessageDto {
   isRead?: boolean;
-  readDate?: string;
+  readAt?: string;
 }
 
 // API Response Types
@@ -429,7 +483,7 @@ export interface InventoryQueryParams extends PaginationParams {
 export interface ComplaintQueryParams extends PaginationParams {
   status?: ComplaintStatus;
   priority?: Priority;
-  category?: ComplaintCategory;
+  category?: string;
   assignedUserId?: string;
 }
 

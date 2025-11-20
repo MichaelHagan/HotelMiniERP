@@ -71,8 +71,8 @@ export const AssetList: React.FC = () => {
 
   // Filter assets by search term (client-side)
   const filteredAssets = assetsData?.data?.filter((asset: Asset) =>
-    asset.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    asset.assetTag?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    asset.assetName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    asset.assetCode?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     asset.category?.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
@@ -105,7 +105,7 @@ export const AssetList: React.FC = () => {
   };
 
   const handleDeleteAsset = async (asset: Asset) => {
-    if (window.confirm(`Are you sure you want to delete asset "${asset.name}"?`)) {
+    if (window.confirm(`Are you sure you want to delete asset "${asset.assetName}"?`)) {
       try {
         await assetService.deleteAsset(asset.id);
         queryClient.invalidateQueries({ queryKey: ['assets'] });
@@ -207,27 +207,26 @@ export const AssetList: React.FC = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Asset Tag</TableCell>
+                <TableCell>Asset Code</TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell>Category</TableCell>
                 <TableCell>Location</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Purchase Date</TableCell>
                 <TableCell>Current Value</TableCell>
-                <TableCell>Assigned To</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={9} align="center">
+                  <TableCell colSpan={8} align="center">
                     Loading assets...
                   </TableCell>
                 </TableRow>
               ) : filteredAssets.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} align="center">
+                  <TableCell colSpan={8} align="center">
                     No assets found
                   </TableCell>
                 </TableRow>
@@ -236,10 +235,10 @@ export const AssetList: React.FC = () => {
                   <TableRow key={asset.id} hover>
                     <TableCell>
                       <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                        {asset.assetTag}
+                        {asset.assetCode}
                       </Typography>
                     </TableCell>
-                    <TableCell>{asset.name}</TableCell>
+                    <TableCell>{asset.assetName}</TableCell>
                     <TableCell>{asset.category}</TableCell>
                     <TableCell>{asset.location}</TableCell>
                     <TableCell>
@@ -251,17 +250,6 @@ export const AssetList: React.FC = () => {
                     </TableCell>
                     <TableCell>{formatDate(asset.purchaseDate)}</TableCell>
                     <TableCell>{formatCurrency(asset.currentValue)}</TableCell>
-                    <TableCell>
-                      {asset.assignedUser ? (
-                        <Typography variant="body2">
-                          {asset.assignedUser.firstName} {asset.assignedUser.lastName}
-                        </Typography>
-                      ) : (
-                        <Typography variant="body2" color="textSecondary">
-                          Unassigned
-                        </Typography>
-                      )}
-                    </TableCell>
                     <TableCell>
                       <Box sx={{ display: 'flex', gap: 0.5 }}>
                         <Tooltip title="View Details">

@@ -177,7 +177,7 @@ const UserDetailDialog: React.FC<UserDetailDialogProps> = ({ open, onClose, user
           </Box>
 
           {/* Profile Picture */}
-          {user.profilePictureUrl && (
+          {user.profilePicture && (
             <Box sx={{ mb: 3 }}>
               <Typography variant="subtitle2" gutterBottom>
                 Profile Picture
@@ -186,7 +186,7 @@ const UserDetailDialog: React.FC<UserDetailDialogProps> = ({ open, onClose, user
 
               <Box
                 component="img"
-                src={user.profilePictureUrl}
+                src={user.profilePicture}
                 alt={`${user.firstName} ${user.lastName}`}
                 sx={{
                   width: 100,

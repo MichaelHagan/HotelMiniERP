@@ -124,8 +124,8 @@ const WorkOrderDetailDialog: React.FC<WorkOrderDetailDialogProps> = ({
                 icon={<PersonIcon fontSize="small" />}
                 label="Requester"
                 value={
-                  workOrder.requester
-                    ? `${workOrder.requester.firstName} ${workOrder.requester.lastName}`
+                  workOrder.requestedByUser
+                    ? `${workOrder.requestedByUser.firstName} ${workOrder.requestedByUser.lastName}`
                     : 'Unknown'
                 }
               />
@@ -134,13 +134,13 @@ const WorkOrderDetailDialog: React.FC<WorkOrderDetailDialogProps> = ({
                 icon={<PersonIcon fontSize="small" />}
                 label="Assigned To"
                 value={
-                  workOrder.assignedUser ? (
+                  workOrder.assignedToUser ? (
                     <Box>
                       <Typography variant="body2">
-                        {workOrder.assignedUser.firstName} {workOrder.assignedUser.lastName}
+                        {workOrder.assignedToUser.firstName} {workOrder.assignedToUser.lastName}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
-                        {workOrder.assignedUser.department}
+                        {workOrder.assignedToUser.department}
                       </Typography>
                     </Box>
                   ) : (
@@ -155,7 +155,7 @@ const WorkOrderDetailDialog: React.FC<WorkOrderDetailDialogProps> = ({
                   label="Related Asset"
                   value={
                     <Box>
-                      <Typography variant="body2">{workOrder.asset.name}</Typography>
+                      <Typography variant="body2">{workOrder.asset.assetName}</Typography>
                       <Typography variant="caption" color="text.secondary">
                         {workOrder.asset.category} - {workOrder.asset.location}
                       </Typography>
@@ -186,14 +186,14 @@ const WorkOrderDetailDialog: React.FC<WorkOrderDetailDialogProps> = ({
 
               <DetailRow
                 icon={<TimerIcon fontSize="small" />}
-                label="Estimated Hours"
-                value={workOrder.estimatedHours ? `${workOrder.estimatedHours} hours` : 'Not estimated'}
+                label="Estimated Cost"
+                value={workOrder.estimatedCost ? `$${workOrder.estimatedCost}` : 'Not estimated'}
               />
 
               <DetailRow
                 icon={<TimerIcon fontSize="small" />}
-                label="Actual Hours"
-                value={workOrder.actualHours ? `${workOrder.actualHours} hours` : 'Not recorded'}
+                label="Actual Cost"
+                value={workOrder.actualCost ? `$${workOrder.actualCost}` : 'Not recorded'}
               />
             </Box>
           </Box>

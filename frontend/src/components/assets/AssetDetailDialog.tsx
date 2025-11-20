@@ -41,7 +41,7 @@ export const AssetDetailDialog: React.FC<AssetDetailDialogProps> = ({
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h6">{asset.name}</Typography>
+          <Typography variant="h6">{asset.assetName}</Typography>
           <Chip
             label={getStatusText(asset.status)}
             color={getStatusColor(asset.status)}
@@ -59,7 +59,7 @@ export const AssetDetailDialog: React.FC<AssetDetailDialogProps> = ({
               </Typography>
               <Divider sx={{ mb: 2 }} />
               
-              <DetailRow label="Asset Tag" value={asset.assetTag} />
+              <DetailRow label="Asset Code" value={asset.assetCode} />
               <DetailRow label="Category" value={asset.category} />
               <DetailRow label="Location" value={asset.location} />
               <DetailRow label="Status" value={
@@ -69,13 +69,6 @@ export const AssetDetailDialog: React.FC<AssetDetailDialogProps> = ({
                   size="small"
                 />
               } />
-              <DetailRow 
-                label="Assigned To" 
-                value={asset.assignedUser ? 
-                  `${asset.assignedUser.firstName} ${asset.assignedUser.lastName}` : 
-                  'Unassigned'
-                } 
-              />
 
               {asset.description && (
                 <>
@@ -98,7 +91,7 @@ export const AssetDetailDialog: React.FC<AssetDetailDialogProps> = ({
               <DetailRow label="Purchase Price" value={formatCurrency(asset.purchasePrice)} />
               <DetailRow label="Current Value" value={formatCurrency(asset.currentValue)} />
               <DetailRow label="Depreciation Rate" value={`${asset.depreciationRate}%`} />
-              <DetailRow label="Vendor" value={asset.vendor} />
+              <DetailRow label="Supplier" value={asset.supplier} />
 
               <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
                 Dates & Maintenance
@@ -106,14 +99,8 @@ export const AssetDetailDialog: React.FC<AssetDetailDialogProps> = ({
               <Divider sx={{ mb: 2 }} />
               
               <DetailRow label="Purchase Date" value={formatDate(asset.purchaseDate)} />
-              {asset.warrantyExpiryDate && (
-                <DetailRow label="Warranty Expires" value={formatDate(asset.warrantyExpiryDate)} />
-              )}
-              {asset.lastMaintenanceDate && (
-                <DetailRow label="Last Maintenance" value={formatTimeAgo(asset.lastMaintenanceDate)} />
-              )}
-              {asset.nextMaintenanceDate && (
-                <DetailRow label="Next Maintenance" value={formatDate(asset.nextMaintenanceDate)} />
+              {asset.warrantyExpiry && (
+                <DetailRow label="Warranty Expires" value={formatDate(asset.warrantyExpiry)} />
               )}
 
               <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>

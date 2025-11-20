@@ -64,8 +64,8 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
       // Filter messages for this conversation
       const filtered = messagesData.data.filter(
         (msg) =>
-          (msg.senderId === user?.id && msg.recipientId === userId) ||
-          (msg.senderId === userId && msg.recipientId === user?.id)
+          (msg.senderId === user?.id && msg.receiverId === userId) ||
+          (msg.senderId === userId && msg.receiverId === user?.id)
       );
       setConversationMessages(filtered.sort((a, b) => 
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
@@ -79,8 +79,8 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
       const handleMessageReceived = (message: Message) => {
         // Only add message if it's part of this conversation
         if (
-          (message.senderId === user?.id && message.recipientId === userId) ||
-          (message.senderId === userId && message.recipientId === user?.id)
+          (message.senderId === user?.id && message.receiverId === userId) ||
+          (message.senderId === userId && message.receiverId === user?.id)
         ) {
           setConversationMessages(prev => [...prev, message]);
           queryClient.invalidateQueries({ queryKey: ['messages'] });
@@ -113,9 +113,10 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
     if (!messageContent.trim() || !userId) return;
 
     const messageDto: CreateMessageDto = {
+      subject: 'Conversation',
       content: messageContent,
       messageType: MessageType.Personal,
-      recipientId: userId
+      receiverId: userId
     };
 
     sendMutation.mutate(messageDto);

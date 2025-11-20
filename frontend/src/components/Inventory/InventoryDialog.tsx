@@ -53,7 +53,6 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({ open, onClose, invent
     name: '',
     description: '',
     model: '',
-    manufacturer: '',
     serialNumber: '',
     location: '',
     category: '',
@@ -62,9 +61,8 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({ open, onClose, invent
     unitCost: 0,
     supplier: '',
     purchaseDate: '',
-    warrantyExpiryDate: '',
+    warrantyExpiry: '',
     lastRestockedDate: '',
-    specifications: {},
   });
 
   const createMutation = useMutation({
@@ -98,14 +96,12 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({ open, onClose, invent
         lastRestockedDate: inventory.lastRestockedDate
           ? new Date(inventory.lastRestockedDate).toISOString().slice(0, 10)
           : undefined,
-        specifications: inventory.specifications,
       });
     } else {
       setFormData({
         name: '',
         description: '',
         model: '',
-        manufacturer: '',
         serialNumber: '',
         location: '',
         category: '',
@@ -114,9 +110,8 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({ open, onClose, invent
         unitCost: 0,
         supplier: '',
         purchaseDate: '',
-        warrantyExpiryDate: '',
+        warrantyExpiry: '',
         lastRestockedDate: '',
-        specifications: {},
       });
     }
   }, [inventory, open]);
@@ -126,7 +121,6 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({ open, onClose, invent
       name: '',
       description: '',
       model: '',
-      manufacturer: '',
       serialNumber: '',
       location: '',
       category: '',
@@ -135,9 +129,8 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({ open, onClose, invent
       unitCost: 0,
       supplier: '',
       purchaseDate: '',
-      warrantyExpiryDate: '',
+      warrantyExpiry: '',
       lastRestockedDate: '',
-      specifications: {},
     });
     onClose();
   };
@@ -189,15 +182,6 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({ open, onClose, invent
                 label="Model"
                 value={(formData as CreateInventoryDto).model || (formData as UpdateInventoryDto).name || ''}
                 onChange={(e) => handleChange('model', e.target.value)}
-                disabled={isEditMode}
-              />
-
-              <TextField
-                required
-                fullWidth
-                label="Manufacturer"
-                value={(formData as CreateInventoryDto).manufacturer || ''}
-                onChange={(e) => handleChange('manufacturer', e.target.value)}
                 disabled={isEditMode}
               />
 
@@ -297,8 +281,8 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({ open, onClose, invent
                   fullWidth
                   type="date"
                   label="Warranty Expiry Date"
-                  value={(formData as CreateInventoryDto).warrantyExpiryDate || ''}
-                  onChange={(e) => handleChange('warrantyExpiryDate', e.target.value)}
+                  value={(formData as CreateInventoryDto).warrantyExpiry || ''}
+                  onChange={(e) => handleChange('warrantyExpiry', e.target.value)}
                   InputLabelProps={{ shrink: true }}
                 />
               )}

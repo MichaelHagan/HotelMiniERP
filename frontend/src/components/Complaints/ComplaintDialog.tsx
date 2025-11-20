@@ -18,7 +18,6 @@ import {
   CreateWorkerComplaintDto,
   CreateCustomerComplaintDto,
   UpdateComplaintDto,
-  ComplaintCategory,
   Priority,
   ComplaintStatus,
   UserRole
@@ -45,7 +44,7 @@ export const ComplaintDialog: React.FC<ComplaintDialogProps> = ({
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    category: ComplaintCategory.Service as ComplaintCategory,
+    category: 'Service',
     priority: Priority.Medium as Priority,
     status: ComplaintStatus.Open as ComplaintStatus,
     customerName: '',
@@ -73,7 +72,7 @@ export const ComplaintDialog: React.FC<ComplaintDialogProps> = ({
       setFormData({
         title: '',
         description: '',
-        category: ComplaintCategory.Service,
+        category: 'Service',
         priority: Priority.Medium,
         status: ComplaintStatus.Open,
         customerName: '',
@@ -188,7 +187,7 @@ export const ComplaintDialog: React.FC<ComplaintDialogProps> = ({
           category: formData.category,
           priority: formData.priority,
           customerName: formData.customerName,
-          customerEmail: formData.customerEmail || undefined,
+          customerEmail: formData.customerEmail || '',
           customerPhone: formData.customerPhone || undefined,
           roomNumber: formData.roomNumber || undefined
         };
@@ -242,12 +241,12 @@ export const ComplaintDialog: React.FC<ComplaintDialogProps> = ({
               value={formData.category}
               onChange={(e) => handleChange('category', e.target.value)}
             >
-              <MenuItem value={ComplaintCategory.Service}>Service</MenuItem>
-              <MenuItem value={ComplaintCategory.Maintenance}>Maintenance</MenuItem>
-              <MenuItem value={ComplaintCategory.Cleanliness}>Cleanliness</MenuItem>
-              <MenuItem value={ComplaintCategory.Noise}>Noise</MenuItem>
-              <MenuItem value={ComplaintCategory.Safety}>Safety</MenuItem>
-              <MenuItem value={ComplaintCategory.Other}>Other</MenuItem>
+              <MenuItem value="Service">Service</MenuItem>
+              <MenuItem value="Maintenance">Maintenance</MenuItem>
+              <MenuItem value="Cleanliness">Cleanliness</MenuItem>
+              <MenuItem value="Noise">Noise</MenuItem>
+              <MenuItem value="Safety">Safety</MenuItem>
+              <MenuItem value="Other">Other</MenuItem>
             </TextField>
 
             <TextField

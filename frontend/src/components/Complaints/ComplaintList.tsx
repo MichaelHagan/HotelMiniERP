@@ -35,7 +35,6 @@ import {
   CustomerComplaint,
   ComplaintStatus,
   Priority,
-  ComplaintCategory,
   UserRole
 } from '../../types';
 import { ComplaintDialog } from './ComplaintDialog';
@@ -56,7 +55,7 @@ export const ComplaintList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<ComplaintStatus | ''>('');
   const [priorityFilter, setPriorityFilter] = useState<Priority | ''>('');
-  const [categoryFilter, setCategoryFilter] = useState<ComplaintCategory | ''>('');
+  const [categoryFilter, setCategoryFilter] = useState<string>('');
   
   const [dialogOpen, setDialogOpen] = useState(false);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
@@ -308,15 +307,15 @@ export const ComplaintList: React.FC = () => {
             label="Category"
             size="small"
             value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value as ComplaintCategory | '')}
+            onChange={(e) => setCategoryFilter(e.target.value)}
           >
             <MenuItem value="">All Categories</MenuItem>
-            <MenuItem value={ComplaintCategory.Service}>Service</MenuItem>
-            <MenuItem value={ComplaintCategory.Maintenance}>Maintenance</MenuItem>
-            <MenuItem value={ComplaintCategory.Cleanliness}>Cleanliness</MenuItem>
-            <MenuItem value={ComplaintCategory.Noise}>Noise</MenuItem>
-            <MenuItem value={ComplaintCategory.Safety}>Safety</MenuItem>
-            <MenuItem value={ComplaintCategory.Other}>Other</MenuItem>
+            <MenuItem value="Service">Service</MenuItem>
+            <MenuItem value="Maintenance">Maintenance</MenuItem>
+            <MenuItem value="Cleanliness">Cleanliness</MenuItem>
+            <MenuItem value="Noise">Noise</MenuItem>
+            <MenuItem value="Safety">Safety</MenuItem>
+            <MenuItem value="Other">Other</MenuItem>
           </TextField>
         </Box>
       </Paper>
@@ -377,8 +376,8 @@ export const ComplaintList: React.FC = () => {
                     </>
                   )}
                   <TableCell>
-                    {complaint.assignedUser 
-                      ? `${complaint.assignedUser.firstName} ${complaint.assignedUser.lastName}`
+                    {complaint.assignedToUser 
+                      ? `${complaint.assignedToUser.firstName} ${complaint.assignedToUser.lastName}`
                       : 'Unassigned'}
                   </TableCell>
                   <TableCell>{formatDateTime(complaint.createdAt)}</TableCell>

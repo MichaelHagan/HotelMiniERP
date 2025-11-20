@@ -198,8 +198,8 @@ export const ComplaintDetailDialog: React.FC<ComplaintDetailDialogProps> = ({
                     Complainant
                   </Typography>
                   <Typography variant="body1">
-                    {complaint.complainant
-                      ? `${complaint.complainant.firstName} ${complaint.complainant.lastName}`
+                    {complaint.submittedByUser
+                      ? `${complaint.submittedByUser.firstName} ${complaint.submittedByUser.lastName}`
                       : 'Not specified'}
                   </Typography>
                 </Box>
@@ -219,17 +219,17 @@ export const ComplaintDetailDialog: React.FC<ComplaintDetailDialogProps> = ({
                   Assigned To
                 </Typography>
                 <Typography variant="body1">
-                  {complaint.assignedUser
-                    ? `${complaint.assignedUser.firstName} ${complaint.assignedUser.lastName}`
+                  {complaint.assignedToUser
+                    ? `${complaint.assignedToUser.firstName} ${complaint.assignedToUser.lastName}`
                     : 'Unassigned'}
                 </Typography>
               </Box>
-              {complaint.assignedUser && (
+              {complaint.assignedToUser && (
                 <Box>
                   <Typography variant="caption" color="textSecondary">
                     Role
                   </Typography>
-                  <Typography variant="body1">{complaint.assignedUser.role}</Typography>
+                  <Typography variant="body1">{complaint.assignedToUser.role}</Typography>
                 </Box>
               )}
             </Box>
@@ -243,23 +243,23 @@ export const ComplaintDetailDialog: React.FC<ComplaintDetailDialogProps> = ({
               </Typography>
               <Divider sx={{ mb: 2 }} />
               <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 2 }}>
-                {complaint.resolutionDate && (
+                {complaint.resolvedDate && (
                   <Box>
                     <Typography variant="caption" color="textSecondary">
                       Resolution Date
                     </Typography>
                     <Typography variant="body1">
-                      {formatDateTime(complaint.resolutionDate)}
+                      {formatDateTime(complaint.resolvedDate)}
                     </Typography>
                   </Box>
                 )}
-                {complaint.resolutionNotes && (
+                {complaint.resolution && (
                   <Box>
                     <Typography variant="caption" color="textSecondary">
                       Resolution Notes
                     </Typography>
                     <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', mt: 0.5 }}>
-                      {complaint.resolutionNotes}
+                      {complaint.resolution}
                     </Typography>
                   </Box>
                 )}

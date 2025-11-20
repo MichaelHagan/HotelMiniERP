@@ -160,12 +160,12 @@ const WorkOrderList: React.FC = () => {
   const canComplete = (workOrder: WorkOrder) => {
     return (
       workOrder.status === WorkOrderStatus.InProgress &&
-      (user?.id === workOrder.assignedUserId || user?.role === UserRole.Admin || user?.role === UserRole.Manager || user?.role === UserRole.Supervisor)
+      (user?.id === workOrder.assignedToUserId || user?.role === UserRole.Admin || user?.role === UserRole.Manager || user?.role === UserRole.Supervisor)
     );
   };
 
   const canEdit = (workOrder: WorkOrder) => {
-    return user?.role === UserRole.Admin || user?.role === UserRole.Manager || user?.id === workOrder.requesterId;
+    return user?.role === UserRole.Admin || user?.role === UserRole.Manager || user?.id === workOrder.requestedByUserId;
   };
 
   const canDelete = (workOrder: WorkOrder) => {
@@ -286,9 +286,9 @@ const WorkOrderList: React.FC = () => {
                     />
                   </TableCell>
                   <TableCell>
-                    {workOrder.assignedUser ? (
+                    {workOrder.assignedToUser ? (
                       <Typography variant="body2">
-                        {workOrder.assignedUser.firstName} {workOrder.assignedUser.lastName}
+                        {workOrder.assignedToUser.firstName} {workOrder.assignedToUser.lastName}
                       </Typography>
                     ) : (
                       <Typography variant="body2" color="text.secondary">
@@ -298,7 +298,7 @@ const WorkOrderList: React.FC = () => {
                   </TableCell>
                   <TableCell>
                     {workOrder.asset ? (
-                      <Typography variant="body2">{workOrder.asset.name}</Typography>
+                      <Typography variant="body2">{workOrder.asset.assetName}</Typography>
                     ) : (
                       <Typography variant="body2" color="text.secondary">
                         N/A

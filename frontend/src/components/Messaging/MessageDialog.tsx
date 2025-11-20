@@ -37,7 +37,7 @@ export const MessageDialog: React.FC<MessageDialogProps> = ({
     subject: '',
     content: '',
     messageType: MessageType.Personal as MessageType,
-    recipientId: recipientId || ''
+    receiverId: recipientId || ''
   });
 
   const [selectedRecipient, setSelectedRecipient] = useState<User | null>(null);
@@ -54,7 +54,7 @@ export const MessageDialog: React.FC<MessageDialogProps> = ({
     if (recipientId && usersData?.data) {
       const recipient = usersData.data.find(u => u.id === recipientId);
       setSelectedRecipient(recipient || null);
-      setFormData(prev => ({ ...prev, recipientId }));
+      setFormData(prev => ({ ...prev, receiverId: recipientId }));
     }
   }, [recipientId, usersData]);
 
@@ -64,7 +64,7 @@ export const MessageDialog: React.FC<MessageDialogProps> = ({
         subject: '',
         content: '',
         messageType: MessageType.Personal,
-        recipientId: recipientId || ''
+        receiverId: recipientId || ''
       });
       setSelectedRecipient(null);
       setErrors({});
@@ -80,8 +80,8 @@ export const MessageDialog: React.FC<MessageDialogProps> = ({
       try {
         if (formData.messageType === MessageType.Broadcast) {
           await sendBroadcast(formData.content);
-        } else if (formData.recipientId) {
-          await sendSignalRMessage(formData.content, formData.recipientId);
+        } else if (formData.receiverId) {
+          await sendSignalRMessage(formData.content, formData.receiverId);
         }
       } catch (error) {
         console.error('SignalR send failed:', error);
@@ -103,9 +103,9 @@ export const MessageDialog: React.FC<MessageDialogProps> = ({
 
   const handleRecipientChange = (_event: any, value: User | null) => {
     setSelectedRecipient(value);
-    setFormData(prev => ({ ...prev, recipientId: value?.id || '' }));
-    if (errors.recipientId) {
-      setErrors(prev => ({ ...prev, recipientId: '' }));
+    setFormData(prev => ({ ...prev, receiverId: value?.id || '' }));
+    if (errors.receiverId) {
+      setErrors(prev => ({ ...prev, receiverId: '' }));
     }
   };
 
@@ -113,7 +113,7 @@ export const MessageDialog: React.FC<MessageDialogProps> = ({
     handleChange('messageType', type);
     if (type === MessageType.Broadcast) {
       setSelectedRecipient(null);
-      setFormData(prev => ({ ...prev, recipientId: '' }));
+      setFormData(prev => ({ ...prev, receiverId: '' }));
     }
   };
 
@@ -124,8 +124,8 @@ export const MessageDialog: React.FC<MessageDialogProps> = ({
       newErrors.content = 'Message content is required';
     }
 
-    if (formData.messageType === MessageType.Personal && !formData.recipientId) {
-      newErrors.recipientId = 'Recipient is required for personal messages';
+    if (formData.messageType === MessageType.Personal && !formData.receiverId) {
+      newErrors.receiverId = 'Recipient is required for personal messages';
     }
 
     setErrors(newErrors);
@@ -136,10 +136,10 @@ export const MessageDialog: React.FC<MessageDialogProps> = ({
     if (!validateForm()) return;
 
     const messageDto: CreateMessageDto = {
-      subject: formData.subject || undefined,
+      subject: formData.subject || '',
       content: formData.content,
       messageType: formData.messageType,
-      recipientId: formData.messageType === MessageType.Personal ? formData.recipientId : undefined
+      receiverId: formData.messageType === MessageType.Personal ? formData.receiverId : ''
     };
 
     sendMutation.mutate(messageDto);
@@ -183,8 +183,8 @@ export const MessageDialog: React.FC<MessageDialogProps> = ({
                   {...params}
                   label="Recipient"
                   required
-                  error={!!errors.recipientId}
-                  helperText={errors.recipientId}
+                  error={!!errors.receiverId}
+                  helperText={errors.receiverId}
                 />
               )}
               renderOption={(props, option) => (

@@ -50,8 +50,8 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({
     description: '',
     priority: Priority.Medium,
     assetId: undefined,
-    assignedUserId: undefined,
-    estimatedHours: undefined,
+    assignedToUserId: undefined,
+    estimatedCost: undefined,
     scheduledDate: undefined,
   });
 
@@ -104,9 +104,9 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({
         priority: workOrder.priority,
         status: workOrder.status,
         assetId: workOrder.assetId,
-        assignedUserId: workOrder.assignedUserId,
-        estimatedHours: workOrder.estimatedHours,
-        actualHours: workOrder.actualHours,
+        assignedToUserId: workOrder.assignedToUserId,
+        estimatedCost: workOrder.estimatedCost,
+        actualCost: workOrder.actualCost,
         scheduledDate: workOrder.scheduledDate
           ? new Date(workOrder.scheduledDate).toISOString().slice(0, 16)
           : undefined,
@@ -118,10 +118,10 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({
         description: '',
         priority: Priority.Medium,
         assetId: undefined,
-        assignedUserId: undefined,
+        assignedToUserId: undefined,
         workerComplaintId: workerComplaintId,
         customerComplaintId: customerComplaintId,
-        estimatedHours: undefined,
+        estimatedCost: undefined,
         scheduledDate: undefined,
       });
     }
@@ -133,10 +133,10 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({
       description: '',
       priority: Priority.Medium,
       assetId: undefined,
-      assignedUserId: undefined,
+      assignedToUserId: undefined,
       workerComplaintId: undefined,
       customerComplaintId: undefined,
-      estimatedHours: undefined,
+      estimatedCost: undefined,
       scheduledDate: undefined,
     });
     onClose();
@@ -224,7 +224,7 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({
               <Box sx={{ gridColumn: isEditMode ? { xs: '1', sm: '1 / -1' } : 'auto' }}>
                 <Autocomplete
                   options={assets}
-                  getOptionLabel={(option) => option.name}
+                  getOptionLabel={(option) => option.assetName}
                   value={assets.find((a) => a.id === (formData as any).assetId) || null}
                   onChange={(_e, value) => handleChange('assetId', value?.id)}
                   loading={assetsLoading}
@@ -315,8 +315,8 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({
               <Autocomplete
                 options={users}
                 getOptionLabel={(option) => `${option.firstName} ${option.lastName} (${option.department})`}
-                value={users.find((u) => u.id === formData.assignedUserId) || null}
-                onChange={(_e, value) => handleChange('assignedUserId', value?.id)}
+                value={users.find((u) => u.id === formData.assignedToUserId) || null}
+                onChange={(_e, value) => handleChange('assignedToUserId', value?.id)}
                 loading={usersLoading}
                 renderInput={(params) => (
                   <TextField
@@ -338,10 +338,10 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({
               <TextField
                 fullWidth
                 type="number"
-                label="Estimated Hours"
-                value={formData.estimatedHours || ''}
+                label="Estimated Cost"
+                value={formData.estimatedCost || ''}
                 onChange={(e) =>
-                  handleChange('estimatedHours', e.target.value ? Number(e.target.value) : undefined)
+                  handleChange('estimatedCost', e.target.value ? Number(e.target.value) : undefined)
                 }
                 inputProps={{ min: 0, step: 0.5 }}
               />
@@ -350,10 +350,10 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({
                 <TextField
                   fullWidth
                   type="number"
-                  label="Actual Hours"
-                  value={(formData as UpdateWorkOrderDto).actualHours || ''}
+                  label="Actual Cost"
+                  value={(formData as UpdateWorkOrderDto).actualCost || ''}
                   onChange={(e) =>
-                    handleChange('actualHours', e.target.value ? Number(e.target.value) : undefined)
+                    handleChange('actualCost', e.target.value ? Number(e.target.value) : undefined)
                   }
                   inputProps={{ min: 0, step: 0.5 }}
                 />

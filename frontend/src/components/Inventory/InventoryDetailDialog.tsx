@@ -52,7 +52,7 @@ const DetailRow: React.FC<DetailRowProps> = ({ icon, label, value }) => (
 
 const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({ open, onClose, inventory }) => {
   if (!inventory) return null;
-
+  
   const isLowStock = inventory.minimumStock && inventory.quantity <= inventory.minimumStock;
 
   return (
@@ -84,12 +84,6 @@ const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({ open, onC
                 icon={<InfoIcon fontSize="small" />}
                 label="Model"
                 value={inventory.model}
-              />
-
-              <DetailRow
-                icon={<BuildIcon fontSize="small" />}
-                label="Manufacturer"
-                value={inventory.manufacturer}
               />
 
               <DetailRow
@@ -185,37 +179,16 @@ const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({ open, onC
               <DetailRow
                 icon={<CalendarIcon fontSize="small" />}
                 label="Purchase Date"
-                value={formatDateTime(inventory.purchaseDate)}
+                value={inventory.purchaseDate ? formatDateTime(inventory.purchaseDate) : 'Not specified'}
               />
 
               <DetailRow
                 icon={<WarrantyIcon fontSize="small" />}
                 label="Warranty Expiry"
-                value={inventory.warrantyExpiryDate ? formatDateTime(inventory.warrantyExpiryDate) : 'Not specified'}
+                value={inventory.warrantyExpiry ? formatDateTime(inventory.warrantyExpiry) : 'Not specified'}
               />
             </Box>
           </Box>
-
-          {/* Specifications */}
-          {inventory.specifications && Object.keys(inventory.specifications).length > 0 && (
-            <Box>
-              <Typography variant="subtitle2" gutterBottom>
-                Technical Specifications
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-
-              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
-                {Object.entries(inventory.specifications).map(([key, value]) => (
-                  <DetailRow
-                    key={key}
-                    icon={<InfoIcon fontSize="small" />}
-                    label={key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}
-                    value={String(value)}
-                  />
-                ))}
-              </Box>
-            </Box>
-          )}
 
           {/* Metadata */}
           <Box sx={{ mt: 3, pt: 3, borderTop: 1, borderColor: 'divider' }}>
