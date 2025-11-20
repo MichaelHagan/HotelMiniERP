@@ -19,6 +19,7 @@ import { MessagingPage } from './pages/MessagingPage';
 import { ProceduresPage } from './pages/ProceduresPage';
 import { ReportsPage } from './pages/ReportsPage';
 import { ProfilePage } from './pages/ProfilePage';
+import { VendorsPage } from './pages/VendorsPage';
 import { Message, UserRole } from './types';
 
 // Create a client for React Query
@@ -146,6 +147,13 @@ function App() {
                     <ProtectedRoute>
                       <Layout>
                         <ComplaintsPage />
+                      </Layout>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/vendors/*" element={
+                    <ProtectedRoute requiredRoles={[UserRole.Admin, UserRole.Manager]}>
+                      <Layout>
+                        <VendorsPage />
                       </Layout>
                     </ProtectedRoute>
                   } />

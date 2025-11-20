@@ -264,18 +264,8 @@ namespace HotelMiniERP.Infrastructure.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("PurchaseDate")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
-
-                    b.Property<string>("SerialNumber")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Supplier")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
 
                     b.Property<decimal?>("UnitCost")
                         .HasColumnType("decimal(18,2)");
@@ -286,13 +276,15 @@ namespace HotelMiniERP.Infrastructure.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("WarrantyExpiry")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<int?>("VendorId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Code")
                         .IsUnique();
+
+                    b.HasIndex("VendorId");
 
                     b.ToTable("Inventory");
                 });
@@ -526,6 +518,60 @@ namespace HotelMiniERP.Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("HotelMiniERP.Domain.Entities.Vendor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("ContactPerson")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Services")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Vendors");
+                });
+
             modelBuilder.Entity("HotelMiniERP.Domain.Entities.WorkOrder", b =>
                 {
                     b.Property<int>("Id")
@@ -599,6 +645,12 @@ namespace HotelMiniERP.Infrastructure.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
+                    b.Property<decimal?>("VendorCost")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("VendorId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("WorkOrderNumber")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -620,6 +672,8 @@ namespace HotelMiniERP.Infrastructure.Migrations
                     b.HasIndex("CustomerComplaintId");
 
                     b.HasIndex("RequestedByUserId");
+
+                    b.HasIndex("VendorId");
 
                     b.HasIndex("WorkOrderNumber")
                         .IsUnique();
@@ -719,6 +773,16 @@ namespace HotelMiniERP.Infrastructure.Migrations
                     b.Navigation("AssignedToUser");
                 });
 
+            modelBuilder.Entity("HotelMiniERP.Domain.Entities.Inventory", b =>
+                {
+                    b.HasOne("HotelMiniERP.Domain.Entities.Vendor", "Vendor")
+                        .WithMany("InventoryItems")
+                        .HasForeignKey("VendorId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Vendor");
+                });
+
             modelBuilder.Entity("HotelMiniERP.Domain.Entities.Message", b =>
                 {
                     b.HasOne("HotelMiniERP.Domain.Entities.User", "Receiver")
@@ -760,6 +824,11 @@ namespace HotelMiniERP.Infrastructure.Migrations
                         .HasForeignKey("RequestedByUserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("HotelMiniERP.Domain.Entities.Vendor", "Vendor")
+                        .WithMany("WorkOrders")
+                        .HasForeignKey("VendorId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("HotelMiniERP.Domain.Entities.WorkerComplaint", "WorkerComplaint")
                         .WithMany("WorkOrders")
                         .HasForeignKey("WorkerComplaintId")
@@ -772,6 +841,8 @@ namespace HotelMiniERP.Infrastructure.Migrations
                     b.Navigation("CustomerComplaint");
 
                     b.Navigation("RequestedByUser");
+
+                    b.Navigation("Vendor");
 
                     b.Navigation("WorkerComplaint");
                 });
@@ -814,6 +885,13 @@ namespace HotelMiniERP.Infrastructure.Migrations
                     b.Navigation("SentMessages");
 
                     b.Navigation("SubmittedComplaints");
+                });
+
+            modelBuilder.Entity("HotelMiniERP.Domain.Entities.Vendor", b =>
+                {
+                    b.Navigation("InventoryItems");
+
+                    b.Navigation("WorkOrders");
                 });
 
             modelBuilder.Entity("HotelMiniERP.Domain.Entities.WorkerComplaint", b =>

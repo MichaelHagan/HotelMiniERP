@@ -15,6 +15,7 @@ public class WorkOrderDto
     public DateTime? CompletedDate { get; set; }
     public decimal? EstimatedCost { get; set; }
     public decimal? ActualCost { get; set; }
+    public decimal? VendorCost { get; set; }
     public string? WorkType { get; set; }
     public string? Location { get; set; }
     public string? Notes { get; set; }
@@ -26,6 +27,8 @@ public class WorkOrderDto
     public string? RequestedByUserName { get; set; }
     public int? WorkerComplaintId { get; set; }
     public int? CustomerComplaintId { get; set; }
+    public int? VendorId { get; set; }
+    public string? VendorName { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }

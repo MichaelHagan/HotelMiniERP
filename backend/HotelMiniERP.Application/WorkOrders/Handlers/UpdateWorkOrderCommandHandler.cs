@@ -47,11 +47,13 @@ public class UpdateWorkOrderCommandHandler : IRequestHandler<UpdateWorkOrderComm
         workOrder.CompletedDate = request.CompletedDate;
         workOrder.EstimatedCost = request.EstimatedCost;
         workOrder.ActualCost = request.ActualCost;
+        workOrder.VendorCost = request.VendorCost;
         workOrder.WorkType = request.WorkType;
         workOrder.Location = request.Location;
         workOrder.Notes = request.Notes;
         workOrder.AssetId = request.AssetId;
         workOrder.AssignedToUserId = request.AssignedToUserId;
+        workOrder.VendorId = request.VendorId;
         workOrder.UpdatedAt = DateTime.UtcNow;
 
         if (request.Status == WorkOrderStatus.Completed && request.CompletedDate == null)
@@ -99,6 +101,7 @@ public class UpdateWorkOrderCommandHandler : IRequestHandler<UpdateWorkOrderComm
                 CompletedDate = w.CompletedDate,
                 EstimatedCost = w.EstimatedCost,
                 ActualCost = w.ActualCost,
+                VendorCost = w.VendorCost,
                 WorkType = w.WorkType,
                 Location = w.Location,
                 Notes = w.Notes,
@@ -110,6 +113,8 @@ public class UpdateWorkOrderCommandHandler : IRequestHandler<UpdateWorkOrderComm
                 RequestedByUserName = w.RequestedByUser != null ? w.RequestedByUser.FirstName + " " + w.RequestedByUser.LastName : null,
                 WorkerComplaintId = w.WorkerComplaintId,
                 CustomerComplaintId = w.CustomerComplaintId,
+                VendorId = w.VendorId,
+                VendorName = w.Vendor != null ? w.Vendor.Name : null,
                 CreatedAt = w.CreatedAt,
                 UpdatedAt = w.UpdatedAt
             })

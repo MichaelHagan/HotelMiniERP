@@ -33,6 +33,7 @@ public class CreateWorkOrderCommandHandler : IRequestHandler<CreateWorkOrderComm
             RequestedDate = DateTime.UtcNow,
             ScheduledDate = request.ScheduledDate,
             EstimatedCost = request.EstimatedCost,
+            VendorCost = request.VendorCost,
             WorkType = request.WorkType,
             Location = request.Location,
             Notes = request.Notes,
@@ -41,6 +42,7 @@ public class CreateWorkOrderCommandHandler : IRequestHandler<CreateWorkOrderComm
             RequestedByUserId = request.RequestedByUserId,
             WorkerComplaintId = request.WorkerComplaintId,
             CustomerComplaintId = request.CustomerComplaintId,
+            VendorId = request.VendorId,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -68,6 +70,7 @@ public class CreateWorkOrderCommandHandler : IRequestHandler<CreateWorkOrderComm
                 CompletedDate = w.CompletedDate,
                 EstimatedCost = w.EstimatedCost,
                 ActualCost = w.ActualCost,
+                VendorCost = w.VendorCost,
                 WorkType = w.WorkType,
                 Location = w.Location,
                 Notes = w.Notes,
@@ -79,6 +82,8 @@ public class CreateWorkOrderCommandHandler : IRequestHandler<CreateWorkOrderComm
                 RequestedByUserName = w.RequestedByUser != null ? w.RequestedByUser.FirstName + " " + w.RequestedByUser.LastName : null,
                 WorkerComplaintId = w.WorkerComplaintId,
                 CustomerComplaintId = w.CustomerComplaintId,
+                VendorId = w.VendorId,
+                VendorName = w.Vendor != null ? w.Vendor.Name : null,
                 CreatedAt = w.CreatedAt,
                 UpdatedAt = w.UpdatedAt
             })

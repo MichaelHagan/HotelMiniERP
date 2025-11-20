@@ -18,6 +18,7 @@ namespace HotelMiniERP.Infrastructure.Data
         public DbSet<Message> Messages { get; set; } = null!;
         public DbSet<Procedure> Procedures { get; set; } = null!;
         public DbSet<Inventory> Inventory { get; set; } = null!;
+        public DbSet<Vendor> Vendors { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -66,6 +67,7 @@ namespace HotelMiniERP.Infrastructure.Data
                 entity.Property(e => e.Description).IsRequired().HasMaxLength(2000);
                 entity.Property(e => e.EstimatedCost).HasColumnType("decimal(18,2)");
                 entity.Property(e => e.ActualCost).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.VendorCost).HasColumnType("decimal(18,2)");
                 entity.Property(e => e.WorkType).HasMaxLength(100);
                 entity.Property(e => e.Location).HasMaxLength(200);
 
@@ -93,6 +95,11 @@ namespace HotelMiniERP.Infrastructure.Data
                 entity.HasOne(w => w.CustomerComplaint)
                     .WithMany(c => c.WorkOrders)
                     .HasForeignKey(w => w.CustomerComplaintId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(w => w.Vendor)
+                    .WithMany(v => v.WorkOrders)
+                    .HasForeignKey(w => w.VendorId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
@@ -174,7 +181,28 @@ namespace HotelMiniERP.Infrastructure.Data
                 entity.Property(e => e.Category).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.Location).IsRequired().HasMaxLength(200);
                 entity.Property(e => e.UnitCost).HasColumnType("decimal(18,2)");
-                entity.Property(e => e.Supplier).HasMaxLength(200);
+
+                // Relationships
+                entity.HasOne(i => i.Vendor)
+                    .WithMany(v => v.InventoryItems)
+                    .HasForeignKey(i => i.VendorId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // Vendor Configuration
+            modelBuilder.Entity<Vendor>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.PhoneNumber).IsRequired().HasMaxLength(20);
+                entity.Property(e => e.Email).HasMaxLength(200);
+                entity.Property(e => e.Address).HasMaxLength(500);
+                entity.Property(e => e.ContactPerson).HasMaxLength(100);
+                entity.Property(e => e.Services).HasMaxLength(500);
+                entity.Property(e => e.Notes).HasMaxLength(1000);
+                entity.Property(e => e.IsActive).IsRequired().HasDefaultValue(true);
+                entity.Property(e => e.CreatedAt).IsRequired();
+                entity.Property(e => e.UpdatedAt).IsRequired();
             });
         }
 

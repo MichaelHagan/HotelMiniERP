@@ -147,7 +147,7 @@ const InventoryList: React.FC = () => {
               <TableCell>Quantity</TableCell>
               <TableCell>Min Stock</TableCell>
               <TableCell>Unit Cost</TableCell>
-              <TableCell>Supplier</TableCell>
+              <TableCell>Vendor</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -195,7 +195,7 @@ const InventoryList: React.FC = () => {
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" color="textSecondary">
-                      {item.supplier || '-'}
+                      {item.vendorName || '-'}
                     </Typography>
                   </TableCell>
                   <TableCell align="right">

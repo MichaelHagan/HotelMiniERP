@@ -35,14 +35,11 @@ public class CreateInventoryCommandHandler : IRequestHandler<CreateInventoryComm
             Category = request.Category,
             Brand = request.Brand,
             Model = request.Model,
-            SerialNumber = request.SerialNumber,
             Location = request.Location ?? string.Empty,
             Quantity = request.Quantity,
             MinimumStock = request.MinimumStock,
             UnitCost = request.UnitCost,
-            Supplier = request.Supplier,
-            PurchaseDate = request.PurchaseDate,
-            WarrantyExpiry = request.WarrantyExpiry,
+            VendorId = request.VendorId,
             LastRestockedDate = request.LastRestockedDate,
             Notes = request.Notes,
             CreatedAt = DateTime.UtcNow,
@@ -51,6 +48,14 @@ public class CreateInventoryCommandHandler : IRequestHandler<CreateInventoryComm
 
         _context.Inventory.Add(inventory);
         await _context.SaveChangesAsync(cancellationToken);
+
+        // Load vendor name if VendorId is set
+        string? vendorName = null;
+        if (inventory.VendorId.HasValue)
+        {
+            var vendor = await _context.Vendors.FindAsync(new object[] { inventory.VendorId.Value }, cancellationToken);
+            vendorName = vendor?.Name;
+        }
 
         return new InventoryDto
         {
@@ -61,14 +66,12 @@ public class CreateInventoryCommandHandler : IRequestHandler<CreateInventoryComm
             Category = inventory.Category,
             Brand = inventory.Brand,
             Model = inventory.Model,
-            SerialNumber = inventory.SerialNumber,
             Location = inventory.Location,
             Quantity = inventory.Quantity,
             MinimumStock = inventory.MinimumStock,
             UnitCost = inventory.UnitCost,
-            Supplier = inventory.Supplier,
-            PurchaseDate = inventory.PurchaseDate,
-            WarrantyExpiry = inventory.WarrantyExpiry,
+            VendorId = inventory.VendorId,
+            VendorName = vendorName,
             LastRestockedDate = inventory.LastRestockedDate,
             Notes = inventory.Notes,
             CreatedAt = inventory.CreatedAt,

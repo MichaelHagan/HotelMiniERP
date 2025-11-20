@@ -16,6 +16,7 @@ import {
   Person as PersonIcon,
   AssignmentInd as AssignmentIndIcon,
   Business as AssetIcon,
+  Store as VendorIcon,
   Timer as TimerIcon,
   Flag as PriorityIcon,
   Info as StatusIcon,
@@ -36,9 +37,24 @@ const WorkOrderDetailDialog: React.FC<WorkOrderDetailDialogProps> = ({
 }) => {
   if (!workOrder) return null;
 
+  const getStatusLabel = (status: WorkOrderStatus): string => {
+    switch (status) {
+      case WorkOrderStatus.Created:
+        return 'Created';
+      case WorkOrderStatus.InProgress:
+        return 'In Progress';
+      case WorkOrderStatus.Completed:
+        return 'Completed';
+      case WorkOrderStatus.Cancelled:
+        return 'Cancelled';
+      default:
+        return 'Unknown';
+    }
+  };
+
   const getStatusColor = (status: WorkOrderStatus) => {
     switch (status) {
-      case WorkOrderStatus.Open:
+      case WorkOrderStatus.Created:
         return 'info';
       case WorkOrderStatus.InProgress:
         return 'warning';
@@ -91,7 +107,7 @@ const WorkOrderDetailDialog: React.FC<WorkOrderDetailDialogProps> = ({
               icon={<PriorityIcon />}
             />
             <Chip
-              label={workOrder.status.replace(/([A-Z])/g, ' $1').trim()}
+              label={getStatusLabel(workOrder.status)}
               color={getStatusColor(workOrder.status)}
               size="small"
               icon={<StatusIcon />}
@@ -133,6 +149,14 @@ const WorkOrderDetailDialog: React.FC<WorkOrderDetailDialogProps> = ({
                 value={workOrder.assignedToUserName || 'Unassigned'}
               />
 
+              {workOrder.vendorName && (
+                <DetailRow
+                  icon={<VendorIcon fontSize="small" />}
+                  label="Vendor"
+                  value={workOrder.vendorName}
+                />
+              )}
+
               {workOrder.assetName && (
                 <DetailRow
                   icon={<AssetIcon fontSize="small" />}
@@ -172,6 +196,14 @@ const WorkOrderDetailDialog: React.FC<WorkOrderDetailDialogProps> = ({
                 label="Actual Cost"
                 value={workOrder.actualCost ? `$${workOrder.actualCost}` : 'Not recorded'}
               />
+
+              {workOrder.vendorCost && (
+                <DetailRow
+                  icon={<TimerIcon fontSize="small" />}
+                  label="Vendor Cost"
+                  value={`$${workOrder.vendorCost}`}
+                />
+              )}
             </Box>
           </Box>
 

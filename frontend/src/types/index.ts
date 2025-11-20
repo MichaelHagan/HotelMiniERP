@@ -139,6 +139,7 @@ export interface WorkOrder {
   completedDate?: string;
   estimatedCost?: number;
   actualCost?: number;
+  vendorCost?: number;
   workType?: string;
   location?: string;
   notes?: string;
@@ -150,6 +151,8 @@ export interface WorkOrder {
   requestedByUserName?: string;
   workerComplaintId?: string;
   customerComplaintId?: string;
+  vendorId?: string;
+  vendorName?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -162,7 +165,7 @@ export enum Priority {
 }
 
 export enum WorkOrderStatus {
-  Open = 'Open',
+  Created = 'Created',
   InProgress = 'InProgress',
   Completed = 'Completed',
   Cancelled = 'Cancelled'
@@ -180,6 +183,8 @@ export interface CreateWorkOrderDto {
   workerComplaintId?: string;
   customerComplaintId?: string;
   estimatedCost?: number;
+  vendorCost?: number;
+  vendorId?: number;
   scheduledDate?: string;
   notes?: string;
 }
@@ -195,9 +200,47 @@ export interface UpdateWorkOrderDto {
   assetId?: number;
   estimatedCost?: number;
   actualCost?: number;
+  vendorCost?: number;
+  vendorId?: number;
   scheduledDate?: string;
   completedDate?: string;
   notes?: string;
+}
+
+// Vendor Types
+export interface Vendor {
+  id: string;
+  name: string;
+  phoneNumber: string;
+  email?: string;
+  address?: string;
+  contactPerson?: string;
+  services?: string;
+  notes?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateVendorDto {
+  name: string;
+  phoneNumber: string;
+  email?: string;
+  address?: string;
+  contactPerson?: string;
+  services?: string;
+  notes?: string;
+}
+
+export interface UpdateVendorDto {
+  name: string;
+  phoneNumber: string;
+  email?: string;
+  address?: string;
+  contactPerson?: string;
+  services?: string;
+  notes?: string;
+  isActive: boolean;
 }
 
 // Inventory Types
@@ -209,14 +252,12 @@ export interface Inventory {
   category: string;
   brand?: string;
   model?: string;
-  serialNumber?: string;
   location: string;
   quantity: number;
   minimumStock?: number;
   unitCost?: number;
-  supplier?: string;
-  purchaseDate?: string;
-  warrantyExpiry?: string;
+  vendorId?: string;
+  vendorName?: string;
   lastRestockedDate?: string;
   notes?: string;
   createdAt: string;
@@ -230,14 +271,12 @@ export interface CreateInventoryDto {
   category: string;
   brand?: string;
   model?: string;
-  serialNumber?: string;
   location: string;
   quantity: number;
   minimumStock?: number;
   unitCost?: number;
-  supplier?: string;
-  purchaseDate?: string;
-  warrantyExpiry?: string;
+  vendorId?: string;
+  lastRestockedDate?: string;
   notes?: string;
 }
 
@@ -248,14 +287,11 @@ export interface UpdateInventoryDto {
   category?: string;
   brand?: string;
   model?: string;
-  serialNumber?: string;
   location?: string;
   quantity?: number;
   minimumStock?: number;
   unitCost?: number;
-  supplier?: string;
-  purchaseDate?: string;
-  warrantyExpiry?: string;
+  vendorId?: string;
   lastRestockedDate?: string;
   notes?: string;
 }

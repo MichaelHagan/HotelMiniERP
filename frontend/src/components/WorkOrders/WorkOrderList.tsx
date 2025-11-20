@@ -129,7 +129,7 @@ const WorkOrderList: React.FC = () => {
 
   const getStatusColor = (status: WorkOrderStatus) => {
     switch (status) {
-      case WorkOrderStatus.Open:
+      case WorkOrderStatus.Created:
         return 'info';
       case WorkOrderStatus.InProgress:
         return 'warning';
@@ -139,6 +139,21 @@ const WorkOrderList: React.FC = () => {
         return 'error';
       default:
         return 'default';
+    }
+  };
+
+  const getStatusLabel = (status: WorkOrderStatus): string => {
+    switch (status) {
+      case WorkOrderStatus.Created:
+        return 'Created';
+      case WorkOrderStatus.InProgress:
+        return 'In Progress';
+      case WorkOrderStatus.Completed:
+        return 'Completed';
+      case WorkOrderStatus.Cancelled:
+        return 'Cancelled';
+      default:
+        return 'Unknown';
     }
   };
 
@@ -209,7 +224,7 @@ const WorkOrderList: React.FC = () => {
               onChange={(e) => setStatusFilter(e.target.value as WorkOrderStatus | 'All')}
             >
               <MenuItem value="All">All</MenuItem>
-              <MenuItem value={WorkOrderStatus.Open}>Open</MenuItem>
+              <MenuItem value={WorkOrderStatus.Created}>Created</MenuItem>
               <MenuItem value={WorkOrderStatus.InProgress}>In Progress</MenuItem>
               <MenuItem value={WorkOrderStatus.Completed}>Completed</MenuItem>
               <MenuItem value={WorkOrderStatus.Cancelled}>Cancelled</MenuItem>
@@ -280,7 +295,7 @@ const WorkOrderList: React.FC = () => {
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label={workOrder.status.replace(/([A-Z])/g, ' $1').trim()}
+                      label={getStatusLabel(workOrder.status)}
                       color={getStatusColor(workOrder.status)}
                       size="small"
                     />

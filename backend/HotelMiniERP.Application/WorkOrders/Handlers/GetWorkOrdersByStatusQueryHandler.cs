@@ -38,6 +38,7 @@ public class GetWorkOrdersByStatusQueryHandler : IRequestHandler<GetWorkOrdersBy
                 CompletedDate = w.CompletedDate,
                 EstimatedCost = w.EstimatedCost,
                 ActualCost = w.ActualCost,
+                VendorCost = w.VendorCost,
                 WorkType = w.WorkType,
                 Location = w.Location,
                 Notes = w.Notes,
@@ -49,6 +50,8 @@ public class GetWorkOrdersByStatusQueryHandler : IRequestHandler<GetWorkOrdersBy
                 RequestedByUserName = w.RequestedByUser != null ? w.RequestedByUser.FirstName + " " + w.RequestedByUser.LastName : null,
                 WorkerComplaintId = w.WorkerComplaintId,
                 CustomerComplaintId = w.CustomerComplaintId,
+                VendorId = w.VendorId,
+                VendorName = w.Vendor != null ? w.Vendor.Name : null,
                 CreatedAt = w.CreatedAt,
                 UpdatedAt = w.UpdatedAt
             })

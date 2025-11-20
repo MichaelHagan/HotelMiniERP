@@ -33,6 +33,7 @@ import {
   NotificationsNone,
   Inventory2,
   BusinessCenter,
+  Store,
 } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
 import { useSignalR } from '../../context/SignalRContext';
@@ -82,6 +83,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     { text: 'Work Orders', icon: <Assignment />, path: '/work-orders' },
     { text: 'Inventory', icon: <Inventory2 />, path: '/inventory' },
     { text: 'Users', icon: <People />, path: '/users', roles: [UserRole.Admin, UserRole.Manager] },
+    { text: 'Vendors', icon: <Store />, path: '/vendors', roles: [UserRole.Admin, UserRole.Manager] },
     { text: 'Complaints', icon: <Report />, path: '/complaints' },
     { text: 'Messaging', icon: <Message />, path: '/messaging' },
     { text: 'Procedures', icon: <Book />, path: '/procedures' },

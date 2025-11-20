@@ -19,6 +19,10 @@ public class CreateWorkOrderCommandValidator : AbstractValidator<CreateWorkOrder
             .GreaterThanOrEqualTo(0).When(x => x.EstimatedCost.HasValue)
             .WithMessage("Estimated cost cannot be negative");
 
+        RuleFor(x => x.VendorCost)
+            .GreaterThanOrEqualTo(0).When(x => x.VendorCost.HasValue)
+            .WithMessage("Vendor cost cannot be negative");
+
         RuleFor(x => x.ScheduledDate)
             .GreaterThanOrEqualTo(DateTime.UtcNow.Date).When(x => x.ScheduledDate.HasValue)
             .WithMessage("Scheduled date cannot be in the past");

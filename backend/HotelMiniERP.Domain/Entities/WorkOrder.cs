@@ -16,6 +16,7 @@ namespace HotelMiniERP.Domain.Entities
         public DateTime? CompletedDate { get; set; }
         public decimal? EstimatedCost { get; set; }
         public decimal? ActualCost { get; set; }
+        public decimal? VendorCost { get; set; }
         public string? WorkType { get; set; }
         public string? Location { get; set; }
         public string? Notes { get; set; }
@@ -26,6 +27,7 @@ namespace HotelMiniERP.Domain.Entities
         public int? RequestedByUserId { get; set; }
         public int? WorkerComplaintId { get; set; }
         public int? CustomerComplaintId { get; set; }
+        public int? VendorId { get; set; }
 
         // Navigation properties
         public Asset? Asset { get; set; }
@@ -33,5 +35,6 @@ namespace HotelMiniERP.Domain.Entities
         public User? RequestedByUser { get; set; }
         public WorkerComplaint? WorkerComplaint { get; set; }
         public CustomerComplaint? CustomerComplaint { get; set; }
+        public Vendor? Vendor { get; set; }
     }
 }

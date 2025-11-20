@@ -43,6 +43,8 @@ public class GetWorkOrderByIdQueryHandler : IRequestHandler<GetWorkOrderByIdQuer
                 RequestedByUserName = w.RequestedByUser != null ? w.RequestedByUser.FirstName + " " + w.RequestedByUser.LastName : null,
                 WorkerComplaintId = w.WorkerComplaintId,
                 CustomerComplaintId = w.CustomerComplaintId,
+                VendorId = w.VendorId,
+                VendorName = w.Vendor != null ? w.Vendor.Name : null,
                 CreatedAt = w.CreatedAt,
                 UpdatedAt = w.UpdatedAt
             })

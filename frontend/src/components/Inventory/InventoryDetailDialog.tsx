@@ -62,7 +62,7 @@ const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({
               <DetailRow label="Code" value={inventory.code} />
               <DetailRow label="Category" value={inventory.category} />
               <DetailRow label="Location" value={inventory.location} />
-              <DetailRow label="Supplier" value={inventory.supplier || 'Not specified'} />
+              <DetailRow label="Vendor" value={inventory.vendorName || 'Not specified'} />
               <DetailRow label="Brand" value={inventory.brand || 'Not specified'} />
 
               {inventory.description && (
@@ -98,16 +98,6 @@ const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({
               <DetailRow label="Minimum Stock" value={inventory.minimumStock || 'Not set'} />
               <DetailRow label="Unit Cost" value={inventory.unitCost ? formatCurrency(inventory.unitCost) : 'Not specified'} />
               <DetailRow label="Last Restocked" value={inventory.lastRestockedDate ? formatDate(inventory.lastRestockedDate) : 'Not recorded'} />
-
-              <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
-                Dates & Warranty
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-              
-              <DetailRow label="Purchase Date" value={inventory.purchaseDate ? formatDate(inventory.purchaseDate) : 'Not specified'} />
-              {inventory.warrantyExpiry && (
-                <DetailRow label="Warranty Expires" value={formatDate(inventory.warrantyExpiry)} />
-              )}
 
               <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
                 System Information

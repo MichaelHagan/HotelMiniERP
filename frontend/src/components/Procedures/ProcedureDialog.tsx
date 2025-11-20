@@ -119,10 +119,22 @@ export const ProcedureDialog: React.FC<ProcedureDialogProps> = ({ open, onClose,
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Convert dates to ISO 8601 format if provided
+    const preparedData = {
+      ...formData,
+      reviewDate: formData.reviewDate 
+        ? new Date(formData.reviewDate).toISOString() 
+        : undefined,
+      approvalDate: formData.approvalDate 
+        ? new Date(formData.approvalDate).toISOString() 
+        : undefined
+    };
+    
     if (isEditMode && procedure) {
-      updateMutation.mutate({ id: procedure.id, data: formData as UpdateProcedureDto });
+      updateMutation.mutate({ id: procedure.id, data: preparedData as UpdateProcedureDto });
     } else {
-      createMutation.mutate(formData as CreateProcedureDto);
+      createMutation.mutate(preparedData as CreateProcedureDto);
     }
   };
 

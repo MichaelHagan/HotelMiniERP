@@ -85,9 +85,7 @@ public class InventoryController : ControllerBase
     {
         try
         {
-            if (id != command.Id)
-                return BadRequest(new { message = "ID mismatch" });
-
+            command.Id = id;
             var result = await _mediator.Send(command);
             return Ok(result);
         }
@@ -101,7 +99,9 @@ public class InventoryController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An error occurred while updating the inventory", error = ex.Message });
+            var innerMessage = ex.InnerException?.Message ?? ex.Message;
+            var stackTrace = ex.InnerException?.StackTrace ?? ex.StackTrace;
+            return StatusCode(500, new { message = "An error occurred while updating the inventory", error = innerMessage, details = stackTrace });
         }
     }
 

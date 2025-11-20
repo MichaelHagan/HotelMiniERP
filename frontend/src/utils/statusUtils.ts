@@ -19,7 +19,7 @@ export const getStatusColor = (status: AssetStatus | WorkOrderStatus | Complaint
     case ComplaintStatus.Closed:
       return 'default';
     
-    case WorkOrderStatus.Open:
+    case WorkOrderStatus.Created:
     case ComplaintStatus.Open:
       return 'info';
     
@@ -63,12 +63,24 @@ export const getStatusText = (status: AssetStatus | WorkOrderStatus | ComplaintS
   switch (status) {
     case AssetStatus.InMaintenance:
       return 'In Maintenance';
+    case WorkOrderStatus.Created:
+      return 'Created';
     case WorkOrderStatus.InProgress:
       return 'In Progress';
+    case WorkOrderStatus.Completed:
+      return 'Completed';
+    case WorkOrderStatus.Cancelled:
+      return 'Cancelled';
     case ComplaintStatus.InProgress:
       return 'In Progress';
+    case ComplaintStatus.Open:
+      return 'Open';
+    case ComplaintStatus.Resolved:
+      return 'Resolved';
+    case ComplaintStatus.Closed:
+      return 'Closed';
     default:
-      return status;
+      return String(status);
   }
 };
 

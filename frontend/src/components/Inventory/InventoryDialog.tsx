@@ -12,9 +12,11 @@ import {
   Select,
   MenuItem,
   CircularProgress,
+  Autocomplete,
 } from '@mui/material';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { inventoryService } from '../../services/inventoryService';
+import { vendorService } from '../../services/vendorService';
 import {
   Inventory,
   CreateInventoryDto,
@@ -49,19 +51,22 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({ open, onClose, invent
   const queryClient = useQueryClient();
   const isEditMode = Boolean(inventory);
 
+  // Fetch vendors for dropdown
+  const { data: vendorsData } = useQuery({
+    queryKey: ['vendors', { isActive: true }],
+    queryFn: () => vendorService.getVendors(true),
+  });
+
   const [formData, setFormData] = useState<CreateInventoryDto | UpdateInventoryDto>({
     name: '',
     description: '',
     model: '',
-    serialNumber: '',
     location: '',
     category: '',
     quantity: 0,
     minimumStock: 0,
     unitCost: 0,
-    supplier: '',
-    purchaseDate: '',
-    warrantyExpiry: '',
+    vendorId: undefined,
     lastRestockedDate: '',
   });
 
@@ -92,7 +97,7 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({ open, onClose, invent
         quantity: inventory.quantity,
         minimumStock: inventory.minimumStock,
         unitCost: inventory.unitCost,
-        supplier: inventory.supplier,
+        vendorId: inventory.vendorId,
         lastRestockedDate: inventory.lastRestockedDate
           ? new Date(inventory.lastRestockedDate).toISOString().slice(0, 10)
           : undefined,
@@ -102,15 +107,12 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({ open, onClose, invent
         name: '',
         description: '',
         model: '',
-        serialNumber: '',
         location: '',
         category: '',
         quantity: 0,
         minimumStock: 0,
         unitCost: 0,
-        supplier: '',
-        purchaseDate: '',
-        warrantyExpiry: '',
+        vendorId: undefined,
         lastRestockedDate: '',
       });
     }
@@ -121,15 +123,12 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({ open, onClose, invent
       name: '',
       description: '',
       model: '',
-      serialNumber: '',
       location: '',
       category: '',
       quantity: 0,
       minimumStock: 0,
       unitCost: 0,
-      supplier: '',
-      purchaseDate: '',
-      warrantyExpiry: '',
+      vendorId: undefined,
       lastRestockedDate: '',
     });
     onClose();
@@ -137,10 +136,19 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({ open, onClose, invent
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Convert lastRestockedDate to ISO 8601 format if provided
+    const preparedData = {
+      ...formData,
+      lastRestockedDate: formData.lastRestockedDate 
+        ? new Date(formData.lastRestockedDate).toISOString() 
+        : undefined
+    };
+    
     if (isEditMode && inventory) {
-      updateMutation.mutate({ id: inventory.id, data: formData as UpdateInventoryDto });
+      updateMutation.mutate({ id: inventory.id, data: preparedData as UpdateInventoryDto });
     } else {
-      createMutation.mutate(formData as CreateInventoryDto);
+      createMutation.mutate(preparedData as CreateInventoryDto);
     }
   };
 
@@ -185,15 +193,6 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({ open, onClose, invent
                 disabled={isEditMode}
               />
 
-              <TextField
-                required
-                fullWidth
-                label="Serial Number"
-                value={(formData as CreateInventoryDto).serialNumber || ''}
-                onChange={(e) => handleChange('serialNumber', e.target.value)}
-                disabled={isEditMode}
-              />
-
               <FormControl fullWidth required>
                 <InputLabel>Category</InputLabel>
                 <Select
@@ -216,12 +215,21 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({ open, onClose, invent
                 placeholder="e.g., Basement, Kitchen, Lobby"
               />
 
-              <TextField
+              <Autocomplete
                 fullWidth
-                label="Supplier"
-                value={formData.supplier || ''}
-                onChange={(e) => handleChange('supplier', e.target.value)}
-                placeholder="e.g., ABC Distributors"
+                options={vendorsData || []}
+                getOptionLabel={(option) => option.name}
+                value={vendorsData?.find((v) => v.id === formData.vendorId) || null}
+                onChange={(_, newValue) => {
+                  handleChange('vendorId', newValue?.id);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Vendor"
+                    placeholder="Select a vendor"
+                  />
+                )}
               />
 
               <TextField
@@ -265,27 +273,6 @@ const InventoryDialog: React.FC<InventoryDialogProps> = ({ open, onClose, invent
                 />
               )}
 
-              {!isEditMode && (
-                <TextField
-                  fullWidth
-                  type="date"
-                  label="Purchase Date"
-                  value={(formData as CreateInventoryDto).purchaseDate || ''}
-                  onChange={(e) => handleChange('purchaseDate', e.target.value)}
-                  InputLabelProps={{ shrink: true }}
-                />
-              )}
-
-              {!isEditMode && (
-                <TextField
-                  fullWidth
-                  type="date"
-                  label="Warranty Expiry Date"
-                  value={(formData as CreateInventoryDto).warrantyExpiry || ''}
-                  onChange={(e) => handleChange('warrantyExpiry', e.target.value)}
-                  InputLabelProps={{ shrink: true }}
-                />
-              )}
             </Box>
           </Box>
         </DialogContent>

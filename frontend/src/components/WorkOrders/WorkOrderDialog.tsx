@@ -19,6 +19,7 @@ import { workOrderService } from '../../services/workOrderService';
 import { assetService } from '../../services/assetService';
 import { userService } from '../../services/userService';
 import { complaintService } from '../../services/complaintService';
+import { vendorService } from '../../services/vendorService';
 import {
   WorkOrder,
   CreateWorkOrderDto,
@@ -63,6 +64,8 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({
     assignedToUserId: undefined,
     estimatedCost: undefined,
     scheduledDate: undefined,
+    vendorId: undefined,
+    vendorCost: undefined,
   });
 
   const { data: assetsData, isLoading: assetsLoading } = useQuery({
@@ -74,6 +77,12 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({
   const { data: usersData, isLoading: usersLoading } = useQuery({
     queryKey: ['users'],
     queryFn: () => userService.getUsers({ page: 1, pageSize: 100 }),
+    enabled: open,
+  });
+
+  const { data: vendorsData, isLoading: vendorsLoading } = useQuery({
+    queryKey: ['vendors'],
+    queryFn: () => vendorService.getVendors(true),
     enabled: open,
   });
 
@@ -121,6 +130,8 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({
           ? new Date(workOrder.scheduledDate).toISOString().slice(0, 16)
           : undefined,
         notes: workOrder.notes,
+        vendorId: workOrder.vendorId ? Number(workOrder.vendorId) : undefined,
+        vendorCost: workOrder.vendorCost,
       });
     } else {
       const isMaintenanceWorkOrder = workType === 'Maintenance' && assetName;
@@ -148,6 +159,8 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({
         customerComplaintId: customerComplaintId,
         estimatedCost: undefined,
         scheduledDate: undefined,
+        vendorId: undefined,
+        vendorCost: undefined,
       });
     }
   }, [workOrder, open, assetId, assetName, workType, workerComplaintId, customerComplaintId, complaintTitle, complaintDescription]);
@@ -169,10 +182,19 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Convert scheduledDate to ISO 8601 format if provided
+    const preparedData = {
+      ...formData,
+      scheduledDate: formData.scheduledDate 
+        ? new Date(formData.scheduledDate).toISOString() 
+        : undefined
+    };
+    
     if (isEditMode && workOrder) {
-      updateMutation.mutate({ id: workOrder.id, data: formData as UpdateWorkOrderDto });
+      updateMutation.mutate({ id: workOrder.id, data: preparedData as UpdateWorkOrderDto });
     } else {
-      createMutation.mutate(formData as CreateWorkOrderDto);
+      createMutation.mutate(preparedData as CreateWorkOrderDto);
     }
   };
 
@@ -232,13 +254,13 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({
                 <FormControl fullWidth>
                   <InputLabel>Status</InputLabel>
                   <Select
-                    value={(formData as UpdateWorkOrderDto).status || WorkOrderStatus.Open}
+                    value={(formData as UpdateWorkOrderDto).status || WorkOrderStatus.Created}
                     label="Status"
                     onChange={(e) =>
                       handleChange('status', e.target.value as WorkOrderStatus)
                     }
                   >
-                    <MenuItem value={WorkOrderStatus.Open}>Open</MenuItem>
+                    <MenuItem value={WorkOrderStatus.Created}>Created</MenuItem>
                     <MenuItem value={WorkOrderStatus.InProgress}>In Progress</MenuItem>
                     <MenuItem value={WorkOrderStatus.Completed}>Completed</MenuItem>
                     <MenuItem value={WorkOrderStatus.Cancelled}>Cancelled</MenuItem>
@@ -359,6 +381,29 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({
                 )}
               />
 
+              <Autocomplete
+                options={vendorsData || []}
+                getOptionLabel={(option) => `${option.name} - ${option.phoneNumber}`}
+                value={vendorsData?.find((v) => v.id.toString() === String(formData.vendorId)) || null}
+                onChange={(_e, value) => handleChange('vendorId', value?.id ? Number(value.id) : undefined)}
+                loading={vendorsLoading}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Vendor (Optional)"
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {vendorsLoading ? <CircularProgress size={20} /> : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                    }}
+                  />
+                )}
+              />
+
               <TextField
                 fullWidth
                 type="number"
@@ -382,6 +427,17 @@ const WorkOrderDialog: React.FC<WorkOrderDialogProps> = ({
                   inputProps={{ min: 0, step: 0.5 }}
                 />
               )}
+
+              <TextField
+                fullWidth
+                type="number"
+                label="Vendor Cost (Optional)"
+                value={formData.vendorCost || ''}
+                onChange={(e) =>
+                  handleChange('vendorCost', e.target.value ? Number(e.target.value) : undefined)
+                }
+                inputProps={{ min: 0, step: 0.5 }}
+              />
 
               <Box sx={{ gridColumn: isEditMode ? 'auto' : { xs: '1', sm: '1 / -1' } }}>
                 <TextField

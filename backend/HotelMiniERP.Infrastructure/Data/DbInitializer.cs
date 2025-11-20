@@ -152,13 +152,11 @@ public static class DbInitializer
             Category = "Cleaning",
             Brand = "CleanPro",
             Model = "CP-5000",
-            SerialNumber = "CP5000-2023-001",
-            PurchaseDate = DateTime.UtcNow.AddMonths(-8),
             UnitCost = 500.00m,
             Location = "Housekeeping Storage",
             Quantity = 5,
             MinimumStock = 2,
-            Supplier = "CleanPro Supplies",
+            VendorId = null, // Will be linked to vendor later
             LastRestockedDate = DateTime.UtcNow.AddMonths(-1),
             CreatedAt = DateTime.UtcNow
         };
@@ -171,13 +169,11 @@ public static class DbInitializer
             Category = "Tools",
             Brand = "ToolMaster",
             Model = "TM-Professional",
-            SerialNumber = "TM-PRO-2023-001",
-            PurchaseDate = DateTime.UtcNow.AddYears(-1),
             UnitCost = 1200.00m,
             Location = "Maintenance Room",
             Quantity = 3,
             MinimumStock = 1,
-            Supplier = "ToolMaster Direct",
+            VendorId = null, // Will be linked to vendor later
             LastRestockedDate = DateTime.UtcNow.AddMonths(-2),
             CreatedAt = DateTime.UtcNow
         };
