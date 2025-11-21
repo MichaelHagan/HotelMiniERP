@@ -52,6 +52,10 @@ public class GetAllComplaintsQueryHandler : IRequestHandler<GetAllComplaintsQuer
                     Location = c.Location,
                     SubmittedByUserId = c.SubmittedByUserId,
                     AssignedToUserId = c.AssignedToUserId,
+                    AssignedToUserName = c.AssignedToUser != null 
+                        ? c.AssignedToUser.FirstName + " " + c.AssignedToUser.LastName 
+                        : null,
+                    HasWorkOrder = c.WorkOrders.Any(),
                     ResolvedDate = c.ResolvedDate,
                     Resolution = c.Resolution,
                     Notes = c.Notes,
@@ -98,6 +102,10 @@ public class GetAllComplaintsQueryHandler : IRequestHandler<GetAllComplaintsQuer
                     CustomerPhone = c.CustomerPhone,
                     RoomNumber = c.RoomNumber,
                     AssignedToUserId = c.AssignedToUserId,
+                    AssignedToUserName = c.AssignedToUser != null 
+                        ? c.AssignedToUser.FirstName + " " + c.AssignedToUser.LastName 
+                        : null,
+                    HasWorkOrder = c.WorkOrders.Any(),
                     ResolvedDate = c.ResolvedDate,
                     Resolution = c.Resolution,
                     Notes = c.Notes,
@@ -116,6 +124,69 @@ public class GetAllComplaintsQueryHandler : IRequestHandler<GetAllComplaintsQuer
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
             .ToList();
+
+        // Load images for the paginated complaints
+        var workerComplaintIds = paginatedComplaints
+            .Where(c => c.Type == "worker")
+            .Select(c => c.Id)
+            .ToList();
+        
+        var customerComplaintIds = paginatedComplaints
+            .Where(c => c.Type == "customer")
+            .Select(c => c.Id)
+            .ToList();
+
+        var allImages = await _context.ComplaintImages
+            .Where(ci => 
+                (ci.WorkerComplaintId.HasValue && workerComplaintIds.Contains(ci.WorkerComplaintId.Value)) ||
+                (ci.CustomerComplaintId.HasValue && customerComplaintIds.Contains(ci.CustomerComplaintId.Value)))
+            .ToListAsync(cancellationToken);
+
+        // Group images by complaint using foreign keys
+        var workerImages = allImages
+            .Where(ci => ci.WorkerComplaintId.HasValue)
+            .GroupBy(ci => ci.WorkerComplaintId!.Value)
+            .ToDictionary(
+                g => g.Key,
+                g => g.Select(ci => new ComplaintImageDto
+                {
+                    Id = ci.Id,
+                    ImageUrl = ci.ImageUrl,
+                    PublicId = ci.PublicId,
+                    FileName = ci.FileName,
+                    FileSize = ci.FileSize,
+                    CreatedAt = ci.CreatedAt
+                }).ToList()
+            );
+
+        var customerImages = allImages
+            .Where(ci => ci.CustomerComplaintId.HasValue)
+            .GroupBy(ci => ci.CustomerComplaintId!.Value)
+            .ToDictionary(
+                g => g.Key,
+                g => g.Select(ci => new ComplaintImageDto
+                {
+                    Id = ci.Id,
+                    ImageUrl = ci.ImageUrl,
+                    PublicId = ci.PublicId,
+                    FileName = ci.FileName,
+                    FileSize = ci.FileSize,
+                    CreatedAt = ci.CreatedAt
+                }).ToList()
+            );
+
+        // Attach images to complaints
+        foreach (var complaint in paginatedComplaints)
+        {
+            if (complaint.Type == "worker" && workerImages.ContainsKey(complaint.Id))
+            {
+                complaint.ImageUrls = workerImages[complaint.Id];
+            }
+            else if (complaint.Type == "customer" && customerImages.ContainsKey(complaint.Id))
+            {
+                complaint.ImageUrls = customerImages[complaint.Id];
+            }
+        }
 
         return new PaginatedResponse<ComplaintDto>
         {

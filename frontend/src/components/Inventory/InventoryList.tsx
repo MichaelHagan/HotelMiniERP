@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
+import { INVENTORY_CATEGORIES } from '../../types';
 import {
   Box,
   Button,
   Card,
   CardContent,
+  FormControl,
   IconButton,
   InputAdornment,
+  InputLabel,
+  MenuItem,
   Paper,
+  Select,
   Table,
   TableBody,
   TableCell,
@@ -135,12 +140,21 @@ const InventoryList: React.FC = () => {
               }}
             />
 
-            <TextField
-              label="Category"
-              placeholder="Filter by category..."
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-            />
+            <FormControl variant="outlined">
+              <InputLabel>Category</InputLabel>
+              <Select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                label="Category"
+              >
+                <MenuItem value="">All Categories</MenuItem>
+                {INVENTORY_CATEGORIES.map((category) => (
+                  <MenuItem key={category} value={category}>
+                    {category}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Box>
         </CardContent>
       </Card>

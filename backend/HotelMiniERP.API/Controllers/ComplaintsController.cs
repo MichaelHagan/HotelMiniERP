@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using HotelMiniERP.Application.Complaints.Queries;
 using HotelMiniERP.Application.Complaints.Commands;
+using HotelMiniERP.API.DTOs;
 
 namespace HotelMiniERP.API.Controllers;
 
@@ -69,10 +70,29 @@ public class ComplaintsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateComplaint([FromBody] CreateComplaintCommand command)
+    public async Task<IActionResult> CreateComplaint([FromForm] CreateComplaintRequestDto requestDto)
     {
         try
         {
+            // Map DTO to command with files
+            var command = new CreateComplaintCommand
+            {
+                Type = requestDto.Type,
+                Title = requestDto.Title,
+                Description = requestDto.Description,
+                Priority = requestDto.Priority,
+                Category = requestDto.Category,
+                Location = requestDto.Location,
+                Notes = requestDto.Notes,
+                SubmittedByUserId = requestDto.SubmittedByUserId,
+                AssignedToUserId = requestDto.AssignedToUserId,
+                CustomerName = requestDto.CustomerName,
+                CustomerEmail = requestDto.CustomerEmail,
+                CustomerPhone = requestDto.CustomerPhone,
+                RoomNumber = requestDto.RoomNumber,
+                Images = requestDto.Images ?? new List<IFormFile>()
+            };
+
             var result = await _mediator.Send(command);
             return CreatedAtAction(nameof(GetComplaintById), new { type = result.Type, id = result.Id }, result);
         }

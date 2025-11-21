@@ -7,6 +7,9 @@ using HotelMiniERP.Infrastructure;
 using HotelMiniERP.Application;
 using HotelMiniERP.API.Hubs;
 using HotelMiniERP.Infrastructure.Data;
+using CloudinaryDotNet;
+using HotelMiniERP.Application.Interfaces;
+using HotelMiniERP.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +26,16 @@ builder.Services.AddApplication();
 
 // Add Infrastructure services
 builder.Services.AddInfrastructure(builder.Configuration);
+
+// Configure Cloudinary
+var cloudinaryAccount = new Account(
+    builder.Configuration["Cloudinary:CloudName"],
+    builder.Configuration["Cloudinary:ApiKey"],
+    builder.Configuration["Cloudinary:ApiSecret"]
+);
+var cloudinary = new Cloudinary(cloudinaryAccount);
+builder.Services.AddSingleton(cloudinary);
+builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 
 // Add CORS
 builder.Services.AddCors(options =>

@@ -13,6 +13,7 @@ import {
 import {
   Person as PersonIcon,
   Email as EmailIcon,
+  Phone as PhoneIcon,
   Work as RoleIcon,
   Business as DepartmentIcon,
   CalendarMonth as CalendarIcon,
@@ -110,6 +111,14 @@ const UserDetailDialog: React.FC<UserDetailDialogProps> = ({ open, onClose, user
                 label="Email"
                 value={user.email}
               />
+
+              {user.phoneNumber && (
+                <DetailRow
+                  icon={<PhoneIcon fontSize="small" />}
+                  label="Phone Number"
+                  value={user.phoneNumber}
+                />
+              )}
             </Box>
           </Box>
 

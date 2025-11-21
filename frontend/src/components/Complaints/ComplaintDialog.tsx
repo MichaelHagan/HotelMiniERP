@@ -8,8 +8,13 @@ import {
   TextField,
   MenuItem,
   Box,
-  Alert
+  Alert,
+  Typography,
+  Chip,
+  Stack,
+  CircularProgress
 } from '@mui/material';
+import { CloudUpload, Delete, Image as ImageIcon } from '@mui/icons-material';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { complaintService } from '../../services/complaintService';
 import {
@@ -54,6 +59,7 @@ export const ComplaintDialog: React.FC<ComplaintDialogProps> = ({
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   useEffect(() => {
     if (complaint) {
@@ -82,17 +88,18 @@ export const ComplaintDialog: React.FC<ComplaintDialogProps> = ({
       });
     }
     setErrors({});
+    setSelectedFiles([]);
   }, [complaint, open]);
 
   const createMutation = useMutation<
     WorkerComplaint | CustomerComplaint,
     Error,
-    CreateWorkerComplaintDto | CreateCustomerComplaintDto
+    { dto: CreateWorkerComplaintDto | CreateCustomerComplaintDto; files: File[] }
   >({
-    mutationFn: (data: CreateWorkerComplaintDto | CreateCustomerComplaintDto) => {
+    mutationFn: ({ dto, files }: { dto: CreateWorkerComplaintDto | CreateCustomerComplaintDto; files: File[] }) => {
       return complaintType === 'worker'
-        ? complaintService.createWorkerComplaint(data as CreateWorkerComplaintDto)
-        : complaintService.createCustomerComplaint(data as CreateCustomerComplaintDto);
+        ? complaintService.createWorkerComplaint(dto as CreateWorkerComplaintDto, files)
+        : complaintService.createCustomerComplaint(dto as CreateCustomerComplaintDto, files);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ 
@@ -132,6 +139,39 @@ export const ComplaintDialog: React.FC<ComplaintDialogProps> = ({
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    if (files.length === 0) return;
+
+    // Validate all files
+    const validFiles: File[] = [];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    
+    for (const file of files) {
+      if (!allowedTypes.includes(file.type)) {
+        setErrors(prev => ({ ...prev, images: `${file.name} has an invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.` }));
+        continue;
+      }
+      
+      if (file.size > maxSize) {
+        setErrors(prev => ({ ...prev, images: `${file.name} exceeds the 5MB size limit.` }));
+        continue;
+      }
+      
+      validFiles.push(file);
+    }
+
+    if (validFiles.length > 0) {
+      setSelectedFiles(prev => [...prev, ...validFiles]);
+      setErrors(prev => ({ ...prev, images: '' }));
+    }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   const validateForm = (): boolean => {
@@ -178,9 +218,9 @@ export const ComplaintDialog: React.FC<ComplaintDialogProps> = ({
           description: formData.description,
           category: formData.category,
           priority: formData.priority,
-          submittedByUserId: user?.id || ''
+          submittedByUserId: user?.id || '0'
         };
-        createMutation.mutate(createData);
+        createMutation.mutate({ dto: createData, files: selectedFiles });
       } else {
         const createData: CreateCustomerComplaintDto = {
           title: formData.title,
@@ -192,7 +232,7 @@ export const ComplaintDialog: React.FC<ComplaintDialogProps> = ({
           customerPhone: formData.customerPhone || undefined,
           roomNumber: formData.roomNumber || undefined
         };
-        createMutation.mutate(createData);
+        createMutation.mutate({ dto: createData, files: selectedFiles });
       }
     }
   };
@@ -278,6 +318,53 @@ export const ComplaintDialog: React.FC<ComplaintDialogProps> = ({
             </TextField>
           )}
 
+          {/* Image Upload Section - Only show for new complaints */}
+          {!isEditMode && (
+            <Box>
+              <Typography variant="subtitle2" gutterBottom>
+                Attach Images (Optional)
+              </Typography>
+              
+              <Button
+                variant="outlined"
+                component="label"
+                startIcon={<CloudUpload />}
+                fullWidth
+                sx={{ mb: 2 }}
+              >
+                Upload Images
+                <input
+                  type="file"
+                  hidden
+                  multiple
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                />
+              </Button>
+
+              {errors.images && (
+                <Alert severity="error" sx={{ mb: 2 }}>
+                  {errors.images}
+                </Alert>
+              )}
+
+              {selectedFiles.length > 0 && (
+                <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
+                  {selectedFiles.map((file, index) => (
+                    <Chip
+                      key={index}
+                      icon={<ImageIcon />}
+                      label={file.name}
+                      onDelete={() => handleRemoveImage(index)}
+                      deleteIcon={<Delete />}
+                      color="default"
+                    />
+                  ))}
+                </Stack>
+              )}
+            </Box>
+          )}
+
           {complaintType === 'customer' && (
             <>
               <TextField
@@ -321,13 +408,19 @@ export const ComplaintDialog: React.FC<ComplaintDialogProps> = ({
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose} disabled={createMutation.isPending || updateMutation.isPending}>
+          Cancel
+        </Button>
         <Button
           onClick={handleSubmit}
           variant="contained"
           disabled={createMutation.isPending || updateMutation.isPending}
+          startIcon={createMutation.isPending || updateMutation.isPending ? <CircularProgress size={20} /> : undefined}
         >
-          {isEditMode ? 'Update' : 'Create'}
+          {createMutation.isPending || updateMutation.isPending 
+            ? 'Uploading...' 
+            : isEditMode ? 'Update' : 'Create'
+          }
         </Button>
       </DialogActions>
     </Dialog>

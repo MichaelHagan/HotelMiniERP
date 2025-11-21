@@ -50,6 +50,35 @@ public class CreateWorkOrderCommandHandler : IRequestHandler<CreateWorkOrderComm
         _context.WorkOrders.Add(workOrder);
         await _context.SaveChangesAsync(cancellationToken);
 
+        // Auto-assign complaint to the same user if work order has an assigned user
+        if (request.AssignedToUserId.HasValue)
+        {
+            if (request.WorkerComplaintId.HasValue)
+            {
+                var complaint = await _context.WorkerComplaints
+                    .FirstOrDefaultAsync(c => c.Id == request.WorkerComplaintId.Value, cancellationToken);
+                
+                if (complaint != null && complaint.AssignedToUserId != request.AssignedToUserId)
+                {
+                    complaint.AssignedToUserId = request.AssignedToUserId;
+                    complaint.UpdatedAt = DateTime.UtcNow;
+                    await _context.SaveChangesAsync(cancellationToken);
+                }
+            }
+            else if (request.CustomerComplaintId.HasValue)
+            {
+                var complaint = await _context.CustomerComplaints
+                    .FirstOrDefaultAsync(c => c.Id == request.CustomerComplaintId.Value, cancellationToken);
+                
+                if (complaint != null && complaint.AssignedToUserId != request.AssignedToUserId)
+                {
+                    complaint.AssignedToUserId = request.AssignedToUserId;
+                    complaint.UpdatedAt = DateTime.UtcNow;
+                    await _context.SaveChangesAsync(cancellationToken);
+                }
+            }
+        }
+
         return await GetWorkOrderDto(workOrder.Id, cancellationToken);
     }
 

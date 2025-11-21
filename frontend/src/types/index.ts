@@ -1,3 +1,38 @@
+// Constants
+export const INVENTORY_CATEGORIES = [
+  'Cleaning Supplies',
+  'Kitchen Inventory',
+  'Kitchen Supplies',
+  'Food & Beverage',
+  'Dry Goods',
+  'Fresh Produce',
+  'Dairy & Refrigerated',
+  'Beverages',
+  'Bar Supplies',
+  'Linens & Bedding',
+  'Toiletries & Amenities',
+  'Maintenance Tools',
+  'Office Supplies',
+  'Safety Inventory',
+  'Other'
+] as const;
+
+export const ASSET_CATEGORIES = [
+  'Furniture',
+  'Electronics',
+  'HVAC Systems',
+  'Kitchen Equipment',
+  'Appliances',
+  'Vehicles',
+  'Tools & Equipment',
+  'IT Equipment',
+  'Lighting',
+  'Safety Equipment',
+  'Plumbing Fixtures',
+  'Building Infrastructure',
+  'Other'
+] as const;
+
 // User Types
 export interface User {
   id: string;
@@ -362,6 +397,15 @@ export interface UpdateProcedureDto {
 }
 
 // Complaint Types
+export interface ComplaintImage {
+  id: number;
+  imageUrl: string;
+  publicId: string;
+  fileName?: string;
+  fileSize?: number;
+  createdAt: string;
+}
+
 export interface WorkerComplaint {
   id: string;
   type: string;
@@ -377,6 +421,9 @@ export interface WorkerComplaint {
   notes?: string;
   submittedByUserId?: number;
   assignedToUserId?: number;
+  assignedToUserName?: string;
+  hasWorkOrder?: boolean;
+  imageUrls?: ComplaintImage[];
   createdAt: string;
   updatedAt: string;
 }
@@ -395,10 +442,13 @@ export interface CustomerComplaint {
   resolution?: string;
   notes?: string;
   assignedToUserId?: number;
+  assignedToUserName?: string;
+  hasWorkOrder?: boolean;
   customerName?: string;
   customerEmail?: string;
   customerPhone?: string;
   roomNumber?: string;
+  imageUrls?: ComplaintImage[];
   createdAt: string;
   updatedAt: string;
 }

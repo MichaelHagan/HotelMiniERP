@@ -20,6 +20,7 @@ namespace HotelMiniERP.Infrastructure.Data
         public DbSet<Inventory> Inventory { get; set; } = null!;
         public DbSet<Vendor> Vendors { get; set; } = null!;
         public DbSet<StockTransaction> StockTransactions { get; set; } = null!;
+        public DbSet<ComplaintImage> ComplaintImages { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -223,6 +224,26 @@ namespace HotelMiniERP.Infrastructure.Data
                 entity.Property(e => e.IsActive).IsRequired().HasDefaultValue(true);
                 entity.Property(e => e.CreatedAt).IsRequired();
                 entity.Property(e => e.UpdatedAt).IsRequired();
+            });
+
+            // ComplaintImage Configuration
+            modelBuilder.Entity<ComplaintImage>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.ImageUrl).IsRequired().HasMaxLength(500);
+                entity.Property(e => e.PublicId).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.FileName).HasMaxLength(255);
+
+                // Relationships
+                entity.HasOne(ci => ci.CustomerComplaint)
+                    .WithMany(cc => cc.ComplaintImages)
+                    .HasForeignKey(ci => ci.CustomerComplaintId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(ci => ci.WorkerComplaint)
+                    .WithMany(wc => wc.ComplaintImages)
+                    .HasForeignKey(ci => ci.WorkerComplaintId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
         }
 

@@ -33,8 +33,33 @@ export class ComplaintService {
     return apiClient.get<WorkerComplaint>(`${this.basePath}/worker/${id}`);
   }
 
-  async createWorkerComplaint(complaintDto: CreateWorkerComplaintDto): Promise<WorkerComplaint> {
-    return apiClient.post<WorkerComplaint>(`${this.basePath}`, { ...complaintDto, type: 'worker' });
+  async createWorkerComplaint(complaintDto: CreateWorkerComplaintDto, images?: File[]): Promise<WorkerComplaint> {
+    const formData = new FormData();
+    formData.append('type', 'worker');
+    formData.append('title', complaintDto.title);
+    formData.append('description', complaintDto.description);
+    formData.append('category', complaintDto.category);
+    formData.append('priority', complaintDto.priority.toString());
+    formData.append('submittedByUserId', complaintDto.submittedByUserId.toString());
+    
+    if (complaintDto.location) {
+      formData.append('location', complaintDto.location);
+    }
+    
+    if (complaintDto.notes) {
+      formData.append('notes', complaintDto.notes);
+    }
+    
+    // Append image files
+    if (images && images.length > 0) {
+      images.forEach((file) => {
+        formData.append('images', file);
+      });
+    }
+    
+    return apiClient.post<WorkerComplaint>(`${this.basePath}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
   }
 
   async updateWorkerComplaint(id: string, complaintDto: UpdateComplaintDto): Promise<WorkerComplaint> {
@@ -70,8 +95,42 @@ export class ComplaintService {
     return apiClient.get<CustomerComplaint>(`${this.basePath}/customer/${id}`);
   }
 
-  async createCustomerComplaint(complaintDto: CreateCustomerComplaintDto): Promise<CustomerComplaint> {
-    return apiClient.post<CustomerComplaint>(`${this.basePath}`, { ...complaintDto, type: 'customer' });
+  async createCustomerComplaint(complaintDto: CreateCustomerComplaintDto, images?: File[]): Promise<CustomerComplaint> {
+    const formData = new FormData();
+    formData.append('type', 'customer');
+    formData.append('title', complaintDto.title);
+    formData.append('description', complaintDto.description);
+    formData.append('category', complaintDto.category);
+    formData.append('priority', complaintDto.priority.toString());
+    formData.append('customerName', complaintDto.customerName);
+    formData.append('customerEmail', complaintDto.customerEmail);
+    
+    if (complaintDto.customerPhone) {
+      formData.append('customerPhone', complaintDto.customerPhone);
+    }
+    
+    if (complaintDto.roomNumber) {
+      formData.append('roomNumber', complaintDto.roomNumber);
+    }
+    
+    if (complaintDto.location) {
+      formData.append('location', complaintDto.location);
+    }
+    
+    if (complaintDto.notes) {
+      formData.append('notes', complaintDto.notes);
+    }
+    
+    // Append image files
+    if (images && images.length > 0) {
+      images.forEach((file) => {
+        formData.append('images', file);
+      });
+    }
+    
+    return apiClient.post<CustomerComplaint>(`${this.basePath}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
   }
 
   async updateCustomerComplaint(id: string, complaintDto: UpdateComplaintDto): Promise<CustomerComplaint> {

@@ -27,5 +27,6 @@ namespace HotelMiniERP.Domain.Entities
         // Navigation properties
         public User? AssignedToUser { get; set; }
         public ICollection<WorkOrder> WorkOrders { get; set; } = new List<WorkOrder>();
+        public ICollection<ComplaintImage> ComplaintImages { get; set; } = new List<ComplaintImage>();
     }
 }

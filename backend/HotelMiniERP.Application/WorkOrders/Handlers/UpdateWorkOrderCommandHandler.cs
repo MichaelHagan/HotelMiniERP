@@ -79,6 +79,28 @@ public class UpdateWorkOrderCommandHandler : IRequestHandler<UpdateWorkOrderComm
             }
         }
 
+        // Business Rule: Auto-assign complaint when work order is assigned to a user
+        if (request.AssignedToUserId.HasValue)
+        {
+            if (workOrder.WorkerComplaintId.HasValue && workOrder.WorkerComplaint != null)
+            {
+                if (workOrder.WorkerComplaint.AssignedToUserId != request.AssignedToUserId)
+                {
+                    workOrder.WorkerComplaint.AssignedToUserId = request.AssignedToUserId;
+                    workOrder.WorkerComplaint.UpdatedAt = DateTime.UtcNow;
+                }
+            }
+
+            if (workOrder.CustomerComplaintId.HasValue && workOrder.CustomerComplaint != null)
+            {
+                if (workOrder.CustomerComplaint.AssignedToUserId != request.AssignedToUserId)
+                {
+                    workOrder.CustomerComplaint.AssignedToUserId = request.AssignedToUserId;
+                    workOrder.CustomerComplaint.UpdatedAt = DateTime.UtcNow;
+                }
+            }
+        }
+
         await _context.SaveChangesAsync(cancellationToken);
 
         return await GetWorkOrderDto(workOrder.Id, cancellationToken);

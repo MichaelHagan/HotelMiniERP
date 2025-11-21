@@ -15,7 +15,7 @@ import {
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { Asset, CreateAssetDto, UpdateAssetDto, User } from '../../types';
+import { Asset, CreateAssetDto, UpdateAssetDto, User, ASSET_CATEGORIES } from '../../types';
 import { assetService, userService } from '../../services';
 import { validateRequired, validateNumber } from '../../utils';
 
@@ -258,15 +258,25 @@ export const AssetDialog: React.FC<AssetDialogProps> = ({
                 />
               </Box>
 
-              <TextField
-                fullWidth
-                label="Category"
-                value={formData.category}
-                onChange={(e) => handleInputChange('category', e.target.value)}
-                error={!!errors.category}
-                helperText={errors.category}
-                required
-              />
+              <FormControl fullWidth required error={!!errors.category}>
+                <InputLabel>Category</InputLabel>
+                <Select
+                  value={formData.category}
+                  onChange={(e) => handleInputChange('category', e.target.value)}
+                  label="Category"
+                >
+                  {ASSET_CATEGORIES.map((category) => (
+                    <MenuItem key={category} value={category}>
+                      {category}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {errors.category && (
+                  <Box sx={{ color: 'error.main', fontSize: '0.75rem', mt: 0.5, ml: 1.75 }}>
+                    {errors.category}
+                  </Box>
+                )}
+              </FormControl>
 
               <TextField
                 fullWidth

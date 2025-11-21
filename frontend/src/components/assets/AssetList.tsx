@@ -32,7 +32,7 @@ import {
   Assignment,
 } from '@mui/icons-material';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Asset, AssetStatus, AssetQueryParams, UserRole } from '../../types';
+import { Asset, AssetStatus, AssetQueryParams, UserRole, ASSET_CATEGORIES } from '../../types';
 import { assetService } from '../../services';
 import { formatDate, formatCurrency, getStatusColor, getStatusText } from '../../utils';
 import { AssetDialog } from './AssetDialog';
@@ -200,12 +200,21 @@ export const AssetList: React.FC = () => {
               </Select>
             </FormControl>
 
-            <TextField
-              label="Category"
-              variant="outlined"
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-            />
+            <FormControl variant="outlined">
+              <InputLabel>Category</InputLabel>
+              <Select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                label="Category"
+              >
+                <MenuItem value="">All Categories</MenuItem>
+                {ASSET_CATEGORIES.map((category) => (
+                  <MenuItem key={category} value={category}>
+                    {category}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
             <TextField
               label="Location"

@@ -1,6 +1,7 @@
 using HotelMiniERP.Application.DTOs;
 using HotelMiniERP.Domain.Enums;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace HotelMiniERP.Application.Complaints.Commands;
 
@@ -23,4 +24,7 @@ public class CreateComplaintCommand : IRequest<ComplaintDto>
     public string? CustomerEmail { get; set; }
     public string? CustomerPhone { get; set; }
     public string? RoomNumber { get; set; }
+    
+    // Image files to upload
+    public List<IFormFile> Images { get; set; } = new List<IFormFile>();
 }

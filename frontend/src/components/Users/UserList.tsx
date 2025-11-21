@@ -202,6 +202,7 @@ const UserList: React.FC = () => {
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Email</TableCell>
+              <TableCell>Phone Number</TableCell>
               <TableCell>Role</TableCell>
               <TableCell>Department</TableCell>
               <TableCell>Status</TableCell>
@@ -212,13 +213,13 @@ const UserList: React.FC = () => {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={7} align="center">
+                <TableCell colSpan={8} align="center">
                   Loading...
                 </TableCell>
               </TableRow>
             ) : filteredUsers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} align="center">
+                <TableCell colSpan={8} align="center">
                   No users found
                 </TableCell>
               </TableRow>
@@ -231,6 +232,7 @@ const UserList: React.FC = () => {
                     </Typography>
                   </TableCell>
                   <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.phoneNumber || '-'}</TableCell>
                   <TableCell>
                     <Chip
                       label={user.role}

@@ -52,7 +52,7 @@ export const LoginPage: React.FC = () => {
         <Paper elevation={3} sx={{ padding: 4, width: '100%' }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Typography component="h1" variant="h4" sx={{ mb: 3, fontWeight: 600 }}>
-              Hotel Mini ERP
+              BGH OpCenter
             </Typography>
             <Typography component="h2" variant="h6" sx={{ mb: 3 }}>
               Sign In

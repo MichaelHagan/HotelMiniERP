@@ -15,6 +15,7 @@ namespace HotelMiniERP.Application.Interfaces
         DbSet<HotelMiniERP.Domain.Entities.Inventory> Inventory { get; set; }
         DbSet<Vendor> Vendors { get; set; }
         DbSet<StockTransaction> StockTransactions { get; set; }
+        DbSet<ComplaintImage> ComplaintImages { get; set; }
         
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }

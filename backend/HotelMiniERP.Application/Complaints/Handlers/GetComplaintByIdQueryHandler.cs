@@ -34,6 +34,10 @@ public class GetComplaintByIdQueryHandler : IRequestHandler<GetComplaintByIdQuer
                     Location = c.Location,
                     SubmittedByUserId = c.SubmittedByUserId,
                     AssignedToUserId = c.AssignedToUserId,
+                    AssignedToUserName = c.AssignedToUser != null 
+                        ? c.AssignedToUser.FirstName + " " + c.AssignedToUser.LastName 
+                        : null,
+                    HasWorkOrder = c.WorkOrders.Any(),
                     ResolvedDate = c.ResolvedDate,
                     Resolution = c.Resolution,
                     Notes = c.Notes,
@@ -44,6 +48,20 @@ public class GetComplaintByIdQueryHandler : IRequestHandler<GetComplaintByIdQuer
 
             if (workerComplaint == null)
                 throw new KeyNotFoundException($"Worker complaint with ID {request.Id} not found");
+
+            // Load images
+            workerComplaint.ImageUrls = await _context.ComplaintImages
+                .Where(ci => ci.WorkerComplaintId == request.Id)
+                .Select(ci => new ComplaintImageDto
+                {
+                    Id = ci.Id,
+                    ImageUrl = ci.ImageUrl,
+                    PublicId = ci.PublicId,
+                    FileName = ci.FileName,
+                    FileSize = ci.FileSize,
+                    CreatedAt = ci.CreatedAt
+                })
+                .ToListAsync(cancellationToken);
 
             return workerComplaint;
         }
@@ -67,6 +85,10 @@ public class GetComplaintByIdQueryHandler : IRequestHandler<GetComplaintByIdQuer
                     CustomerPhone = c.CustomerPhone,
                     RoomNumber = c.RoomNumber,
                     AssignedToUserId = c.AssignedToUserId,
+                    AssignedToUserName = c.AssignedToUser != null 
+                        ? c.AssignedToUser.FirstName + " " + c.AssignedToUser.LastName 
+                        : null,
+                    HasWorkOrder = c.WorkOrders.Any(),
                     ResolvedDate = c.ResolvedDate,
                     Resolution = c.Resolution,
                     Notes = c.Notes,
@@ -77,6 +99,20 @@ public class GetComplaintByIdQueryHandler : IRequestHandler<GetComplaintByIdQuer
 
             if (customerComplaint == null)
                 throw new KeyNotFoundException($"Customer complaint with ID {request.Id} not found");
+
+            // Load images
+            customerComplaint.ImageUrls = await _context.ComplaintImages
+                .Where(ci => ci.CustomerComplaintId == request.Id)
+                .Select(ci => new ComplaintImageDto
+                {
+                    Id = ci.Id,
+                    ImageUrl = ci.ImageUrl,
+                    PublicId = ci.PublicId,
+                    FileName = ci.FileName,
+                    FileSize = ci.FileSize,
+                    CreatedAt = ci.CreatedAt
+                })
+                .ToListAsync(cancellationToken);
 
             return customerComplaint;
         }

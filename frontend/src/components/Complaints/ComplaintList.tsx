@@ -380,9 +380,7 @@ export const ComplaintList: React.FC = () => {
                     </>
                   )}
                   <TableCell>
-                    {complaint.assignedToUserId 
-                      ? `User ID: ${complaint.assignedToUserId}`
-                      : 'Unassigned'}
+                    {complaint.assignedToUserName || 'Unassigned'}
                   </TableCell>
                   <TableCell>{formatDateTime(complaint.createdAt)}</TableCell>
                   <TableCell align="right">
@@ -399,10 +397,17 @@ export const ComplaintList: React.FC = () => {
                       </Tooltip>
                     )}
                     {canEdit && (
-                      <Tooltip title="Create Work Order">
-                        <IconButton size="small" onClick={() => handleCreateWorkOrder(complaint)} color="primary">
-                          <WorkOrderIcon />
-                        </IconButton>
+                      <Tooltip title={complaint.hasWorkOrder ? "Work Order Already Exists" : "Create Work Order"}>
+                        <span>
+                          <IconButton 
+                            size="small" 
+                            onClick={() => handleCreateWorkOrder(complaint)} 
+                            color="primary"
+                            disabled={complaint.hasWorkOrder}
+                          >
+                            <WorkOrderIcon />
+                          </IconButton>
+                        </span>
                       </Tooltip>
                     )}
                     {canDelete && (

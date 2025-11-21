@@ -8,13 +8,16 @@ import {
   Typography,
   Box,
   Chip,
-  Divider
+  Divider,
+  Card,
+  CardMedia
 } from '@mui/material';
 import {
   Email as EmailIcon,
   Phone as PhoneIcon,
   Room as RoomIcon,
-  Person as PersonIcon
+  Person as PersonIcon,
+  Image as ImageIcon
 } from '@mui/icons-material';
 import { WorkerComplaint, CustomerComplaint, ComplaintStatus, Priority } from '../../types';
 import { formatDateTime } from '../../utils/dateUtils';
@@ -251,6 +254,54 @@ export const ComplaintDetailDialog: React.FC<ComplaintDetailDialogProps> = ({
                     </Typography>
                   </Box>
                 )}
+              </Box>
+            </Box>
+          )}
+
+          {/* Attached Images */}
+          {complaint.imageUrls && complaint.imageUrls.length > 0 && (
+            <Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <ImageIcon color="action" />
+                <Typography variant="h6" gutterBottom>
+                  Attached Images ({complaint.imageUrls.length})
+                </Typography>
+              </Box>
+              <Divider sx={{ mb: 2 }} />
+              <Box sx={{ 
+                display: 'grid', 
+                gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' }, 
+                gap: 2 
+              }}>
+                {complaint.imageUrls.map((image) => (
+                  <Card key={image.id}>
+                    <CardMedia
+                      component="img"
+                      height="200"
+                      image={image.imageUrl}
+                      alt={image.fileName}
+                      sx={{ 
+                        objectFit: 'cover',
+                        cursor: 'pointer',
+                        '&:hover': {
+                          opacity: 0.8
+                        }
+                      }}
+                      onClick={() => window.open(image.imageUrl, '_blank')}
+                    />
+                    <Box sx={{ p: 1 }}>
+                      <Typography variant="caption" display="block" noWrap title={image.fileName}>
+                        {image.fileName}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary" display="block">
+                        {image.fileSize ? (image.fileSize / 1024).toFixed(1) : '0'} KB
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary" display="block">
+                        {formatDateTime(image.createdAt)}
+                      </Typography>
+                    </Box>
+                  </Card>
+                ))}
               </Box>
             </Box>
           )}

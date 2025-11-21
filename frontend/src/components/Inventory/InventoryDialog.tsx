@@ -19,25 +19,8 @@ import {
   Inventory,
   CreateInventoryDto,
   UpdateInventoryDto,
+  INVENTORY_CATEGORIES,
 } from '../../types';
-
-const INVENTORY_CATEGORIES = [
-  'Cleaning Supplies',
-  'Kitchen Inventory',
-  'Kitchen Supplies',
-  'Food & Beverage',
-  'Dry Goods',
-  'Fresh Produce',
-  'Dairy & Refrigerated',
-  'Beverages',
-  'Bar Supplies',
-  'Linens & Bedding',
-  'Toiletries & Amenities',
-  'Maintenance Tools',
-  'Office Supplies',
-  'Safety Inventory',
-  'Other'
-];
 
 interface InventoryDialogProps {
   open: boolean;

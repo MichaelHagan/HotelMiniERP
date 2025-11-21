@@ -1,29 +1,21 @@
 using HotelMiniERP.Domain.Enums;
+using Microsoft.AspNetCore.Http;
 
-namespace HotelMiniERP.Application.DTOs;
+namespace HotelMiniERP.API.DTOs;
 
-public class ComplaintDto
+public class CreateComplaintRequestDto
 {
-    public int Id { get; set; }
-    public string Type { get; set; } = "worker"; // "worker" or "customer"
-    public string ComplaintNumber { get; set; } = string.Empty;
+    public string Type { get; set; } = "worker";
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
-    public ComplaintStatus Status { get; set; }
     public ComplaintPriority Priority { get; set; }
     public string Category { get; set; } = string.Empty;
     public string? Location { get; set; }
-    public DateTime? ResolvedDate { get; set; }
-    public string? Resolution { get; set; }
     public string? Notes { get; set; }
     
     // Worker complaint fields
     public int? SubmittedByUserId { get; set; }
-    
-    // Common fields
     public int? AssignedToUserId { get; set; }
-    public string? AssignedToUserName { get; set; }
-    public bool HasWorkOrder { get; set; }
     
     // Customer complaint fields
     public string? CustomerName { get; set; }
@@ -31,10 +23,6 @@ public class ComplaintDto
     public string? CustomerPhone { get; set; }
     public string? RoomNumber { get; set; }
     
-    // Images
-    public List<ComplaintImageDto> ImageUrls { get; set; } = new List<ComplaintImageDto>();
-    
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
+    // Image files
+    public List<IFormFile>? Images { get; set; }
 }
-
