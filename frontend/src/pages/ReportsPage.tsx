@@ -174,9 +174,9 @@ export const ReportsPage: React.FC = () => {
           </Box>
 
           {/* Info Card */}
-          <Card sx={{ mt: 4, bgcolor: 'info.light', color: 'info.contrastText' }}>
+          <Card sx={{ mt: 4, bgcolor: 'grey.100', border: '1px solid', borderColor: 'grey.300' }}>
             <CardContent>
-              <Typography variant="body2">
+              <Typography variant="body2" color="text.secondary">
                 <strong>Note:</strong> All reports can be exported to CSV format for further analysis. 
                 Date ranges can be customized to view data for specific time periods. 
                 Charts and visualizations update in real-time based on your selections.

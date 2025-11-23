@@ -37,10 +37,48 @@ const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#1976d2',
+      main: '#c9b144',      // Golden
+      light: '#e0ca6f',     // Lighter golden
+      dark: '#9a8533',      // Darker golden
+      contrastText: '#fff',
     },
     secondary: {
-      main: '#dc004e',
+      main: '#2c3e50',      // Deep blue-grey (elegant contrast)
+      light: '#34495e',
+      dark: '#1a252f',
+      contrastText: '#fff',
+    },
+    info: {
+      main: '#95a5a6',      // Neutral grey
+      light: '#ecf0f1',     // Very light grey
+      dark: '#7f8c8d',      // Darker grey
+      contrastText: '#2c3e50',
+    },
+    success: {
+      main: '#27ae60',      // Green (complements gold)
+      light: '#2ecc71',
+      dark: '#229954',
+      contrastText: '#fff',
+    },
+    warning: {
+      main: '#f39c12',      // Warm orange (harmonizes with gold)
+      light: '#f1c40f',
+      dark: '#d68910',
+      contrastText: '#fff',
+    },
+    error: {
+      main: '#c0392b',      // Deep red
+      light: '#e74c3c',
+      dark: '#a93226',
+      contrastText: '#fff',
+    },
+    background: {
+      default: '#f8f9fa',
+      paper: '#ffffff',
+    },
+    text: {
+      primary: '#2c3e50',
+      secondary: '#7f8c8d',
     },
   },
   typography: {
