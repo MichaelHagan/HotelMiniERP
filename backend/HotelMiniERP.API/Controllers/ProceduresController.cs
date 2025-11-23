@@ -77,7 +77,11 @@ public class ProceduresController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An error occurred while creating the procedure", error = ex.Message });
+            return StatusCode(500, new { 
+                message = "An error occurred while creating the procedure", 
+                error = ex.Message,
+                innerError = ex.InnerException?.Message 
+            });
         }
     }
 
@@ -98,7 +102,11 @@ public class ProceduresController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An error occurred while updating the procedure", error = ex.Message });
+            return StatusCode(500, new { 
+                message = "An error occurred while updating the procedure", 
+                error = ex.Message,
+                innerError = ex.InnerException?.Message 
+            });
         }
     }
 

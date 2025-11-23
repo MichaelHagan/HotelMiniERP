@@ -132,7 +132,11 @@ export const ProcedureDialog: React.FC<ProcedureDialogProps> = ({ open, onClose,
     };
     
     if (isEditMode && procedure) {
-      updateMutation.mutate({ id: procedure.id, data: preparedData as UpdateProcedureDto });
+      const updateData = {
+        ...preparedData,
+        id: parseInt(procedure.id)
+      } as UpdateProcedureDto;
+      updateMutation.mutate({ id: procedure.id, data: updateData });
     } else {
       createMutation.mutate(preparedData as CreateProcedureDto);
     }

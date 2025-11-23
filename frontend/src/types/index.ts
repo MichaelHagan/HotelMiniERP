@@ -385,6 +385,7 @@ export interface CreateProcedureDto {
 }
 
 export interface UpdateProcedureDto {
+  id: number;
   title?: string;
   description?: string;
   content?: string;

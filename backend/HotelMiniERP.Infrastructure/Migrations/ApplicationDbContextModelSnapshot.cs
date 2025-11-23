@@ -110,7 +110,7 @@ namespace HotelMiniERP.Infrastructure.Migrations
                     b.HasIndex("AssetCode")
                         .IsUnique();
 
-                    b.ToTable("Assets");
+                    b.ToTable("Assets", (string)null);
                 });
 
             modelBuilder.Entity("HotelMiniERP.Domain.Entities.ComplaintImage", b =>
@@ -165,7 +165,7 @@ namespace HotelMiniERP.Infrastructure.Migrations
 
                     b.HasIndex("WorkerComplaintId");
 
-                    b.ToTable("ComplaintImages");
+                    b.ToTable("ComplaintImages", (string)null);
                 });
 
             modelBuilder.Entity("HotelMiniERP.Domain.Entities.CustomerComplaint", b =>
@@ -259,7 +259,7 @@ namespace HotelMiniERP.Infrastructure.Migrations
                     b.HasIndex("ComplaintNumber")
                         .IsUnique();
 
-                    b.ToTable("CustomerComplaints");
+                    b.ToTable("CustomerComplaints", (string)null);
                 });
 
             modelBuilder.Entity("HotelMiniERP.Domain.Entities.Inventory", b =>
@@ -323,7 +323,7 @@ namespace HotelMiniERP.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Inventory");
+                    b.ToTable("Inventory", (string)null);
                 });
 
             modelBuilder.Entity("HotelMiniERP.Domain.Entities.Message", b =>
@@ -382,7 +382,7 @@ namespace HotelMiniERP.Infrastructure.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Messages");
+                    b.ToTable("Messages", (string)null);
                 });
 
             modelBuilder.Entity("HotelMiniERP.Domain.Entities.Procedure", b =>
@@ -462,7 +462,7 @@ namespace HotelMiniERP.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Procedures");
+                    b.ToTable("Procedures", (string)null);
                 });
 
             modelBuilder.Entity("HotelMiniERP.Domain.Entities.StockTransaction", b =>
@@ -529,7 +529,7 @@ namespace HotelMiniERP.Infrastructure.Migrations
 
                     b.HasIndex("VendorId1");
 
-                    b.ToTable("StockTransactions");
+                    b.ToTable("StockTransactions", (string)null);
                 });
 
             modelBuilder.Entity("HotelMiniERP.Domain.Entities.User", b =>
@@ -619,7 +619,7 @@ namespace HotelMiniERP.Infrastructure.Migrations
                     b.HasIndex("Username")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("HotelMiniERP.Domain.Entities.Vendor", b =>
@@ -673,7 +673,7 @@ namespace HotelMiniERP.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Vendors");
+                    b.ToTable("Vendors", (string)null);
                 });
 
             modelBuilder.Entity("HotelMiniERP.Domain.Entities.WorkOrder", b =>
@@ -784,7 +784,7 @@ namespace HotelMiniERP.Infrastructure.Migrations
 
                     b.HasIndex("WorkerComplaintId");
 
-                    b.ToTable("WorkOrders");
+                    b.ToTable("WorkOrders", (string)null);
                 });
 
             modelBuilder.Entity("HotelMiniERP.Domain.Entities.WorkerComplaint", b =>
@@ -865,7 +865,7 @@ namespace HotelMiniERP.Infrastructure.Migrations
 
                     b.HasIndex("SubmittedByUserId");
 
-                    b.ToTable("WorkerComplaints");
+                    b.ToTable("WorkerComplaints", (string)null);
                 });
 
             modelBuilder.Entity("HotelMiniERP.Domain.Entities.ComplaintImage", b =>
