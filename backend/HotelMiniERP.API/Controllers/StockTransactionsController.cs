@@ -25,6 +25,14 @@ public class StockTransactionsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<StockTransactionDto>> CreateStockTransaction([FromBody] CreateStockTransactionDto dto)
     {
+        // Get authenticated user ID from JWT token
+        var userIdClaim = User.FindFirst("UserId")?.Value;
+        int? userId = null;
+        if (!string.IsNullOrEmpty(userIdClaim) && int.TryParse(userIdClaim, out var parsedUserId))
+        {
+            userId = parsedUserId;
+        }
+
         var command = new CreateStockTransactionCommand
         {
             InventoryId = dto.InventoryId,
@@ -35,7 +43,7 @@ public class StockTransactionsController : ControllerBase
             ReductionReason = dto.ReductionReason,
             Notes = dto.Notes,
             UnitCost = dto.UnitCost,
-            CreatedByUserId = null // TODO: Get from authenticated user
+            CreatedByUserId = userId
         };
 
         try

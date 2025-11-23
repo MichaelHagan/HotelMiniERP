@@ -7,10 +7,6 @@ public class CreateProcedureCommandValidator : AbstractValidator<CreateProcedure
 {
     public CreateProcedureCommandValidator()
     {
-        RuleFor(x => x.Code)
-            .NotEmpty().WithMessage("Procedure code is required")
-            .MaximumLength(50).WithMessage("Procedure code cannot exceed 50 characters");
-
         RuleFor(x => x.Title)
             .NotEmpty().WithMessage("Title is required")
             .MaximumLength(300).WithMessage("Title cannot exceed 300 characters");
@@ -23,12 +19,8 @@ public class CreateProcedureCommandValidator : AbstractValidator<CreateProcedure
             .NotEmpty().WithMessage("Category is required")
             .MaximumLength(100).WithMessage("Category cannot exceed 100 characters");
 
-        RuleFor(x => x.Department)
-            .NotEmpty().WithMessage("Department is required")
-            .MaximumLength(100).WithMessage("Department cannot exceed 100 characters");
-
-        RuleFor(x => x.CreatedByUserId)
-            .GreaterThan(0).WithMessage("Created by user ID is required");
+        RuleFor(x => x.Content)
+            .NotEmpty().WithMessage("Content is required");
     }
 }
 

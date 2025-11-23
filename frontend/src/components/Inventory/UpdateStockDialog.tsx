@@ -116,7 +116,7 @@ const UpdateStockDialog: React.FC<UpdateStockDialogProps> = ({ open, onClose, in
                 row
                 value={formData.transactionType}
                 onChange={(e) => {
-                  const type = parseInt(e.target.value) as StockTransactionType;
+                  const type = e.target.value as StockTransactionType;
                   handleChange('transactionType', type);
                   // Reset vendor and reason when switching types
                   if (type === StockTransactionType.Reduction) {
@@ -197,16 +197,16 @@ const UpdateStockDialog: React.FC<UpdateStockDialogProps> = ({ open, onClose, in
               <FormControl fullWidth required sx={{ mb: 2 }}>
                 <InputLabel>Reduction Reason</InputLabel>
                 <Select
-                  value={formData.reductionReason?.toString() || ''}
+                  value={formData.reductionReason || ''}
                   label="Reduction Reason"
-                  onChange={(e) => handleChange('reductionReason', parseInt(e.target.value) as StockReductionReason)}
+                  onChange={(e) => handleChange('reductionReason', e.target.value as StockReductionReason)}
                 >
-                  <MenuItem value={StockReductionReason.Spoilage.toString()}>Spoilage</MenuItem>
-                  <MenuItem value={StockReductionReason.Used.toString()}>Used</MenuItem>
-                  <MenuItem value={StockReductionReason.Damaged.toString()}>Damaged</MenuItem>
-                  <MenuItem value={StockReductionReason.Lost.toString()}>Lost</MenuItem>
-                  <MenuItem value={StockReductionReason.Expired.toString()}>Expired</MenuItem>
-                  <MenuItem value={StockReductionReason.Other.toString()}>Other</MenuItem>
+                  <MenuItem value={StockReductionReason.Spoilage}>Spoilage</MenuItem>
+                  <MenuItem value={StockReductionReason.Used}>Used</MenuItem>
+                  <MenuItem value={StockReductionReason.Damaged}>Damaged</MenuItem>
+                  <MenuItem value={StockReductionReason.Lost}>Lost</MenuItem>
+                  <MenuItem value={StockReductionReason.Expired}>Expired</MenuItem>
+                  <MenuItem value={StockReductionReason.Other}>Other</MenuItem>
                 </Select>
               </FormControl>
             )}

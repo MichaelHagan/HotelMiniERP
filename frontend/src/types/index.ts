@@ -316,17 +316,17 @@ export interface UpdateInventoryDto {
 
 // Stock Transaction Types
 export enum StockTransactionType {
-  Restock = 1,
-  Reduction = 2
+  Restock = "Restock",
+  Reduction = "Reduction"
 }
 
 export enum StockReductionReason {
-  Spoilage = 1,
-  Used = 2,
-  Damaged = 3,
-  Lost = 4,
-  Expired = 5,
-  Other = 6
+  Spoilage = "Spoilage",
+  Used = "Used",
+  Damaged = "Damaged",
+  Lost = "Lost",
+  Expired = "Expired",
+  Other = "Other"
 }
 
 export interface StockTransaction {

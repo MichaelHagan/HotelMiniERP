@@ -44,25 +44,29 @@ public class UpdateProcedureCommandHandler : IRequestHandler<UpdateProcedureComm
             contentChanged = true;
         }
 
-        if (!string.IsNullOrEmpty(request.Steps) || !string.IsNullOrEmpty(request.Requirements) || !string.IsNullOrEmpty(request.Department))
+        if (!string.IsNullOrEmpty(request.Content))
         {
-            var content = procedure.Content;
-            if (!string.IsNullOrEmpty(request.Department))
-                content = $"Department: {request.Department}\n\n{content}";
-            if (!string.IsNullOrEmpty(request.Steps))
-                content += $"\nSteps: {request.Steps}";
-            if (!string.IsNullOrEmpty(request.Requirements))
-                content += $"\nRequirements: {request.Requirements}";
-            
-            procedure.Content = content;
+            procedure.Content = request.Content;
             contentChanged = true;
         }
+
+        if (!string.IsNullOrEmpty(request.Version))
+            procedure.Version = request.Version;
+
+        if (request.ReviewDate.HasValue)
+            procedure.ReviewDate = request.ReviewDate;
+
+        if (!string.IsNullOrEmpty(request.ApprovedBy))
+            procedure.ApprovedBy = request.ApprovedBy;
+
+        if (request.ApprovalDate.HasValue)
+            procedure.ApprovalDate = request.ApprovalDate;
 
         if (request.IsActive.HasValue)
             procedure.IsActive = request.IsActive.Value;
 
-        // Increment version if content changed
-        if (contentChanged)
+        // Increment version if content changed (unless version was explicitly set)
+        if (contentChanged && string.IsNullOrEmpty(request.Version))
         {
             var versionParts = procedure.Version.Split('.');
             if (versionParts.Length == 2 && int.TryParse(versionParts[1], out int minorVersion))

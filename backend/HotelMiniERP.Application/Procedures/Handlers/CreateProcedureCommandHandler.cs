@@ -18,21 +18,24 @@ public class CreateProcedureCommandHandler : IRequestHandler<CreateProcedureComm
 
     public async Task<ProcedureDto> Handle(CreateProcedureCommand request, CancellationToken cancellationToken)
     {
-        // Check for duplicate code
-        var existingCode = await _context.Procedures
-            .AnyAsync(p => p.Title.ToLower() == request.Code.ToLower() && !p.IsDeleted, cancellationToken);
+        // Check for duplicate title
+        var existingTitle = await _context.Procedures
+            .AnyAsync(p => p.Title.ToLower() == request.Title.ToLower() && !p.IsDeleted, cancellationToken);
 
-        if (existingCode)
-            throw new InvalidOperationException($"Procedure with code '{request.Code}' already exists");
+        if (existingTitle)
+            throw new InvalidOperationException($"Procedure with title '{request.Title}' already exists");
 
         var procedure = new HotelMiniERP.Domain.Entities.Procedure
         {
             Title = request.Title,
             Description = request.Description,
             Category = request.Category,
-            Content = $"Department: {request.Department}\n\nSteps: {request.Steps}\n\nRequirements: {request.Requirements}",
-            Version = "1.0",
+            Content = request.Content,
+            Version = request.Version ?? "1.0",
             IsActive = true,
+            ReviewDate = request.ReviewDate,
+            ApprovedBy = request.ApprovedBy,
+            ApprovalDate = request.ApprovalDate,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
