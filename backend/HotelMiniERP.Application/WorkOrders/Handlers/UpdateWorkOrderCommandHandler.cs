@@ -2,6 +2,7 @@ using HotelMiniERP.Application.Interfaces;
 using HotelMiniERP.Application.WorkOrders.Commands;
 using HotelMiniERP.Application.DTOs;
 using HotelMiniERP.Domain.Enums;
+using HotelMiniERP.Application.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,10 +11,12 @@ namespace HotelMiniERP.Application.WorkOrders.Handlers;
 public class UpdateWorkOrderCommandHandler : IRequestHandler<UpdateWorkOrderCommand, WorkOrderDto>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ISystemNotificationService _notificationService;
 
-    public UpdateWorkOrderCommandHandler(IApplicationDbContext context)
+    public UpdateWorkOrderCommandHandler(IApplicationDbContext context, ISystemNotificationService notificationService)
     {
         _context = context;
+        _notificationService = notificationService;
     }
 
     public async Task<WorkOrderDto> Handle(UpdateWorkOrderCommand request, CancellationToken cancellationToken)
@@ -38,6 +41,7 @@ public class UpdateWorkOrderCommandHandler : IRequestHandler<UpdateWorkOrderComm
         }
 
         var previousStatus = workOrder.Status;
+        var previousAssignedTo = workOrder.AssignedToUserId;
 
         workOrder.Title = request.Title;
         workOrder.Description = request.Description;
@@ -77,11 +81,32 @@ public class UpdateWorkOrderCommandHandler : IRequestHandler<UpdateWorkOrderComm
                 workOrder.CustomerComplaint.ResolvedDate = DateTime.UtcNow;
                 workOrder.CustomerComplaint.UpdatedAt = DateTime.UtcNow;
             }
+
+            // Notify requester that work order is completed
+            if (workOrder.RequestedByUserId.HasValue && workOrder.RequestedByUserId.Value > 0)
+            {
+                await _notificationService.NotifyWorkOrderStatusChanged(
+                    workOrder.Id,
+                    workOrder.Title,
+                    WorkOrderStatus.Completed,
+                    workOrder.RequestedByUserId.Value
+                );
+            }
         }
 
         // Business Rule: Auto-assign complaint when work order is assigned to a user
         if (request.AssignedToUserId.HasValue)
         {
+            // Send notification when work order is assigned to a new user
+            if (previousAssignedTo != request.AssignedToUserId)
+            {
+                await _notificationService.NotifyWorkOrderAssigned(
+                    workOrder.Id,
+                    request.AssignedToUserId.Value,
+                    workOrder.Title
+                );
+            }
+
             if (workOrder.WorkerComplaintId.HasValue && workOrder.WorkerComplaint != null)
             {
                 if (workOrder.WorkerComplaint.AssignedToUserId != request.AssignedToUserId)

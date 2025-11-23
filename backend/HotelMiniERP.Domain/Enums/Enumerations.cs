@@ -50,10 +50,9 @@ namespace HotelMiniERP.Domain.Enums
 
     public enum MessageType
     {
-        Info = 1,
-        Warning = 2,
-        Alert = 3,
-        Notification = 4
+        Personal = 1,
+        Broadcast = 2,
+        System = 3
     }
 
     public enum InventoryStatus

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   AppBar,
   Box,
@@ -38,6 +39,8 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useSignalR } from '../../context/SignalRContext';
 import { UserRole } from '../../types';
+import { messageService } from '../../services/messageService';
+import { NotificationPopover } from './NotificationPopover';
 
 const drawerWidth = 280;
 
@@ -48,10 +51,35 @@ interface LayoutProps {
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [notificationAnchorEl, setNotificationAnchorEl] = useState<null | HTMLElement>(null);
   const { user, logout } = useAuth();
-  const { isConnected } = useSignalR();
+  const { isConnected, connection } = useSignalR();
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
+
+  // Fetch unread messages
+  const { data: unreadMessages = [] } = useQuery({
+    queryKey: ['unreadMessages'],
+    queryFn: () => messageService.getUnreadMessages(),
+    refetchInterval: 30000, // Refetch every 30 seconds
+  });
+
+  // Listen for real-time notifications via SignalR
+  useEffect(() => {
+    if (connection && isConnected) {
+      const handleNewNotification = () => {
+        // Invalidate and refetch unread messages when a new notification arrives
+        queryClient.invalidateQueries({ queryKey: ['unreadMessages'] });
+      };
+
+      connection.on('NewNotification', handleNewNotification);
+
+      return () => {
+        connection.off('NewNotification', handleNewNotification);
+      };
+    }
+  }, [connection, isConnected, queryClient]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -63,6 +91,14 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleNotificationClick = (event: React.MouseEvent<HTMLElement>) => {
+    setNotificationAnchorEl(event.currentTarget);
+  };
+
+  const handleNotificationClose = () => {
+    setNotificationAnchorEl(null);
   };
 
   const handleLogout = () => {
@@ -160,8 +196,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           </Typography>
           
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <IconButton color="inherit">
-              <Badge badgeContent={0} color="error">
+            <IconButton color="inherit" onClick={handleNotificationClick}>
+              <Badge badgeContent={unreadMessages.length} color="error">
                 <NotificationsNone />
               </Badge>
             </IconButton>
@@ -281,6 +317,13 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           />
           {isConnected ? 'Connected' : 'Disconnected'}
         </Box>
+
+        <NotificationPopover
+          anchorEl={notificationAnchorEl}
+          open={Boolean(notificationAnchorEl)}
+          onClose={handleNotificationClose}
+          messages={unreadMessages}
+        />
       </Box>
     </Box>
   );

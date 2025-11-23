@@ -1,6 +1,7 @@
 using HotelMiniERP.Application.Complaints.Commands;
 using HotelMiniERP.Application.DTOs;
 using HotelMiniERP.Application.Interfaces;
+using HotelMiniERP.Application.Services;
 using HotelMiniERP.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -10,10 +11,12 @@ namespace HotelMiniERP.Application.Complaints.Handlers;
 public class UpdateComplaintCommandHandler : IRequestHandler<UpdateComplaintCommand, ComplaintDto>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ISystemNotificationService _notificationService;
 
-    public UpdateComplaintCommandHandler(IApplicationDbContext context)
+    public UpdateComplaintCommandHandler(IApplicationDbContext context, ISystemNotificationService notificationService)
     {
         _context = context;
+        _notificationService = notificationService;
     }
 
     public async Task<ComplaintDto> Handle(UpdateComplaintCommand request, CancellationToken cancellationToken)
@@ -49,8 +52,21 @@ public class UpdateComplaintCommandHandler : IRequestHandler<UpdateComplaintComm
             if (request.Location != null)
                 complaint.Location = request.Location;
             
+            var previousAssignedTo = complaint.AssignedToUserId;
             if (request.AssignedToUserId.HasValue)
+            {
                 complaint.AssignedToUserId = request.AssignedToUserId;
+                
+                // Send notification when complaint is assigned to a new user
+                if (previousAssignedTo != request.AssignedToUserId && request.AssignedToUserId.Value > 0)
+                {
+                    await _notificationService.NotifyComplaintAssigned(
+                        complaint.Id,
+                        request.AssignedToUserId.Value,
+                        complaint.Title
+                    );
+                }
+            }
             
             if (!string.IsNullOrEmpty(request.Resolution))
                 complaint.Resolution = request.Resolution;
@@ -125,8 +141,21 @@ public class UpdateComplaintCommandHandler : IRequestHandler<UpdateComplaintComm
             if (request.RoomNumber != null)
                 complaint.RoomNumber = request.RoomNumber;
             
+            var previousAssignedTo = complaint.AssignedToUserId;
             if (request.AssignedToUserId.HasValue)
+            {
                 complaint.AssignedToUserId = request.AssignedToUserId;
+                
+                // Send notification when complaint is assigned to a new user
+                if (previousAssignedTo != request.AssignedToUserId && request.AssignedToUserId.Value > 0)
+                {
+                    await _notificationService.NotifyComplaintAssigned(
+                        complaint.Id,
+                        request.AssignedToUserId.Value,
+                        complaint.Title
+                    );
+                }
+            }
             
             if (!string.IsNullOrEmpty(request.Resolution))
                 complaint.Resolution = request.Resolution;

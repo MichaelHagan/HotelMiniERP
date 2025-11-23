@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using HotelMiniERP.Infrastructure;
 using HotelMiniERP.Application;
 using HotelMiniERP.API.Hubs;
+using HotelMiniERP.API.Services;
 using HotelMiniERP.Infrastructure.Data;
 using CloudinaryDotNet;
 using HotelMiniERP.Application.Interfaces;
@@ -102,6 +103,9 @@ builder.Services.AddAuthentication(options =>
 
 // Add SignalR
 builder.Services.AddSignalR();
+
+// Add hosted services
+builder.Services.AddHostedService<NotificationBroadcastService>();
 
 // Add Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();

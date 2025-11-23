@@ -3,6 +3,7 @@ using MediatR;
 using FluentValidation;
 using System.Reflection;
 using HotelMiniERP.Application.Behaviors;
+using HotelMiniERP.Application.Services;
 
 namespace HotelMiniERP.Application
 {
@@ -15,6 +16,9 @@ namespace HotelMiniERP.Application
             
             // Register logging behavior
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+            
+            // Register services
+            services.AddScoped<ISystemNotificationService, SystemNotificationService>();
             
             return services;
         }

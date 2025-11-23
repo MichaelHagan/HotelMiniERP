@@ -32,7 +32,14 @@ export class MessageService {
   }
 
   async sendMessage(messageDto: CreateMessageDto): Promise<Message> {
-    return apiClient.post<Message>(this.basePath, messageDto);
+    const backendPayload = {
+      type: messageDto.messageType,
+      title: messageDto.subject,
+      content: messageDto.content,
+      sentToUserId: messageDto.receiverId ? parseInt(messageDto.receiverId) : null
+    };
+    
+    return apiClient.post<Message>(this.basePath, backendPayload);
   }
 
   async updateMessage(id: string, messageDto: UpdateMessageDto): Promise<Message> {

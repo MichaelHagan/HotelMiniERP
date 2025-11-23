@@ -1,6 +1,7 @@
 using HotelMiniERP.Application.DTOs;
 using HotelMiniERP.Application.Interfaces;
 using HotelMiniERP.Application.StockTransactions.Commands;
+using HotelMiniERP.Application.Services;
 using HotelMiniERP.Domain.Entities;
 using HotelMiniERP.Domain.Enums;
 using MediatR;
@@ -11,10 +12,12 @@ namespace HotelMiniERP.Application.StockTransactions.Handlers;
 public class CreateStockTransactionCommandHandler : IRequestHandler<CreateStockTransactionCommand, StockTransactionDto>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ISystemNotificationService _notificationService;
 
-    public CreateStockTransactionCommandHandler(IApplicationDbContext context)
+    public CreateStockTransactionCommandHandler(IApplicationDbContext context, ISystemNotificationService notificationService)
     {
         _context = context;
+        _notificationService = notificationService;
     }
 
     public async Task<StockTransactionDto> Handle(CreateStockTransactionCommand request, CancellationToken cancellationToken)
@@ -84,6 +87,17 @@ public class CreateStockTransactionCommandHandler : IRequestHandler<CreateStockT
                 throw new InvalidOperationException(
                     $"Insufficient stock. Current quantity: {inventory.Quantity + request.Quantity}, " +
                     $"Requested reduction: {request.Quantity}");
+            }
+
+            // Check if inventory is below minimum stock and send notification
+            if (inventory.MinimumStock.HasValue && inventory.Quantity < inventory.MinimumStock.Value)
+            {
+                await _notificationService.NotifyLowInventory(
+                    inventory.Id,
+                    inventory.Name,
+                    inventory.Quantity,
+                    inventory.MinimumStock.Value
+                );
             }
         }
 
