@@ -81,15 +81,29 @@ public class MessagesController : ControllerBase
                 return Unauthorized(new { message = "User ID not found in token" });
             }
 
-            var query = new GetAllMessagesQuery
+            // Get personal unread messages
+            var personalQuery = new GetAllMessagesQuery
             {
                 SentToUserId = userId,
                 IsRead = false,
                 Page = 1,
-                PageSize = 100 // Get all unread messages
+                PageSize = 100
             };
-            var result = await _mediator.Send(query);
-            return Ok(result.Data);
+            var personalMessages = await _mediator.Send(personalQuery);
+
+            // Get unread broadcast messages
+            var broadcastQuery = new GetAllMessagesQuery
+            {
+                Type = "Broadcast",
+                IsRead = false,
+                Page = 1,
+                PageSize = 100
+            };
+            var broadcastMessages = await _mediator.Send(broadcastQuery);
+
+            // Combine and return
+            var allUnread = personalMessages.Data.Concat(broadcastMessages.Data).Distinct().ToList();
+            return Ok(allUnread);
         }
         catch (Exception ex)
         {
@@ -174,18 +188,31 @@ public class MessagesController : ControllerBase
                 return Unauthorized(new { message = "User ID not found in token" });
             }
 
-            // Get all unread messages for the current user
-            var query = new GetAllMessagesQuery
+            // Get personal unread messages
+            var personalQuery = new GetAllMessagesQuery
             {
                 SentToUserId = userId,
                 IsRead = false,
                 Page = 1,
                 PageSize = 1000
             };
-            var unreadMessages = await _mediator.Send(query);
+            var personalMessages = await _mediator.Send(personalQuery);
+
+            // Get unread broadcast messages
+            var broadcastQuery = new GetAllMessagesQuery
+            {
+                Type = "Broadcast",
+                IsRead = false,
+                Page = 1,
+                PageSize = 1000
+            };
+            var broadcastMessages = await _mediator.Send(broadcastQuery);
+
+            // Combine all unread messages
+            var allUnread = personalMessages.Data.Concat(broadcastMessages.Data).Distinct().ToList();
 
             // Mark each as read
-            foreach (var message in unreadMessages.Data)
+            foreach (var message in allUnread)
             {
                 var command = new UpdateMessageCommand
                 {
@@ -195,7 +222,7 @@ public class MessagesController : ControllerBase
                 await _mediator.Send(command);
             }
 
-            return Ok(new { message = "All messages marked as read", count = unreadMessages.Data.Count });
+            return Ok(new { message = "All messages marked as read", count = allUnread.Count });
         }
         catch (Exception ex)
         {
