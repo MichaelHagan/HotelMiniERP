@@ -18,8 +18,12 @@ public class GetFinancialSummaryReportQueryHandler : IRequestHandler<GetFinancia
 
     public async Task<FinancialSummaryReportDto> Handle(GetFinancialSummaryReportQuery request, CancellationToken cancellationToken)
     {
-        var startDate = request.StartDate ?? DateTime.UtcNow.AddMonths(-12);
-        var endDate = request.EndDate ?? DateTime.UtcNow;
+        var startDate = request.StartDate.HasValue 
+            ? DateTime.SpecifyKind(request.StartDate.Value.Date, DateTimeKind.Utc)
+            : DateTime.UtcNow.Date.AddMonths(-12);
+        var endDate = request.EndDate.HasValue
+            ? DateTime.SpecifyKind(request.EndDate.Value.Date.AddDays(1).AddTicks(-1), DateTimeKind.Utc)
+            : DateTime.UtcNow.Date.AddDays(1).AddTicks(-1);
 
         // Asset Investments
         var assetsInPeriod = await _context.Assets

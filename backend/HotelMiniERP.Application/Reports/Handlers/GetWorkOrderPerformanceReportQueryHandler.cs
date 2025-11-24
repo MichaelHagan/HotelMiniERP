@@ -18,8 +18,12 @@ public class GetWorkOrderPerformanceReportQueryHandler : IRequestHandler<GetWork
 
     public async Task<WorkOrderPerformanceReportDto> Handle(GetWorkOrderPerformanceReportQuery request, CancellationToken cancellationToken)
     {
-        var startDate = request.StartDate ?? DateTime.UtcNow.AddMonths(-1);
-        var endDate = request.EndDate ?? DateTime.UtcNow;
+        var startDate = request.StartDate.HasValue 
+            ? DateTime.SpecifyKind(request.StartDate.Value.Date, DateTimeKind.Utc)
+            : DateTime.UtcNow.Date.AddMonths(-1);
+        var endDate = request.EndDate.HasValue
+            ? DateTime.SpecifyKind(request.EndDate.Value.Date.AddDays(1).AddTicks(-1), DateTimeKind.Utc)
+            : DateTime.UtcNow.Date.AddDays(1).AddTicks(-1);
 
         var workOrders = await _context.WorkOrders
             .Include(w => w.AssignedToUser)

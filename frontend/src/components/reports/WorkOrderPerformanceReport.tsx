@@ -18,6 +18,7 @@ import {
   TableRow,
   Paper,
 } from '@mui/material';
+import { reportService } from '../../services/reportService';
 import {
   Assignment,
   DateRange,
@@ -45,19 +46,7 @@ export const WorkOrderPerformanceReport: React.FC = () => {
 
   const { data: reportData, isLoading, error, refetch } = useQuery({
     queryKey: ['workorder-performance-report', startDate, endDate],
-    queryFn: async () => {
-      const response = await fetch(
-        `/api/reports/workorders/performance?startDate=${startDate}&endDate=${endDate}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      if (!response.ok) throw new Error('Failed to fetch report');
-      return response.json();
-    },
+    queryFn: () => reportService.getWorkOrderPerformanceReport(startDate, endDate),
   });
 
   const handleGenerateReport = () => {
@@ -69,11 +58,11 @@ export const WorkOrderPerformanceReport: React.FC = () => {
     
     const csvContent = [
       ['Priority', 'Total', 'Completed', 'Average Time'],
-      ...reportData.ByPriority.map((item: any) => [
-        item.Priority,
-        item.Total,
-        item.Completed,
-        item.AverageTime,
+      ...reportData.byPriority.map((item: any) => [
+        item.priority,
+        item.total,
+        item.completed,
+        item.averageTime,
       ]),
     ].map(row => row.join(',')).join('\n');
 
@@ -97,17 +86,17 @@ export const WorkOrderPerformanceReport: React.FC = () => {
     return <Alert severity="error">Failed to load work order performance report</Alert>;
   }
 
-  const priorityChartData = reportData?.ByPriority?.map((item: any) => ({
-    priority: item.Priority,
-    total: item.Total,
-    completed: item.Completed,
-    pending: item.Total - item.Completed,
+  const priorityChartData = reportData?.byPriority?.map((item: any) => ({
+    priority: item.priority,
+    total: item.total,
+    completed: item.completed,
+    pending: item.total - item.completed,
   })) || [];
 
-  const assigneeChartData = reportData?.ByAssignee?.map((item: any) => ({
-    name: item.AssigneeName,
-    completed: item.WorkOrdersCompleted,
-    rate: item.CompletionRate,
+  const assigneeChartData = reportData?.byAssignee?.map((item: any) => ({
+    name: item.assigneeName,
+    completed: item.workOrdersCompleted,
+    rate: item.completionRate,
   })) || [];
 
   return (
@@ -169,7 +158,7 @@ export const WorkOrderPerformanceReport: React.FC = () => {
                 <Typography variant="body2" color="textSecondary">
                   Total Work Orders
                 </Typography>
-                <Typography variant="h4">{reportData.Summary?.TotalWorkOrders || 0}</Typography>
+                <Typography variant="h4">{reportData.summary?.totalWorkOrders || 0}</Typography>
               </CardContent>
             </Card>
             <Card>
@@ -178,11 +167,11 @@ export const WorkOrderPerformanceReport: React.FC = () => {
                   Completed
                 </Typography>
                 <Typography variant="h4" color="success.main">
-                  {reportData.Summary?.CompletedWorkOrders || 0}
+                  {reportData.summary?.completedWorkOrders || 0}
                 </Typography>
                 <Chip
                   icon={<CheckCircle />}
-                  label={`${reportData.Summary?.CompletionRate || 0}%`}
+                  label={`${reportData.summary?.completionRate || 0}%`}
                   color="success"
                   size="small"
                   sx={{ mt: 1 }}
@@ -194,7 +183,7 @@ export const WorkOrderPerformanceReport: React.FC = () => {
                 <Typography variant="body2" color="textSecondary">
                   Avg Completion Time
                 </Typography>
-                <Typography variant="h4">{reportData.Summary?.AverageCompletionTime || 'N/A'}</Typography>
+                <Typography variant="h4">{reportData.summary?.averageCompletionTime || 'N/A'}</Typography>
               </CardContent>
             </Card>
             <Card>
@@ -203,7 +192,7 @@ export const WorkOrderPerformanceReport: React.FC = () => {
                   On-Time Rate
                 </Typography>
                 <Typography variant="h4" color="primary">
-                  {reportData.Summary?.OnTimeCompletionRate || 0}%
+                  {reportData.summary?.onTimeCompletionRate || 0}%
                 </Typography>
               </CardContent>
             </Card>
@@ -278,12 +267,12 @@ export const WorkOrderPerformanceReport: React.FC = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {reportData.ByPriority?.map((row: any, index: number) => (
+                      {reportData.byPriority?.map((row: any, index: number) => (
                         <TableRow key={index}>
-                          <TableCell>{row.Priority}</TableCell>
-                          <TableCell align="right">{row.Total}</TableCell>
-                          <TableCell align="right">{row.Completed}</TableCell>
-                          <TableCell align="right">{row.AverageTime}</TableCell>
+                          <TableCell>{row.priority}</TableCell>
+                          <TableCell align="right">{row.total}</TableCell>
+                          <TableCell align="right">{row.completed}</TableCell>
+                          <TableCell align="right">{row.averageTime}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -308,15 +297,15 @@ export const WorkOrderPerformanceReport: React.FC = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {reportData.ByAssignee?.map((row: any, index: number) => (
+                      {reportData.byAssignee?.map((row: any, index: number) => (
                         <TableRow key={index}>
-                          <TableCell>{row.AssigneeName}</TableCell>
-                          <TableCell align="right">{row.WorkOrdersCompleted}</TableCell>
-                          <TableCell align="right">{row.AverageCompletionTime}</TableCell>
+                          <TableCell>{row.assigneeName}</TableCell>
+                          <TableCell align="right">{row.workOrdersCompleted}</TableCell>
+                          <TableCell align="right">{row.averageCompletionTime}</TableCell>
                           <TableCell align="right">
                             <Chip
-                              label={`${row.CompletionRate}%`}
-                              color={row.CompletionRate > 90 ? 'success' : row.CompletionRate > 80 ? 'warning' : 'default'}
+                              label={`${row.completionRate}%`}
+                              color={row.completionRate > 90 ? 'success' : row.completionRate > 80 ? 'warning' : 'default'}
                               size="small"
                             />
                           </TableCell>

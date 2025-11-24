@@ -20,6 +20,10 @@ export class ReportService {
     return apiClient.get<WorkOrderReport>(`${this.basePath}/workorders`);
   }
 
+  async getWorkOrderPerformanceReport(startDate: string, endDate: string): Promise<any> {
+    return apiClient.get(`${this.basePath}/workorders/performance?startDate=${startDate}&endDate=${endDate}`);
+  }
+
   async getAssetUtilizationReport(): Promise<any> {
     return apiClient.get(`${this.basePath}/asset-utilization`);
   }

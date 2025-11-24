@@ -18,8 +18,12 @@ public class GetComplaintsAnalysisReportQueryHandler : IRequestHandler<GetCompla
 
     public async Task<ComplaintsAnalysisReportDto> Handle(GetComplaintsAnalysisReportQuery request, CancellationToken cancellationToken)
     {
-        var startDate = request.StartDate ?? DateTime.UtcNow.AddMonths(-3);
-        var endDate = request.EndDate ?? DateTime.UtcNow;
+        var startDate = request.StartDate.HasValue 
+            ? DateTime.SpecifyKind(request.StartDate.Value.Date, DateTimeKind.Utc)
+            : DateTime.UtcNow.Date.AddMonths(-3);
+        var endDate = request.EndDate.HasValue
+            ? DateTime.SpecifyKind(request.EndDate.Value.Date.AddDays(1).AddTicks(-1), DateTimeKind.Utc)
+            : DateTime.UtcNow.Date.AddDays(1).AddTicks(-1);
         var startOfThisMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 0, 0, 0, DateTimeKind.Utc);
         var startOfLastMonth = startOfThisMonth.AddMonths(-1);
         var endOfLastMonth = startOfThisMonth.AddDays(-1);

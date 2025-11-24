@@ -7,6 +7,8 @@ export class ApiClient {
 
   constructor(baseURL: string = config.api.url) {
     this.baseURL = baseURL;
+    console.log('ApiClient initialized with baseURL:', baseURL);
+    console.log('Config API URL:', config.api.url);
     this.instance = axios.create({
       baseURL,
       timeout: config.api.timeout,
