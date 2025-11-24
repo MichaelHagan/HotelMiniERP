@@ -37,10 +37,14 @@ import WorkOrderDialog from './WorkOrderDialog';
 import WorkOrderDetailDialog from './WorkOrderDetailDialog';
 import { formatDateTime } from '../../utils/dateUtils';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { useConfirm } from '../../context/ConfirmDialogContext';
 
 const WorkOrderList: React.FC = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const { showSuccess, showError } = useToast();
+  const { confirm } = useConfirm();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
@@ -65,13 +69,23 @@ const WorkOrderList: React.FC = () => {
     mutationFn: (id: string) => workOrderService.deleteWorkOrder(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workOrders'] });
+      showSuccess('Work order deleted successfully');
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to delete work order';
+      showError(errorMessage);
     },
   });
 
   const completeMutation = useMutation({
-    mutationFn: (id: string) => workOrderService.completeWorkOrder(id),
+    mutationFn: (id: string) => workOrderService.updateWorkOrderStatus(id, WorkOrderStatus.Completed),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workOrders'] });
+      showSuccess('Work order marked as completed');
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to complete work order';
+      showError(errorMessage);
     },
   });
 
@@ -100,13 +114,21 @@ const WorkOrderList: React.FC = () => {
   };
 
   const handleDeleteClick = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this work order?')) {
+    const confirmed = await confirm(
+      'Are you sure you want to delete this work order? This action cannot be undone.',
+      'Delete Work Order'
+    );
+    if (confirmed) {
       deleteMutation.mutate(id);
     }
   };
 
   const handleCompleteClick = async (id: string) => {
-    if (window.confirm('Mark this work order as completed?')) {
+    const confirmed = await confirm(
+      'Mark this work order as completed? This will also resolve any related complaints.',
+      'Complete Work Order'
+    );
+    if (confirmed) {
       completeMutation.mutate(id);
     }
   };

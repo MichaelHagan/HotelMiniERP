@@ -5,6 +5,8 @@ import { CssBaseline, Box } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/AuthContext';
 import { SignalRProvider } from './context/SignalRContext';
+import { ToastProvider } from './context/ToastContext';
+import { ConfirmDialogProvider } from './context/ConfirmDialogContext';
 import { ProtectedRoute } from './components/common/ProtectedRoute';
 import { Layout } from './components/common/Layout';
 import { TokenExpiryWarning } from './components/common/TokenExpiryWarning';
@@ -130,13 +132,15 @@ function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <AuthProvider>
-          <TokenExpiryWarning />
-          <SignalRProvider 
-            onMessageReceived={handleMessageReceived}
-            onNotificationReceived={handleNotificationReceived}
-          >
-            <Router>
-              <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+          <ToastProvider>
+            <ConfirmDialogProvider>
+              <TokenExpiryWarning />
+              <SignalRProvider 
+                onMessageReceived={handleMessageReceived}
+                onNotificationReceived={handleNotificationReceived}
+              >
+                <Router>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
                 <Routes>
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/" element={
@@ -228,6 +232,8 @@ function App() {
               </Box>
             </Router>
           </SignalRProvider>
+            </ConfirmDialogProvider>
+          </ToastProvider>
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>

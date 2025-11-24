@@ -39,10 +39,14 @@ import UserDialog from './UserDialog';
 import UserDetailDialog from './UserDetailDialog';
 import { formatDateTime } from '../../utils/dateUtils';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { useConfirm } from '../../context/ConfirmDialogContext';
 
 const UserList: React.FC = () => {
   const queryClient = useQueryClient();
   const { user: currentUser } = useAuth();
+  const { showSuccess, showError } = useToast();
+  const { confirm } = useConfirm();
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
@@ -66,6 +70,10 @@ const UserList: React.FC = () => {
     mutationFn: (id: string) => userService.deleteUser(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
+      showSuccess('User deleted successfully');
+    },
+    onError: (error: any) => {
+      showError(error?.response?.data?.message || error?.message || 'Failed to delete user');
     },
   });
 
@@ -84,8 +92,12 @@ const UserList: React.FC = () => {
     setDetailDialogOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    if (window.confirm('Are you sure you want to deactivate this user? This action cannot be undone.')) {
+  const handleDelete = async (id: string) => {
+    const confirmed = await confirm(
+      'Are you sure you want to deactivate this user? This action cannot be undone.',
+      'Confirm Deactivation'
+    );
+    if (confirmed) {
       deleteMutation.mutate(id);
     }
   };

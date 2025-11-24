@@ -38,11 +38,15 @@ import InventoryDialog from './InventoryDialog';
 import InventoryDetailDialog from './InventoryDetailDialog';
 import UpdateStockDialog from './UpdateStockDialog';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { useConfirm } from '../../context/ConfirmDialogContext';
 import { formatCurrency } from '../../utils/formatUtils';
 
 const InventoryList: React.FC = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const { showSuccess, showError } = useToast();
+  const { confirm } = useConfirm();
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
@@ -68,6 +72,10 @@ const InventoryList: React.FC = () => {
     mutationFn: (id: string) => inventoryService.deleteInventory(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['inventory'] });
+      showSuccess('Inventory item deleted successfully');
+    },
+    onError: (error: any) => {
+      showError(error?.response?.data?.message || error?.message || 'Failed to delete inventory item');
     },
   });
 
@@ -91,8 +99,12 @@ const InventoryList: React.FC = () => {
     setStockDialogOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this inventory item?')) {
+  const handleDelete = async (id: string) => {
+    const confirmed = await confirm(
+      'Are you sure you want to delete this inventory item?',
+      'Confirm Deletion'
+    );
+    if (confirmed) {
       deleteMutation.mutate(id);
     }
   };

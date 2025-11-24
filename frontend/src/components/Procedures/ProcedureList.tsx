@@ -31,6 +31,8 @@ import { Procedure, UserRole } from '../../types';
 import { ProcedureDialog } from './ProcedureDialog';
 import { ProcedureDetailDialog } from './ProcedureDetailDialog';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { useConfirm } from '../../context/ConfirmDialogContext';
 import { formatDateTime } from '../../utils/dateUtils';
 
 const PROCEDURE_CATEGORIES = [
@@ -47,6 +49,8 @@ const PROCEDURE_CATEGORIES = [
 export const ProcedureList: React.FC = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { showSuccess, showError } = useToast();
+  const { confirm } = useConfirm();
   
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
@@ -73,7 +77,11 @@ export const ProcedureList: React.FC = () => {
     mutationFn: (id: string) => procedureService.deleteProcedure(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['procedures'] });
-    }
+      showSuccess('Procedure deleted successfully');
+    },
+    onError: (error: any) => {
+      showError(error?.response?.data?.message || error?.message || 'Failed to delete procedure');
+    },
   });
 
   const handleChangePage = (_event: unknown, newPage: number) => {
@@ -101,7 +109,11 @@ export const ProcedureList: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this procedure?')) {
+    const confirmed = await confirm(
+      'Are you sure you want to delete this procedure?',
+      'Confirm Deletion'
+    );
+    if (confirmed) {
       deleteMutation.mutate(id);
     }
   };

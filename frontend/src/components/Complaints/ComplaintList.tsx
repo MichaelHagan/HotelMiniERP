@@ -41,6 +41,8 @@ import { ComplaintDialog } from './ComplaintDialog';
 import { ComplaintDetailDialog } from './ComplaintDetailDialog';
 import WorkOrderDialog from '../WorkOrders/WorkOrderDialog';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { useConfirm } from '../../context/ConfirmDialogContext';
 import { formatDateTime } from '../../utils/dateUtils';
 
 type ComplaintType = 'worker' | 'customer';
@@ -48,6 +50,8 @@ type ComplaintType = 'worker' | 'customer';
 export const ComplaintList: React.FC = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { showSuccess, showError } = useToast();
+  const { confirm } = useConfirm();
   
   const [complaintType, setComplaintType] = useState<ComplaintType>('worker');
   const [page, setPage] = useState(0);
@@ -100,6 +104,11 @@ export const ComplaintList: React.FC = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [complaintType === 'worker' ? 'workerComplaints' : 'customerComplaints'] });
+      showSuccess('Complaint deleted successfully');
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to delete complaint';
+      showError(errorMessage);
     }
   });
 
@@ -137,7 +146,11 @@ export const ComplaintList: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this complaint?')) {
+    const confirmed = await confirm(
+      'Are you sure you want to delete this complaint? This action cannot be undone.',
+      'Delete Complaint'
+    );
+    if (confirmed) {
       deleteMutation.mutate(id);
     }
   };

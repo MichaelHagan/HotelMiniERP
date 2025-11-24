@@ -7,10 +7,10 @@ namespace HotelMiniERP.Application.WorkOrders.Commands;
 public class UpdateWorkOrderCommand : IRequest<WorkOrderDto>
 {
     public int Id { get; set; }
-    public string Title { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-    public WorkOrderStatus Status { get; set; }
-    public WorkOrderPriority Priority { get; set; }
+    public string? Title { get; set; }
+    public string? Description { get; set; }
+    public WorkOrderStatus? Status { get; set; }
+    public WorkOrderPriority? Priority { get; set; }
     public DateTime? ScheduledDate { get; set; }
     public DateTime? CompletedDate { get; set; }
     public decimal? EstimatedCost { get; set; }

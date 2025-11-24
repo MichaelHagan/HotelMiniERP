@@ -39,9 +39,13 @@ import { AssetDialog } from './AssetDialog';
 import { AssetDetailDialog } from './AssetDetailDialog';
 import WorkOrderDialog from '../WorkOrders/WorkOrderDialog';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { useConfirm } from '../../context/ConfirmDialogContext';
 
 export const AssetList: React.FC = () => {
   const { user } = useAuth();
+  const { showSuccess, showError } = useToast();
+  const { confirm } = useConfirm();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
@@ -110,12 +114,17 @@ export const AssetList: React.FC = () => {
   };
 
   const handleDeleteAsset = async (asset: Asset) => {
-    if (window.confirm(`Are you sure you want to delete asset "${asset.assetName}"?`)) {
+    const confirmed = await confirm(
+      `Are you sure you want to delete asset "${asset.assetName}"?`,
+      'Confirm Deletion'
+    );
+    if (confirmed) {
       try {
         await assetService.deleteAsset(asset.id);
         queryClient.invalidateQueries({ queryKey: ['assets'] });
-      } catch (error) {
-        console.error('Failed to delete asset:', error);
+        showSuccess('Asset deleted successfully');
+      } catch (error: any) {
+        showError(error?.response?.data?.message || error?.message || 'Failed to delete asset');
       }
     }
   };

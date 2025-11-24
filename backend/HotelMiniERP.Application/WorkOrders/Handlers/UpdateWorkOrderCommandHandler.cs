@@ -43,30 +43,61 @@ public class UpdateWorkOrderCommandHandler : IRequestHandler<UpdateWorkOrderComm
         var previousStatus = workOrder.Status;
         var previousAssignedTo = workOrder.AssignedToUserId;
 
-        workOrder.Title = request.Title;
-        workOrder.Description = request.Description;
-        workOrder.Status = request.Status;
-        workOrder.Priority = request.Priority;
-        workOrder.ScheduledDate = request.ScheduledDate;
-        workOrder.CompletedDate = request.CompletedDate;
-        workOrder.EstimatedCost = request.EstimatedCost;
-        workOrder.ActualCost = request.ActualCost;
-        workOrder.VendorCost = request.VendorCost;
-        workOrder.WorkType = request.WorkType;
-        workOrder.Location = request.Location;
-        workOrder.Notes = request.Notes;
-        workOrder.AssetId = request.AssetId;
-        workOrder.AssignedToUserId = request.AssignedToUserId;
-        workOrder.VendorId = request.VendorId;
+        // Only update fields that are provided
+        if (request.Title != null)
+            workOrder.Title = request.Title;
+        
+        if (request.Description != null)
+            workOrder.Description = request.Description;
+        
+        if (request.Status.HasValue)
+            workOrder.Status = request.Status.Value;
+        
+        if (request.Priority.HasValue)
+            workOrder.Priority = request.Priority.Value;
+        
+        if (request.ScheduledDate.HasValue)
+            workOrder.ScheduledDate = request.ScheduledDate;
+        
+        if (request.CompletedDate.HasValue)
+            workOrder.CompletedDate = request.CompletedDate;
+        
+        if (request.EstimatedCost.HasValue)
+            workOrder.EstimatedCost = request.EstimatedCost;
+        
+        if (request.ActualCost.HasValue)
+            workOrder.ActualCost = request.ActualCost;
+        
+        if (request.VendorCost.HasValue)
+            workOrder.VendorCost = request.VendorCost;
+        
+        if (request.WorkType != null)
+            workOrder.WorkType = request.WorkType;
+        
+        if (request.Location != null)
+            workOrder.Location = request.Location;
+        
+        if (request.Notes != null)
+            workOrder.Notes = request.Notes;
+        
+        if (request.AssetId.HasValue)
+            workOrder.AssetId = request.AssetId;
+        
+        if (request.AssignedToUserId.HasValue)
+            workOrder.AssignedToUserId = request.AssignedToUserId;
+        
+        if (request.VendorId.HasValue)
+            workOrder.VendorId = request.VendorId;
+        
         workOrder.UpdatedAt = DateTime.UtcNow;
 
-        if (request.Status == WorkOrderStatus.Completed && request.CompletedDate == null)
+        if (request.Status.HasValue && request.Status.Value == WorkOrderStatus.Completed && request.CompletedDate == null)
         {
             workOrder.CompletedDate = DateTime.UtcNow;
         }
 
         // Business Rule: Auto-close linked complaints when work order is completed
-        if (request.Status == WorkOrderStatus.Completed && previousStatus != WorkOrderStatus.Completed)
+        if (request.Status.HasValue && request.Status.Value == WorkOrderStatus.Completed && previousStatus != WorkOrderStatus.Completed)
         {
             if (workOrder.WorkerComplaintId.HasValue && workOrder.WorkerComplaint != null)
             {

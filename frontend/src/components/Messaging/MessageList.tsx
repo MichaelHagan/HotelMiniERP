@@ -36,6 +36,8 @@ import { ConversationView } from './ConversationView';
 import { useAuth } from '../../context/AuthContext';
 import { useSignalR } from '../../context/SignalRContext';
 import { formatDateTime } from '../../utils/dateUtils';
+import { useToast } from '../../context/ToastContext';
+import { useConfirm } from '../../context/ConfirmDialogContext';
 
 type MessageView = 'inbox' | 'sent' | 'broadcast';
 
@@ -43,6 +45,8 @@ export const MessageList: React.FC = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { connection, isConnected } = useSignalR();
+  const { showSuccess, showError } = useToast();
+  const { confirm } = useConfirm();
   
   const [view, setView] = useState<MessageView>('inbox');
   const [page, setPage] = useState(1);
@@ -91,7 +95,11 @@ export const MessageList: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['messages'] });
       queryClient.invalidateQueries({ queryKey: ['unreadMessages'] });
-    }
+      showSuccess('Message marked as read');
+    },
+    onError: (error: any) => {
+      showError(error?.response?.data?.message || error?.message || 'Failed to mark message as read');
+    },
   });
 
   // Delete mutation
@@ -100,7 +108,11 @@ export const MessageList: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['messages'] });
       queryClient.invalidateQueries({ queryKey: ['unreadMessages'] });
-    }
+      showSuccess('Message deleted successfully');
+    },
+    onError: (error: any) => {
+      showError(error?.response?.data?.message || error?.message || 'Failed to delete message');
+    },
   });
 
   // Mark all as read mutation
@@ -109,7 +121,11 @@ export const MessageList: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['messages'] });
       queryClient.invalidateQueries({ queryKey: ['unreadMessages'] });
-    }
+      showSuccess('All messages marked as read');
+    },
+    onError: (error: any) => {
+      showError(error?.response?.data?.message || error?.message || 'Failed to mark all messages as read');
+    },
   });
 
   const handleViewChange = (_event: React.SyntheticEvent, newValue: MessageView) => {
@@ -141,7 +157,11 @@ export const MessageList: React.FC = () => {
 
   const handleDelete = async (message: Message, event: React.MouseEvent) => {
     event.stopPropagation();
-    if (window.confirm('Are you sure you want to delete this message?')) {
+    const confirmed = await confirm(
+      'Are you sure you want to delete this message?',
+      'Confirm Deletion'
+    );
+    if (confirmed) {
       deleteMutation.mutate(message.id);
     }
   };

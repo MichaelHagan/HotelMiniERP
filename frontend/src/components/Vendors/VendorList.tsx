@@ -24,6 +24,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { vendorService } from '../../services/vendorService';
 import { Vendor, CreateVendorDto, UpdateVendorDto } from '../../types';
 import { VendorDialog } from './VendorDialog';
+import { useToast } from '../../context/ToastContext';
+import { useConfirm } from '../../context/ConfirmDialogContext';
 
 export const VendorList: React.FC = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -31,6 +33,8 @@ export const VendorList: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>('active');
   const [searchTerm, setSearchTerm] = useState('');
   const queryClient = useQueryClient();
+  const { showSuccess, showError } = useToast();
+  const { confirm } = useConfirm();
 
   const { data: vendors = [], isLoading } = useQuery({
     queryKey: ['vendors', statusFilter],
@@ -42,6 +46,11 @@ export const VendorList: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['vendors'] });
       setDialogOpen(false);
+      showSuccess('Vendor created successfully');
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to create vendor';
+      showError(errorMessage);
     },
   });
 
@@ -52,6 +61,11 @@ export const VendorList: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['vendors'] });
       setDialogOpen(false);
       setSelectedVendor(undefined);
+      showSuccess('Vendor updated successfully');
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to update vendor';
+      showError(errorMessage);
     },
   });
 
@@ -59,6 +73,11 @@ export const VendorList: React.FC = () => {
     mutationFn: (id: string) => vendorService.deleteVendor(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['vendors'] });
+      showSuccess('Vendor deactivated successfully');
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to deactivate vendor';
+      showError(errorMessage);
     },
   });
 
@@ -72,8 +91,12 @@ export const VendorList: React.FC = () => {
     setDialogOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    if (window.confirm('Are you sure you want to deactivate this vendor?')) {
+  const handleDelete = async (id: string) => {
+    const confirmed = await confirm(
+      'Are you sure you want to deactivate this vendor? They will no longer appear in active listings.',
+      'Deactivate Vendor'
+    );
+    if (confirmed) {
       deleteMutation.mutate(id);
     }
   };
