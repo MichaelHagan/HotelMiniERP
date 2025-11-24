@@ -119,9 +119,10 @@ export const ComplaintDialog: React.FC<ComplaintDialogProps> = ({
   >({
     mutationFn: (data: UpdateComplaintDto) => {
       if (!complaint) throw new Error('No complaint to update');
+      const id = parseInt(complaint.id, 10);
       return complaintType === 'worker'
-        ? complaintService.updateWorkerComplaint(complaint.id, data)
-        : complaintService.updateCustomerComplaint(complaint.id, data);
+        ? complaintService.updateWorkerComplaint(id, data)
+        : complaintService.updateCustomerComplaint(id, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ 

@@ -4,7 +4,8 @@ import {
   CreateWorkOrderDto,
   UpdateWorkOrderDto,
   WorkOrderQueryParams,
-  PaginatedResponse
+  PaginatedResponse,
+  WorkOrderStatus
 } from '../types';
 
 export class WorkOrderService {
@@ -63,6 +64,10 @@ export class WorkOrderService {
 
   async completeWorkOrder(id: string, notes?: string, actualHours?: number): Promise<WorkOrder> {
     return apiClient.put<WorkOrder>(`${this.basePath}/${id}/complete`, { notes, actualHours });
+  }
+
+  async updateWorkOrderStatus(id: string, status: WorkOrderStatus): Promise<WorkOrder> {
+    return apiClient.put<WorkOrder>(`${this.basePath}/${id}`, { status });
   }
 }
 

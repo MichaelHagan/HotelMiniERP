@@ -29,7 +29,7 @@ export class ComplaintService {
     return apiClient.get<PaginatedResponse<WorkerComplaint>>(url);
   }
 
-  async getWorkerComplaintById(id: string): Promise<WorkerComplaint> {
+  async getWorkerComplaintById(id: number): Promise<WorkerComplaint> {
     return apiClient.get<WorkerComplaint>(`${this.basePath}/worker/${id}`);
   }
 
@@ -62,11 +62,11 @@ export class ComplaintService {
     });
   }
 
-  async updateWorkerComplaint(id: string, complaintDto: UpdateComplaintDto): Promise<WorkerComplaint> {
-    return apiClient.put<WorkerComplaint>(`${this.basePath}/worker/${id}`, { ...complaintDto, type: 'worker' });
+  async updateWorkerComplaint(id: number, complaintDto: UpdateComplaintDto): Promise<WorkerComplaint> {
+    return apiClient.put<WorkerComplaint>(`${this.basePath}/worker/${id}`, { ...complaintDto, id, type: 'worker' });
   }
 
-  async deleteWorkerComplaint(id: string): Promise<void> {
+  async deleteWorkerComplaint(id: number): Promise<void> {
     await apiClient.delete(`${this.basePath}/worker/${id}`);
   }
 
@@ -91,7 +91,7 @@ export class ComplaintService {
     return apiClient.get<PaginatedResponse<CustomerComplaint>>(url);
   }
 
-  async getCustomerComplaintById(id: string): Promise<CustomerComplaint> {
+  async getCustomerComplaintById(id: number): Promise<CustomerComplaint> {
     return apiClient.get<CustomerComplaint>(`${this.basePath}/customer/${id}`);
   }
 
@@ -133,19 +133,19 @@ export class ComplaintService {
     });
   }
 
-  async updateCustomerComplaint(id: string, complaintDto: UpdateComplaintDto): Promise<CustomerComplaint> {
-    return apiClient.put<CustomerComplaint>(`${this.basePath}/customer/${id}`, { ...complaintDto, type: 'customer' });
+  async updateCustomerComplaint(id: number, complaintDto: UpdateComplaintDto): Promise<CustomerComplaint> {
+    return apiClient.put<CustomerComplaint>(`${this.basePath}/customer/${id}`, { ...complaintDto, id, type: 'customer' });
   }
 
-  async deleteCustomerComplaint(id: string): Promise<void> {
+  async deleteCustomerComplaint(id: number): Promise<void> {
     await apiClient.delete(`${this.basePath}/customer/${id}`);
   }
 
-  async assignComplaint(type: 'worker' | 'customer', id: string, userId: string): Promise<WorkerComplaint | CustomerComplaint> {
+  async assignComplaint(type: 'worker' | 'customer', id: number, userId: string): Promise<WorkerComplaint | CustomerComplaint> {
     return apiClient.put(`${this.basePath}/${type}/${id}/assign`, { assignedUserId: userId });
   }
 
-  async resolveComplaint(type: 'worker' | 'customer', id: string, resolutionNotes: string): Promise<WorkerComplaint | CustomerComplaint> {
+  async resolveComplaint(type: 'worker' | 'customer', id: number, resolutionNotes: string): Promise<WorkerComplaint | CustomerComplaint> {
     return apiClient.put(`${this.basePath}/${type}/${id}/resolve`, { resolutionNotes });
   }
 }

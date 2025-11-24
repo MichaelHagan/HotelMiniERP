@@ -93,9 +93,10 @@ export const ComplaintList: React.FC = () => {
   // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: (id: string) => {
+      const numId = parseInt(id, 10);
       return complaintType === 'worker' 
-        ? complaintService.deleteWorkerComplaint(id)
-        : complaintService.deleteCustomerComplaint(id);
+        ? complaintService.deleteWorkerComplaint(numId)
+        : complaintService.deleteCustomerComplaint(numId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [complaintType === 'worker' ? 'workerComplaints' : 'customerComplaints'] });

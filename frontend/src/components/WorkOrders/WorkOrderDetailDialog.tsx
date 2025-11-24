@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -10,6 +10,10 @@ import {
   Box,
   Divider,
   Stack,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
 } from '@mui/material';
 import {
   CalendarToday as CalendarIcon,
@@ -20,9 +24,14 @@ import {
   Timer as TimerIcon,
   Flag as PriorityIcon,
   Info as StatusIcon,
+  PlayArrow as StartIcon,
+  CheckCircle as CompleteIcon,
+  Cancel as CancelIcon,
 } from '@mui/icons-material';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { WorkOrder, WorkOrderStatus, Priority } from '../../types';
 import { formatDateTime } from '../../utils/dateUtils';
+import { workOrderService } from '../../services/workOrderService';
 
 interface WorkOrderDetailDialogProps {
   open: boolean;
@@ -35,7 +44,23 @@ const WorkOrderDetailDialog: React.FC<WorkOrderDetailDialogProps> = ({
   onClose,
   workOrder,
 }) => {
+  const queryClient = useQueryClient();
+  const [selectedStatus, setSelectedStatus] = useState<WorkOrderStatus | null>(null);
+
+  const updateStatusMutation = useMutation({
+    mutationFn: (status: WorkOrderStatus) => 
+      workOrderService.updateWorkOrderStatus(workOrder!.id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['workOrders'] });
+      onClose();
+    },
+  });
+
   if (!workOrder) return null;
+
+  const handleStatusChange = (newStatus: WorkOrderStatus) => {
+    updateStatusMutation.mutate(newStatus);
+  };
 
   const getStatusLabel = (status: WorkOrderStatus): string => {
     switch (status) {
@@ -241,7 +266,42 @@ const WorkOrderDetailDialog: React.FC<WorkOrderDetailDialogProps> = ({
         </Box>
       </DialogContent>
 
-      <DialogActions>
+      <DialogActions sx={{ px: 3, py: 2, justifyContent: 'space-between' }}>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          {workOrder.status === WorkOrderStatus.Created && (
+            <Button
+              variant="contained"
+              color="warning"
+              startIcon={<StartIcon />}
+              onClick={() => handleStatusChange(WorkOrderStatus.InProgress)}
+              disabled={updateStatusMutation.isPending}
+            >
+              Start Work
+            </Button>
+          )}
+          {workOrder.status === WorkOrderStatus.InProgress && (
+            <Button
+              variant="contained"
+              color="success"
+              startIcon={<CompleteIcon />}
+              onClick={() => handleStatusChange(WorkOrderStatus.Completed)}
+              disabled={updateStatusMutation.isPending}
+            >
+              Mark Complete
+            </Button>
+          )}
+          {(workOrder.status === WorkOrderStatus.Created || workOrder.status === WorkOrderStatus.InProgress) && (
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<CancelIcon />}
+              onClick={() => handleStatusChange(WorkOrderStatus.Cancelled)}
+              disabled={updateStatusMutation.isPending}
+            >
+              Cancel
+            </Button>
+          )}
+        </Box>
         <Button onClick={onClose}>Close</Button>
       </DialogActions>
     </Dialog>

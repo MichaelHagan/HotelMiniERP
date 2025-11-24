@@ -24,10 +24,13 @@ public class UpdateComplaintCommandHandler : IRequestHandler<UpdateComplaintComm
         if (request.Type.ToLower() == "worker")
         {
             var complaint = await _context.WorkerComplaints
+                .Include(c => c.WorkOrders)
                 .FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
 
             if (complaint == null)
                 throw new KeyNotFoundException($"Worker complaint with ID {request.Id} not found");
+
+            var previousStatus = complaint.Status;
 
             // Update fields
             if (!string.IsNullOrEmpty(request.Title))
@@ -76,6 +79,24 @@ public class UpdateComplaintCommandHandler : IRequestHandler<UpdateComplaintComm
 
             complaint.UpdatedAt = DateTime.UtcNow;
 
+            // Auto-complete related work orders when complaint is resolved
+            if (request.Status.HasValue && request.Status.Value == ComplaintStatus.Resolved && previousStatus != ComplaintStatus.Resolved)
+            {
+                var relatedWorkOrders = complaint.WorkOrders?
+                    .Where(wo => wo.Status != WorkOrderStatus.Completed && wo.Status != WorkOrderStatus.Cancelled)
+                    .ToList();
+
+                if (relatedWorkOrders?.Any() == true)
+                {
+                    foreach (var workOrder in relatedWorkOrders)
+                    {
+                        workOrder.Status = WorkOrderStatus.Completed;
+                        workOrder.CompletedDate = DateTime.UtcNow;
+                        workOrder.UpdatedAt = DateTime.UtcNow;
+                    }
+                }
+            }
+
             await _context.SaveChangesAsync(cancellationToken);
 
             return new ComplaintDto
@@ -101,10 +122,13 @@ public class UpdateComplaintCommandHandler : IRequestHandler<UpdateComplaintComm
         else
         {
             var complaint = await _context.CustomerComplaints
+                .Include(c => c.WorkOrders)
                 .FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
 
             if (complaint == null)
                 throw new KeyNotFoundException($"Customer complaint with ID {request.Id} not found");
+
+            var previousStatus = complaint.Status;
 
             // Update fields
             if (!string.IsNullOrEmpty(request.Title))
@@ -164,6 +188,24 @@ public class UpdateComplaintCommandHandler : IRequestHandler<UpdateComplaintComm
                 complaint.Notes = request.Notes;
 
             complaint.UpdatedAt = DateTime.UtcNow;
+
+            // Auto-complete related work orders when complaint is resolved
+            if (request.Status.HasValue && request.Status.Value == ComplaintStatus.Resolved && previousStatus != ComplaintStatus.Resolved)
+            {
+                var relatedWorkOrders = complaint.WorkOrders?
+                    .Where(wo => wo.Status != WorkOrderStatus.Completed && wo.Status != WorkOrderStatus.Cancelled)
+                    .ToList();
+
+                if (relatedWorkOrders?.Any() == true)
+                {
+                    foreach (var workOrder in relatedWorkOrders)
+                    {
+                        workOrder.Status = WorkOrderStatus.Completed;
+                        workOrder.CompletedDate = DateTime.UtcNow;
+                        workOrder.UpdatedAt = DateTime.UtcNow;
+                    }
+                }
+            }
 
             await _context.SaveChangesAsync(cancellationToken);
 
