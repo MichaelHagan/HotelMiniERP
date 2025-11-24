@@ -1,6 +1,7 @@
 using HotelMiniERP.Application.Messages.Commands;
 using HotelMiniERP.Application.DTOs;
 using HotelMiniERP.Application.Interfaces;
+using HotelMiniERP.Application.Services;
 using HotelMiniERP.Domain.Entities;
 using HotelMiniERP.Domain.Enums;
 using MediatR;
@@ -10,10 +11,12 @@ namespace HotelMiniERP.Application.Messages.Handlers;
 public class CreateMessageCommandHandler : IRequestHandler<CreateMessageCommand, MessageDto>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ISystemNotificationService _notificationService;
 
-    public CreateMessageCommandHandler(IApplicationDbContext context)
+    public CreateMessageCommandHandler(IApplicationDbContext context, ISystemNotificationService notificationService)
     {
         _context = context;
+        _notificationService = notificationService;
     }
 
     public async Task<MessageDto> Handle(CreateMessageCommand request, CancellationToken cancellationToken)
@@ -27,7 +30,7 @@ public class CreateMessageCommandHandler : IRequestHandler<CreateMessageCommand,
             Content = request.Content,
             MessageType = messageType,
             SenderId = request.SentByUserId,
-            ReceiverId = request.SentToUserId ?? request.SentByUserId, // Default to sender if no receiver
+            ReceiverId = messageType == MessageType.Broadcast ? null : request.SentToUserId,
             IsRead = false,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
@@ -35,6 +38,12 @@ public class CreateMessageCommandHandler : IRequestHandler<CreateMessageCommand,
 
         _context.Messages.Add(message);
         await _context.SaveChangesAsync(cancellationToken);
+
+        // Trigger real-time notification via SignalR
+        if (messageType == MessageType.Broadcast || (messageType == MessageType.Personal && request.SentToUserId.HasValue && request.SentToUserId.Value != request.SentByUserId))
+        {
+            await _notificationService.RaiseNotificationEvent(message);
+        }
 
         return new MessageDto
         {

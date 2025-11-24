@@ -163,6 +163,46 @@ public class MessagesController : ControllerBase
         }
     }
 
+    [HttpPut("mark-all-read")]
+    public async Task<IActionResult> MarkAllAsRead()
+    {
+        try
+        {
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(new { message = "User ID not found in token" });
+            }
+
+            // Get all unread messages for the current user
+            var query = new GetAllMessagesQuery
+            {
+                SentToUserId = userId,
+                IsRead = false,
+                Page = 1,
+                PageSize = 1000
+            };
+            var unreadMessages = await _mediator.Send(query);
+
+            // Mark each as read
+            foreach (var message in unreadMessages.Data)
+            {
+                var command = new UpdateMessageCommand
+                {
+                    Id = message.Id,
+                    IsRead = true
+                };
+                await _mediator.Send(command);
+            }
+
+            return Ok(new { message = "All messages marked as read", count = unreadMessages.Data.Count });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An error occurred while marking all messages as read", error = ex.Message });
+        }
+    }
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteMessage(int id)
     {

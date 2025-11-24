@@ -28,7 +28,7 @@ public class GetAllMessagesQueryHandler : IRequestHandler<GetAllMessagesQuery, P
             query = query.Where(m => m.SenderId == request.SentByUserId.Value);
 
         if (request.SentToUserId.HasValue)
-            query = query.Where(m => m.ReceiverId == request.SentToUserId.Value);
+            query = query.Where(m => m.ReceiverId.HasValue && m.ReceiverId.Value == request.SentToUserId.Value);
 
         if (request.IsRead.HasValue)
             query = query.Where(m => m.IsRead == request.IsRead.Value);

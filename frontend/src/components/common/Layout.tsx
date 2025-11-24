@@ -68,9 +68,24 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   // Listen for real-time notifications via SignalR
   useEffect(() => {
     if (connection && isConnected) {
-      const handleNewNotification = () => {
-        // Invalidate and refetch unread messages when a new notification arrives
-        queryClient.invalidateQueries({ queryKey: ['unreadMessages'] });
+      const handleNewNotification = (message: any) => {
+        console.log('Received NewNotification:', message);
+        
+        // Optimistically update the cache with the new message
+        queryClient.setQueryData(['unreadMessages'], (oldData: any[] = []) => {
+          // Check if message is for current user and not from current user
+          if (message.receiverId === Number(user?.id) || message.messageType === 'Broadcast') {
+            // Add new message if it doesn't exist
+            const exists = oldData.some(msg => msg.id === message.id);
+            if (!exists && !message.isRead) {
+              return [...oldData, message];
+            }
+          }
+          return oldData;
+        });
+        
+        // Also invalidate messages list to refresh the full list
+        queryClient.invalidateQueries({ queryKey: ['messages'] });
       };
 
       connection.on('NewNotification', handleNewNotification);
@@ -79,7 +94,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         connection.off('NewNotification', handleNewNotification);
       };
     }
-  }, [connection, isConnected, queryClient]);
+  }, [connection, isConnected, queryClient, user]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);

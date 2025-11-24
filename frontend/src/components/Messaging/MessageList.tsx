@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -29,11 +29,12 @@ import {
   Announcement as BroadcastIcon
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { messageService } from '../../services/messageService';
-import { Message, MessageType, UserRole } from '../../types';
+import { messageService, userService } from '../../services';
+import { Message, MessageType, UserRole, User } from '../../types';
 import { MessageDialog } from './MessageDialog';
 import { ConversationView } from './ConversationView';
 import { useAuth } from '../../context/AuthContext';
+import { useSignalR } from '../../context/SignalRContext';
 import { formatDateTime } from '../../utils/dateUtils';
 
 type MessageView = 'inbox' | 'sent' | 'broadcast';
@@ -41,6 +42,7 @@ type MessageView = 'inbox' | 'sent' | 'broadcast';
 export const MessageList: React.FC = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { connection, isConnected } = useSignalR();
   
   const [view, setView] = useState<MessageView>('inbox');
   const [page, setPage] = useState(1);
@@ -52,6 +54,12 @@ export const MessageList: React.FC = () => {
   const [conversationOpen, setConversationOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
+  // Fetch users for name display
+  const { data: users = [] } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => userService.getUsers()
+  });
+
   // Fetch messages
   const { data: messagesData, isLoading, refetch } = useQuery({
     queryKey: ['messages', page, pageSize],
@@ -59,11 +67,30 @@ export const MessageList: React.FC = () => {
     refetchInterval: 30000 // Refetch every 30 seconds
   });
 
+  // Listen for real-time message updates via SignalR
+  useEffect(() => {
+    if (connection && isConnected) {
+      const handleNewNotification = (message: Message) => {
+        console.log('MessageList received new message:', message);
+        // Immediately refetch messages for instant update
+        queryClient.invalidateQueries({ queryKey: ['messages'] });
+        queryClient.invalidateQueries({ queryKey: ['unreadMessages'] });
+      };
+
+      connection.on('NewNotification', handleNewNotification);
+
+      return () => {
+        connection.off('NewNotification', handleNewNotification);
+      };
+    }
+  }, [connection, isConnected, queryClient]);
+
   // Mark as read mutation
   const markAsReadMutation = useMutation({
     mutationFn: (id: string) => messageService.markAsRead(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['messages'] });
+      queryClient.invalidateQueries({ queryKey: ['unreadMessages'] });
     }
   });
 
@@ -72,6 +99,7 @@ export const MessageList: React.FC = () => {
     mutationFn: (id: string) => messageService.deleteMessage(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['messages'] });
+      queryClient.invalidateQueries({ queryKey: ['unreadMessages'] });
     }
   });
 
@@ -80,6 +108,7 @@ export const MessageList: React.FC = () => {
     mutationFn: () => messageService.markAllAsRead(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['messages'] });
+      queryClient.invalidateQueries({ queryKey: ['unreadMessages'] });
     }
   });
 
@@ -93,8 +122,11 @@ export const MessageList: React.FC = () => {
   };
 
   const handleMessageClick = (message: Message) => {
-    if (!message.isRead && message.receiverId === Number(user?.id)) {
-      markAsReadMutation.mutate(message.id);
+    // Mark as read if unread and it's for the current user (personal or broadcast)
+    if (!message.isRead) {
+      if (message.messageType === MessageType.Broadcast || message.receiverId === Number(user?.id)) {
+        markAsReadMutation.mutate(message.id);
+      }
     }
     
     // Open conversation if it's a personal message
@@ -128,6 +160,11 @@ export const MessageList: React.FC = () => {
   const handleConversationClose = () => {
     setConversationOpen(false);
     setSelectedUserId(null);
+  };
+
+  const handleConversationOpen = (userId: number) => {
+    setSelectedUserId(String(userId));
+    setConversationOpen(true);
   };
 
   const handleRefresh = () => {
@@ -171,6 +208,58 @@ export const MessageList: React.FC = () => {
   }, [messagesData, view, typeFilter, searchTerm, user]);
 
   const unreadCount = filteredMessages.filter(m => !m.isRead && m.receiverId === Number(user?.id)).length;
+
+  // Group personal messages by conversation (other user)
+  const groupedMessages = useMemo(() => {
+    const userMap = new Map<number, User>();
+    const userList = Array.isArray(users) ? users : (users?.data || []);
+    userList.forEach((u: User) => userMap.set(Number(u.id), u));
+
+    const conversations = new Map<number, Message[]>();
+    const broadcasts: Message[] = [];
+    const systemMessages: Message[] = [];
+
+    filteredMessages.forEach(msg => {
+      if (msg.messageType === MessageType.Broadcast) {
+        broadcasts.push(msg);
+      } else if (msg.messageType === MessageType.System) {
+        systemMessages.push(msg);
+      } else if (msg.messageType === MessageType.Personal && msg.receiverId !== null) {
+        // Determine the "other" user in the conversation
+        const otherUserId = msg.senderId === Number(user?.id) ? msg.receiverId : msg.senderId;
+        
+        if (!conversations.has(otherUserId)) {
+          conversations.set(otherUserId, []);
+        }
+        conversations.get(otherUserId)!.push(msg);
+      }
+    });
+
+    // Convert conversations map to array and sort by most recent message
+    const conversationList = Array.from(conversations.entries())
+      .map(([userId, msgs]) => {
+        const sortedMsgs = msgs.sort((a, b) => 
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        const latestMsg = sortedMsgs[0];
+        const unreadInConv = msgs.filter(m => !m.isRead && m.receiverId === Number(user?.id)).length;
+        const otherUser = userMap.get(userId);
+
+        return {
+          userId,
+          userName: otherUser ? `${otherUser.firstName} ${otherUser.lastName}` : `User ${userId}`,
+          userInitials: otherUser ? `${otherUser.firstName[0]}${otherUser.lastName[0]}` : 'U',
+          latestMessage: latestMsg,
+          unreadCount: unreadInConv,
+          totalMessages: msgs.length
+        };
+      })
+      .sort((a, b) => 
+        new Date(b.latestMessage.createdAt).getTime() - new Date(a.latestMessage.createdAt).getTime()
+      );
+
+    return { conversations: conversationList, broadcasts, systemMessages };
+  }, [filteredMessages, users, user]);
 
   const getMessageIcon = (messageType: MessageType) => {
     switch (messageType) {
@@ -289,78 +378,32 @@ export const MessageList: React.FC = () => {
           </Box>
         ) : (
           <List sx={{ p: 0 }}>
-            {filteredMessages.map((message, index) => (
-              <React.Fragment key={message.id}>
-                <ListItem
-                  disablePadding
-                  secondaryAction={
-                    <Box sx={{ display: 'flex', gap: 1 }}>
-                      {!message.isRead && message.receiverId === Number(user?.id) && (
-                        <Tooltip title="Mark as read">
-                          <IconButton 
-                            size="small" 
-                            onClick={(e) => handleMarkAsRead(message, e)}
-                          >
-                            <MarkReadIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                      {canDelete(message) && (
-                        <Tooltip title="Delete">
-                          <IconButton 
-                            size="small" 
-                            onClick={(e) => handleDelete(message, e)}
-                          >
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                    </Box>
-                  }
-                >
-                  <ListItemButton onClick={() => handleMessageClick(message)}>
+            {/* Conversations */}
+            {groupedMessages.conversations.map((conversation, index) => (
+              <React.Fragment key={`conv-${conversation.userId}`}>
+                <ListItem disablePadding>
+                  <ListItemButton onClick={() => handleConversationOpen(conversation.userId)}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
-                      <Avatar sx={{ bgcolor: message.isRead ? 'grey.400' : 'primary.main' }}>
-                        M
+                      <Avatar sx={{ bgcolor: conversation.unreadCount > 0 ? 'primary.main' : 'grey.400' }}>
+                        {conversation.userInitials}
                       </Avatar>
                       <Box sx={{ flexGrow: 1, minWidth: 0 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                           <Typography 
                             variant="subtitle2" 
                             sx={{ 
-                              fontWeight: message.isRead ? 'normal' : 'bold',
+                              fontWeight: conversation.unreadCount > 0 ? 'bold' : 'normal',
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
                               whiteSpace: 'nowrap'
                             }}
                           >
-                            {view === 'sent' 
-                              ? `To: User ID ${message.receiverId}` 
-                              : `From: User ID ${message.senderId}`}
+                            {conversation.userName}
                           </Typography>
-                          {getMessageIcon(message.messageType) && (
-                            <Chip 
-                              icon={getMessageIcon(message.messageType)!}
-                              label={message.messageType}
-                              size="small"
-                              variant="outlined"
-                            />
-                          )}
-                          {!message.isRead && message.receiverId === Number(user?.id) && (
-                            <Chip label="Unread" size="small" color="error" />
+                          {conversation.unreadCount > 0 && (
+                            <Badge badgeContent={conversation.unreadCount} color="error" />
                           )}
                         </Box>
-                        <Typography 
-                          variant="body2" 
-                          sx={{ 
-                            fontWeight: message.isRead ? 'normal' : 'bold',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap'
-                          }}
-                        >
-                          {message.subject || 'No Subject'}
-                        </Typography>
                         <Typography 
                           variant="body2" 
                           color="textSecondary"
@@ -370,6 +413,58 @@ export const MessageList: React.FC = () => {
                             whiteSpace: 'nowrap'
                           }}
                         >
+                          {conversation.latestMessage.content}
+                        </Typography>
+                      </Box>
+                      <Typography variant="caption" color="textSecondary" sx={{ whiteSpace: 'nowrap' }}>
+                        {formatDateTime(conversation.latestMessage.createdAt)}
+                      </Typography>
+                    </Box>
+                  </ListItemButton>
+                </ListItem>
+                {(index < groupedMessages.conversations.length - 1 || groupedMessages.broadcasts.length > 0 || groupedMessages.systemMessages.length > 0) && <Divider />}
+              </React.Fragment>
+            ))}
+
+            {/* Broadcasts */}
+            {groupedMessages.broadcasts.map((message, index) => (
+              <React.Fragment key={`bc-${message.id}`}>
+                <ListItem
+                  disablePadding
+                  secondaryAction={
+                    canDelete(message) && (
+                      <Tooltip title="Delete">
+                        <IconButton 
+                          size="small" 
+                          onClick={(e) => handleDelete(message, e)}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    )
+                  }
+                >
+                  <ListItemButton onClick={() => handleMessageClick(message)}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
+                      <Avatar sx={{ bgcolor: message.isRead ? 'grey.400' : 'warning.main' }}>
+                        <BroadcastIcon />
+                      </Avatar>
+                      <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                          <Typography variant="subtitle2" sx={{ fontWeight: message.isRead ? 'normal' : 'bold' }}>
+                            Broadcast
+                          </Typography>
+                          {!message.isRead && (
+                            <Chip label="Unread" size="small" color="error" />
+                          )}
+                        </Box>
+                        <Typography 
+                          variant="body2" 
+                          sx={{ fontWeight: message.isRead ? 'normal' : 'bold' }}
+                        >
+                          {message.subject || 'No Subject'}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary">
                           {message.content}
                         </Typography>
                       </Box>
@@ -379,7 +474,35 @@ export const MessageList: React.FC = () => {
                     </Box>
                   </ListItemButton>
                 </ListItem>
-                {index < filteredMessages.length - 1 && <Divider />}
+                {(index < groupedMessages.broadcasts.length - 1 || groupedMessages.systemMessages.length > 0) && <Divider />}
+              </React.Fragment>
+            ))}
+
+            {/* System Messages */}
+            {groupedMessages.systemMessages.map((message, index) => (
+              <React.Fragment key={`sys-${message.id}`}>
+                <ListItem disablePadding>
+                  <ListItemButton onClick={() => handleMessageClick(message)}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
+                      <Avatar sx={{ bgcolor: 'info.main' }}>
+                        <SendIcon />
+                      </Avatar>
+                      <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                        <Typography variant="subtitle2">System Message</Typography>
+                        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                          {message.subject || 'No Subject'}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary">
+                          {message.content}
+                        </Typography>
+                      </Box>
+                      <Typography variant="caption" color="textSecondary" sx={{ whiteSpace: 'nowrap' }}>
+                        {formatDateTime(message.createdAt)}
+                      </Typography>
+                    </Box>
+                  </ListItemButton>
+                </ListItem>
+                {index < groupedMessages.systemMessages.length - 1 && <Divider />}
               </React.Fragment>
             ))}
           </List>

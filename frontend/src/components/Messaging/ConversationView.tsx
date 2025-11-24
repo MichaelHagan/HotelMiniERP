@@ -106,8 +106,30 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
       setConversationMessages(prev => [...prev, message]);
       setMessageContent('');
       queryClient.invalidateQueries({ queryKey: ['messages'] });
+      queryClient.invalidateQueries({ queryKey: ['unreadMessages'] });
     }
   });
+
+  const markAsReadMutation = useMutation({
+    mutationFn: (messageId: string) => messageService.markAsRead(messageId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['messages'] });
+      queryClient.invalidateQueries({ queryKey: ['unreadMessages'] });
+    }
+  });
+
+  // Auto-mark unread messages as read when conversation opens
+  useEffect(() => {
+    if (open && conversationMessages.length > 0) {
+      const unreadMessages = conversationMessages.filter(
+        msg => !msg.isRead && msg.receiverId === Number(user?.id)
+      );
+      
+      unreadMessages.forEach(msg => {
+        markAsReadMutation.mutate(msg.id);
+      });
+    }
+  }, [open, conversationMessages.length]); // Only run when conversation opens or message count changes
 
   const handleSendMessage = () => {
     if (!messageContent.trim() || !userId) return;

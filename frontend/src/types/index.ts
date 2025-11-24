@@ -504,7 +504,7 @@ export interface Message {
   content: string;
   messageType: MessageType;
   senderId: number;
-  receiverId: number;
+  receiverId: number | null;
   isRead: boolean;
   readAt?: string;
   createdAt: string;

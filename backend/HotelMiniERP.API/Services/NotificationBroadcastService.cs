@@ -48,26 +48,24 @@ public class NotificationBroadcastService : IHostedService
     {
         try
         {
-            Console.WriteLine($"[NotificationBroadcast] Broadcasting notification ID: {message.Id} to ReceiverId: {message.ReceiverId}");
-            
-            // Send to specific user if there's a receiver
-            if (message.ReceiverId > 0)
+            // Check if it's a broadcast message
+            if (message.MessageType == Domain.Enums.MessageType.Broadcast)
             {
-                await _hubContext.Clients
-                    .Group($"User_{message.ReceiverId}")
-                    .SendAsync("NewNotification", message);
-                Console.WriteLine($"[NotificationBroadcast] Sent to User_{message.ReceiverId}");
-            }
-            else
-            {
-                // Broadcast to all if no specific receiver (e.g., low inventory alerts)
+                // Send to all users
                 await _hubContext.Clients.All.SendAsync("NewNotification", message);
-                Console.WriteLine($"[NotificationBroadcast] Broadcast to all clients");
+                Console.WriteLine($"[NotificationBroadcast] Broadcast message {message.Id} sent to all users");
+            }
+            else if (message.ReceiverId.HasValue && message.ReceiverId.Value > 0)
+            {
+                // Send to specific user
+                await _hubContext.Clients
+                    .Group($"User_{message.ReceiverId.Value}")
+                    .SendAsync("NewNotification", message);
+                Console.WriteLine($"[NotificationBroadcast] Message {message.Id} sent to User_{message.ReceiverId.Value}");
             }
         }
         catch (Exception ex)
         {
-            // Log error but don't throw - notifications are not critical
             Console.WriteLine($"Error broadcasting notification: {ex.Message}");
         }
     }

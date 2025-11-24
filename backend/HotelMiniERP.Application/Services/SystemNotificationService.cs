@@ -11,6 +11,7 @@ public interface ISystemNotificationService
     Task NotifyComplaintAssigned(int complaintId, int assignedToUserId, string complaintTitle);
     Task NotifyLowInventory(int inventoryId, string inventoryName, int currentStock, int minimumStock);
     Task NotifyAssetMaintenanceDue(int assetId, string assetName, DateTime dueDate, int? assignedToUserId);
+    Task RaiseNotificationEvent(Message message);
     
     event Func<Message, Task>? OnNotificationCreated;
 }
@@ -25,7 +26,7 @@ public class SystemNotificationService : ISystemNotificationService
         _context = context;
     }
 
-    private async Task RaiseNotificationEvent(Message message)
+    public async Task RaiseNotificationEvent(Message message)
     {
         if (OnNotificationCreated != null)
         {
